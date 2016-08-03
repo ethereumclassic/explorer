@@ -35,7 +35,7 @@ var Block = new Schema(
             "input": String
         }
     ],
-    "uncles": [{"hash": String}]
+    "uncles": [String]
 });
 
 var blockDB = mongoose.model('Block', Block);

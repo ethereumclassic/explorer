@@ -1,3 +1,5 @@
+require( '../db.js' );
+
 var express = require('express');
 var app = express();
 
@@ -5,6 +7,8 @@ var fs = require('fs');
 
 var Web3 = require('web3');
 
+var mongoose = require( 'mongoose' );
+var Block     = mongoose.model( 'Block' );
 
 var grabBlocks = function(config) {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + 
@@ -15,7 +19,6 @@ var grabBlocks = function(config) {
 }
 
 var grabBlock = function(config, web3, blockHashOrNumber) {
-    
     var desiredBlockHashOrNumber;
 
     // check if done
@@ -49,11 +52,11 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                     desiredBlockHashOrNumber);
             }
             else {
-                if('terminateAtExistingFile' in config && config.terminateAtExistingFile === true) {
-                    checkBlockFileExistsThenWrite(config, blockData);
+                if('terminateAtExistingDB' in config && config.terminateAtExistingFile === true) {
+                    checkBlockDBExistsThenWrite(config, blockData);
                 }
                 else {
-                    writeBlockToFile(config, blockData);
+                    writeBlockToDB(config, blockData);
                 }
 
                 if('hash' in blockData && 'number' in blockData) {
@@ -90,50 +93,39 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
 }
 
 
-var writeBlockToFile = function(config, blockData) {
-    var blockFilename = blockData.number + '.json';
-    var fileContents = JSON.stringify(blockData, null, 4);
-
-    fs.writeFile(config.output + '/' + blockFilename, fileContents, function(error) {
-        if(error) {
-            console.log('Error: Aborted due to error on writting to file for ' + 
-                'block number ' + blockData.number.toString() + ': "' + 
-                config.output + '/' + blockFilename + '"');
-            console.log('Error Received: ' + error);
-            process.exit(9);
-        }
-        else {
+var writeBlockToDB = function(config, blockData) {
+    //var blockContents = JSON.stringify(blockData, null, 4);
+    new Block(blockData).save( function( err, block, count ){
+        if ( typeof err !== 'undefined' && err ) {
+           console.log('Error: Aborted due to error on ' + 
+                'block number ' + blockData.number.toString() + ': ' + 
+                err);
+           process.exit(9);
+        } else {
             if(!('quiet' in config && config.quiet === true)) {
-                console.log('File successfully written for block number ' +
-                    blockData.number.toString() + ': "' + config.output + '/' +
-                    blockFilename + '"');
-            }
+                console.log('DB successfully written for block number ' +
+                    blockData.number.toString() );
+            }            
         }
-    });
+      });
 }
 
 /**
-  * Checks if the a file exists for the block number then ->
-  *     if file exists: abort
-  *     if file DNE: write a file for the block
+  * Checks if the a record exists for the block number then ->
+  *     if record exists: abort
+  *     if record DNE: write a file for the block
   */
-var checkBlockFileExistsThenWrite = function(config, blockData) {
-    var blockFilePath = config.output + '/' + blockData.number + '.json';
-    fs.stat(blockFilePath, function(error, stat) {
-        if(error == null) {
-            console.log('Aborting because block number: ' + blockData.number.toString() + 
-                ' already has a json file for it.');
-            process.exit(9);
-        }
-        else if(error.code == 'ENOENT') {
-            writeBlockToFile(config, blockData);
-        }
+var checkBlockDBExistsThenWrite = function(config, blockData) {
+    Block.find({number: blockData.number}, function (err, b) {
+        if (!b.length)
+            writeBlockToDB(config, blockData);
         else {
-            console.log('Error: Aborted due to error when checking if file exists for block number: ' + 
-                blockData.number.toString(), error.code);
+            console.log('Aborting because block number: ' + blockData.number.toString() + 
+                ' already exists in DB.');
             process.exit(9);
         }
-    });
+
+    })
 }
 
 /** On Startup **/
@@ -180,4 +172,4 @@ console.log('Using configuration:');
 console.log(config);
 grabBlocks(config);
 
-app.listen(4000);
+//app.listen(4000);
