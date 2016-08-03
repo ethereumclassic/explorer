@@ -1,9 +1,10 @@
+#!/usr/bin/env node
+
 require( './db' );
 
-#!/usr/bin/env node
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
+//var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var routes = require('./routes');
@@ -15,7 +16,7 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(favicon(__dirname + '/public/favicon.ico'));
+//app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -30,13 +31,14 @@ app.get('/', function(req, res) {
 
 /* 
   data request format
-  { "address": "0x1234blah" }
+  { "address": "0x1234blah", "txin": true } 
   { "tx": "0x1234blah" }
   { "block": "1234" }
 */
 app.post('/addr', routes.addr);
 app.post('/tx', routes.tx);
 app.post('/block', routes.block);
+app.get('/test', routes.test);
 
 // let angular catch them
 app.use(function(req, res) {
