@@ -1,5 +1,5 @@
 {
     "gethPort": 8545, 
-    "blocks": [ {"start": 1, "end": 4}],
+    "blocks": [ {"start": 1, "end": 2000000}],
     "quiet": true
 }
