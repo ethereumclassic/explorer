@@ -18,12 +18,13 @@
                 </div>
                 <div class="portlet-body">
                     <div class="table-scrollable table-scrollable-borderless" style="max-height:400px;">
+
                         <table class="table table-hover table-light">
                             <thead>
                                 <tr class="uppercase">
-                                    <th> seq # </th>
-                                    <th> <!--  description --> </th>
-                                    <th> Count </th>
+                                    <th>  </th>
+                                    <th> Miner </th>
+                                    <th> Txns </th>
                                     <th> CFP Count </th>
                                     <th> ether sent </th>
                                     <th> ether amount </th>
@@ -31,15 +32,10 @@
                                     <th> $ amount </th>
                                 </tr>
                             </thead>
-                            <tbody><tr ng-repeat="t in account.data track by $index">
-                                <td>{{t.seq}}</td>
-                                <td class="{{t.action}}">{{t.action}}</td>
-                                <td>{{t.count}}</td>
-                                <td>{{t.cfpCount}}</td>
-                                <td>{{t.etherSent}}</td>
-                                <td>{{t.etherAmount}}</td>
-                                <td>{{t.fiatSent}}</td>
-                                <td>{{t.fiatAmount}}</td>
+                            <tbody><tr ng-repeat="t in latest_blocks track by $index">
+                                <td>{{t.number}}</td>
+                                <td>{{t.miner}}</td>
+                                <td>{{t.transactions.length}}</td>
                             </tr>
                         </tbody></table>
                     </div>

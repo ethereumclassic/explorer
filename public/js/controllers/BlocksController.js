@@ -11,59 +11,24 @@ angular.module('BlocksApp').controller('BlocksController', function($rootScope, 
     $rootScope.settings.layout.pageBodySolid = false;
     $rootScope.settings.layout.pageSidebarClosed = false;
 
-    var URL = '/data';
+    var URL = '/web3relay';
 
     $http({
       method: 'POST',
       url: URL,
-      data: {"action": "FEES"}
+      data: {"action": "latest_blocks"}
     }).success(function(data) {
-      $scope.fees = data;
+      $scope.latest_blocks = data.blocks;
     });
 
     $http({
       method: 'POST',
       url: URL,
-      data: {"action": "FIX_EVENTS"}
+      data: {"action": "latest_txs"}
     }).success(function(data) {
-      $scope.fixes = data;
+      $scope.latest_txs = data.txs;
     });
 
 
 
-})
-.directive('feeFactory', function() {
-  return {
-    restrict: 'E',
-    templateUrl: '/views/fees.html'
-  }
-})
-.directive('chartFactory', function() {
-  return {
-    restrict: 'E',
-    templateUrl: '/views/chart.html',
-    scope: {
-            c: '='
-        },
-    link: function(scope, elem, attrs){
-
-        var cWidth = 960;
-        //elem.parent()[0].offsetWidth - 320;  // fixed sidebar is constant
-
-        var URL = '/data';
-        
-        var svg = elem.find('chart')[0];
-        var name = scope.c.name;
-        
-        var dataOptions = scope.c.dataOptions;
-        var multi = false; // this is a different chart type for now 
-        if ('options' in scope.c) 
-            multi = scope.c.options.multi;
-
-        var chartOptions = scope.c.options;
-        chartOptions['width'] = cWidth;
-        
-
-    }
-  }
 })

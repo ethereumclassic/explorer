@@ -40,6 +40,7 @@ exports.clientSocket = function(io) {
 }
 
 exports.data = function(req, res){
+
   // TODO: error handling for invalid calls
   var action = req.body.action.toLowerCase();
 
@@ -81,6 +82,7 @@ function getLatestBlocks(lim) {
 
 function getLatestTxs(lim) {
   var blocks = getLatest(lim);
+  console.log(blocks)
   var txs = extractTX(blocks);
   return {"txs": txs}
 }
