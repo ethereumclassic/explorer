@@ -1,4 +1,4 @@
-require( '../../db.js' );
+require( '../db.js' );
 
 var express = require('express');
 var app = express();
