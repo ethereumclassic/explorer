@@ -36,10 +36,11 @@ exports.block = function(req, res) {
   var txQuery = "number";
   var number = parseInt(req.body.block);
 
-  var blockFind = Block.find( { number : number });
+  var blockFind = Block.findOne( { number : number });
   blockFind.exec(function (err, doc) {
-
-    if (!doc.length){
+    console.log(doc)
+    console.log(err)
+    if (!doc._id){
       res.write(JSON.stringify({}));
       res.end();
     } else {
@@ -55,13 +56,14 @@ exports.tx = function(req, res){
   var tx = req.body.tx.toLowerCase();
 
   var txFind = Block.findOne( { "transactions.hash" : tx });
-  txFind.exec(function (err, docs) {
-    if (!docs.length){
-      res.write(JSON.stringify([]));
+  txFind.exec(function (err, doc) {
+    console.log(doc)
+    if (!doc._id){
+      res.write(JSON.stringify({}));
       res.end();
     } else {
       // filter transactions
-      var txDocs = filterTX(docs, "hash", tx)
+      var txDocs = filterTX([doc], "hash", tx)
       res.write(JSON.stringify(txDocs));
       res.end();
     }
