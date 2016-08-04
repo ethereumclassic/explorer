@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // streams from web3
 // var web3socket = require('./routes/web3relay').clientSocket;
-var web3relay = require('./routes/web3relay');
+//var web3relay = require('./routes/web3relay');
 
 // client
 
@@ -42,7 +42,9 @@ app.get('/', function(req, res) {
 app.post('/addr', routes.addr);
 app.post('/tx', routes.tx);
 app.post('/block', routes.block);
-app.post('/web3relay', web3relay.data)
+app.post('/data', routes.data);
+// app.post('/web3relay', web3relay.data)
+
 app.get('/test', function(req, res) {
   res.render('test');
 });

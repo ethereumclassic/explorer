@@ -11,7 +11,7 @@ angular.module('BlocksApp').controller('BlocksController', function($rootScope, 
     $rootScope.settings.layout.pageBodySolid = false;
     $rootScope.settings.layout.pageSidebarClosed = false;
 
-    var URL = '/web3relay';
+    var URL = '/data';
 
     $http({
       method: 'POST',

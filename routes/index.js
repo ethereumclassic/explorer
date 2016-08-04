@@ -1,6 +1,7 @@
 var mongoose = require( 'mongoose' );
 var Block     = mongoose.model( 'Block' );
 var filterTX = require('./filters').filterTX;
+var extractTX = require('./filters').extractTX;
 
 exports.addr = function(req, res){
   // TODO: validate addr and tx
@@ -72,11 +73,55 @@ exports.tx = function(req, res){
 
 };
 
+/*
+  Fetch data from DB
+*/
+exports.data = function(req, res){
 
-function sum( obj ) {
-  var sum = 0;
-  for( var el in obj ) {
-      sum += parseFloat( obj[el].count );
+  // TODO: error handling for invalid calls
+  var action = req.body.action.toLowerCase();
+  var limit = req.body.limit
+
+  if (action in DATA_ACTIONS) {
+    if (isNaN(limit))
+      var lim = MAX_ENTRIES;
+    else
+      var lim = parseInt(limit);
+    
+    getLatest(lim, res, DATA_ACTIONS[action]);
+
+  } else {
+  
+    console.error("Invalid Request: " + action)
+    res.status(400).send();
   }
-  return sum;
+
+};
+
+
+var getLatest = function(lim, res, callback) {
+  var blockFind = Block.find().sort('-number').limit(lim);
+  blockFind.exec(function (err, docs) {
+    callback(docs, res);
+  });
 }
+
+/* get blocks from db */
+var sendBlocks = function(data, res) {
+  res.write(JSON.stringify({"blocks": data}));
+  res.end();
+}
+
+var sendTxs = function(data, res) {
+  var txs = extractTX(data);
+  res.write(JSON.stringify({"txs": txs}));
+  res.end();
+}
+
+const MAX_ENTRIES = 10;
+
+const DATA_ACTIONS = {
+  "latest_blocks": sendBlocks,
+  "latest_txs": sendTxs
+}
+
