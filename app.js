@@ -24,7 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // streams from web3
-var web3socket = require('./routes/web3relay').clientSocket;
+// var web3socket = require('./routes/web3relay').clientSocket;
+var web3relay = require('./routes/web3relay');
 
 // client
 
@@ -41,6 +42,7 @@ app.get('/', function(req, res) {
 app.post('/addr', routes.addr);
 app.post('/tx', routes.tx);
 app.post('/block', routes.block);
+app.post('/web3relay', web3relay.data)
 app.get('/test', function(req, res) {
   res.render('test');
 });
@@ -78,7 +80,7 @@ app.use(function(err, req, res, next) {
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-web3socket(io);
+// web3socket(io);
 
 http.listen(app.get('port'), '0.0.0.0', function() {
     console.log('Express server listening on port ' + app.get('port'));

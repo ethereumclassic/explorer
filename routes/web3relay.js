@@ -21,7 +21,7 @@ else
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
 
-function clientSocket(io) {
+exports.clientSocket = function(io) {
 
   newBlocks.watch(function (error, log) {
     console.log('### JSON emitted to block client: ' + JSON.stringify(log));
@@ -35,6 +35,19 @@ function clientSocket(io) {
 
 }
 
-module.exports = {
-  clientSocket: clientSocket
+exports.data = function(req, res){
+  //var call = req.body.call.toLowerCase();
+
+  var blocks = getLatest();
+  res.write(JSON.stringify(blocks));
+  res.end();
+
+};
+
+function getLatest() {
+  var blocks = [];
+  for (var i=0; i < 10; i++) {
+    blocks.push(web3.eth.getBlock(web3.eth.blockNumber - i));
+  }
+  return blocks;
 }
