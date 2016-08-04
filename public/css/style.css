@@ -25,7 +25,7 @@ button.wait {
     z-index:100;
     position: absolute;
     margin-left:30%;
-    bottom: 150px;
+    /*bottom: 150px;*/
     cursor: wait !important;
     box-shadow: none !important;
 }
