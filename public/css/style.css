@@ -34,6 +34,10 @@ button.wait {
 	clear: both;
 }
 
+table#transactions td {
+	white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:200px;
+}
+
 body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 	font-family: 'Lato', sans-serif;
 }

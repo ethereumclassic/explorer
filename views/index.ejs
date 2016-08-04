@@ -46,6 +46,7 @@
     <input id="addr_in" class="form-control" type = "text" placeholder = "Address: eg. 0x12356">
     <button href="#services" class="form-control button" id="addr_btn" type="submit">Search Address</button>
     </form><br>
+    <!--
     <form>
     <input  id="tx_in" class="form-control" type = "text" placeholder = "Transaction Hash: eg. 0xd8blah">
     <button href="#services" class="form-control button" id="tx_btn" type="submit">Search Transaction</button>
@@ -53,7 +54,7 @@
     <form>
     <input id="block_in" class="form-control" type = "text" placeholder = "Block Number: eg. 192000">
     <button href="#services" class="form-control button" id="block_btn" type="submit">Search Block</button>
-    </form><br>
+    </form><br>-->
     <p><a style="color:#fff;">Sorry this is so ugly, it's a temporary page until I get something better put up. If you do frontend stuff and want to help, email elaine.ou@gmail.com.</a></p>
             </div>
           </div>
@@ -134,12 +135,12 @@ $(document).ready(function () {
         $("#transactions").html("");
         $("#results").html("<h5><b>Address</b>: " + text+"</h5>");
           
-        $("#transactions").append("<tr><th>TxHash</th><th></th><th></th><th>Value</th></tr>");
+        $("#transactions").append("<tr><th>TxHash</th><th>from</th><th>to</th><th>Value</th></tr>");
 
           json = res;
           for (var i = 0; i < json.length; i++) {
             $("#transactions").append("<tr>",
-              "<td>" + json[i].hash, "<td>" + json[i].from,
+              '<td class="txhash">' + json[i].hash, "<td>" + json[i].from,
               "<td>" + json[i].to,
               '<td align="right">' + json[i].value)
           };
@@ -231,7 +232,7 @@ $("#tx_btn").click(function getresponse(e){
           json = res;
           for (var i = 0; i < json.length; i++) {
             $("#transactions").append("<tr>",
-              "<td>" + json[i].hash, "<td>" + json[i].from,
+              '<td class="txhash">' + json[i].hash, "<td>" + json[i].from,
               "<td>" + json[i].to,
               '<td align="right">' + json[i].value)
           };
