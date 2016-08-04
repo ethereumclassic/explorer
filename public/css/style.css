@@ -20,7 +20,7 @@ body {
 button.wait {
     color: transparent !important;
     border: 0 !important;
-    background: url('../img/283.gif') no-repeat scroll 0 0 transparent !important;
+    background: url('../img/loading.gif') no-repeat scroll 0 0 transparent !important;
     height: 100px;
     z-index:100;
     position: absolute;
