@@ -2,3 +2,7 @@ div.page-logo {overflow: visible;}
 img.logo-default {
     max-height:100px;
 }
+ul.scrollable {
+    max-height: 400px;
+    overflow-y: scroll;
+}

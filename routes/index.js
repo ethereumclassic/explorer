@@ -118,7 +118,7 @@ var sendTxs = function(data, res) {
   res.end();
 }
 
-const MAX_ENTRIES = 10;
+const MAX_ENTRIES = 20;
 
 const DATA_ACTIONS = {
   "latest_blocks": sendBlocks,
