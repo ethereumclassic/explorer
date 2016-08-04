@@ -38,7 +38,9 @@ app.get('/', function(req, res) {
 app.post('/addr', routes.addr);
 app.post('/tx', routes.tx);
 app.post('/block', routes.block);
-app.get('/test', routes.test);
+app.get('/test', function(req, res) {
+  res.render('test');
+});
 
 // let angular catch them
 app.use(function(req, res) {

@@ -71,15 +71,6 @@ exports.tx = function(req, res){
 
 };
 
-exports.test = function(req, res) {
-
-  Block.find( function (err, docs) {
-    res.write(JSON.stringify(docs));
-        res.end();
-  }).limit(10);
-
-};
-
 
 function sum( obj ) {
   var sum = 0;
