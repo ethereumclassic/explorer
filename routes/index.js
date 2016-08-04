@@ -1,5 +1,6 @@
 var mongoose = require( 'mongoose' );
 var Block     = mongoose.model( 'Block' );
+var filterTX = require('./filters').filterTX;
 
 exports.addr = function(req, res){
   // TODO: validate addr and tx
@@ -78,16 +79,4 @@ function sum( obj ) {
       sum += parseFloat( obj[el].count );
   }
   return sum;
-}
-
-/*
-  Filter an array of TX 
-*/
-function filterTX(txs, field, value) {
-  var blockTX = txs.map(function(block) {
-    return block.transactions.filter(function(obj) {
-      return obj[field]==value;   
-    });
-  });
-  return [].concat.apply([], blockTX);
 }
