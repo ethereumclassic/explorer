@@ -3,7 +3,7 @@ var Block     = mongoose.model( 'Block' );
 
 exports.addr = function(req, res){
   // TODO: validate addr and tx
-  var addr = req.body.addr;
+  var addr = req.body.addr.toLowerCase();
 
   // txin = true: inbound tx
   if (req.body.txin) 
@@ -52,14 +52,16 @@ exports.block = function(req, res) {
 
 exports.tx = function(req, res){
 
-  var txFind = Block.findOne( { "transactions.hash" : req.body.tx });
+  var tx = req.body.tx.toLowerCase();
+
+  var txFind = Block.findOne( { "transactions.hash" : tx });
   txFind.exec(function (err, docs) {
     if (!docs.length){
       res.write(JSON.stringify([]));
       res.end();
     } else {
       // filter transactions
-      var txDocs = filterTX(docs, "hash", req.body.tx)
+      var txDocs = filterTX(docs, "hash", tx)
       res.write(JSON.stringify(txDocs));
       res.end();
     }
