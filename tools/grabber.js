@@ -13,9 +13,30 @@ var Block     = mongoose.model( 'Block' );
 var grabBlocks = function(config) {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + 
         config.gethPort.toString()));
-    setTimeout(function() {
-        grabBlock(config, web3, config.blocks.pop());
-    }, 2000);
+
+
+    if('listenOnly' in config && config.listenOnly === true) 
+        listenBlocks(config, web3);
+    else
+        setTimeout(function() {
+            grabBlock(config, web3, config.blocks.pop());
+        }, 2000);
+
+}
+
+var listenBlocks = function(config, web3) {
+    var newBlocks = web3.eth.filter("latest");
+    newBlocks.watch(function (error, log) {
+
+        if(error) {
+            console.log('Error: ' + error);
+        } else if (log == null) {
+            console.log('Warning: null block hash');
+        } else {
+            grabBlock(config, web3, log);
+        }
+
+    });
 }
 
 var grabBlock = function(config, web3, blockHashOrNumber) {
@@ -52,7 +73,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                     desiredBlockHashOrNumber);
             }
             else {
-                if('terminateAtExistingDB' in config && config.terminateAtExistingFile === true) {
+                if('terminateAtExistingDB' in config && config.terminateAtExistingDB === true) {
                     checkBlockDBExistsThenWrite(config, blockData);
                 }
                 else {
@@ -170,6 +191,6 @@ if (!('blocks' in config) || !(Array.isArray(config.blocks))) {
 
 console.log('Using configuration:');
 console.log(config);
+
 grabBlocks(config);
 
-//app.listen(4000);
