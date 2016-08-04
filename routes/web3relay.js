@@ -75,6 +75,10 @@ function getLatest(lim) {
   return blocks;
 }
 
+/*
+  actually, everything should fetch from DB, not web3
+*/
+
 function getLatestBlocks(lim) {
   var blocks = getLatest(lim);
   return {"blocks": blocks}
@@ -82,12 +86,11 @@ function getLatestBlocks(lim) {
 
 function getLatestTxs(lim) {
   var blocks = getLatest(lim);
-  console.log(blocks)
   var txs = extractTX(blocks);
   return {"txs": txs}
 }
 
-const MAX_ENTRIES = 20;
+const MAX_ENTRIES = 10;
 
 const DATA_ACTIONS = {
   "latest_blocks": getLatestBlocks,

@@ -12,8 +12,14 @@ function filterTX(txs, field, value) {
 
 /* extract transactions from blocks */
 function extractTX(blocks) {
+    
   var blockTX = blocks.map(function(block) {
     return block.transactions;
   });
   return [].concat.apply([], blockTX);
+}
+
+module.exports = {
+  extractTX: extractTX,
+  filterTX: filterTX
 }
