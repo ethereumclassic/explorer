@@ -43,7 +43,7 @@
               <h3 class="white">Search the Blockchain</h3>
             <br>
     <form>
-    <input  id="addr_in" class="form-control" type = "text" placeholder = "Address: eg. 0x12356">
+    <input id="addr_in" class="form-control" type = "text" placeholder = "Address: eg. 0x12356">
     <button href="#services" class="form-control button" id="addr_btn" type="submit">Search Address</button>
     </form><br>
     <form>
@@ -67,7 +67,7 @@
       <div class="container">
         
         <div class="row mar-bot40">
-          <div class="col-md-offset-3 col-md-6">
+          <div class="col-md-12">
             <div class="section-header">
             <h4 id="linkedin_name"></h4>
               <h2 class="section-heading animated" data-animation="bounceInUp">Stuff you searched for</h2>
@@ -151,6 +151,97 @@ $(document).ready(function () {
     });
   });
 
+$("#block_btn").click(function getresponse(e){
+    e.preventDefault();
+    $("#block_btn").attr('disabled', 'disabled');
+    $("#block_btn").addClass('wait');
+    var text = $("#block_in").val();
+    var jdata = JSON.stringify({'block': text});
+    $("#block_in").val("");
+    window.location.hash='';
+    $("#results").html("");
+      $.ajax({
+      type: 'POST',
+      url: '/block',
+      dataType: "json",
+      contentType: "application/json",
+      data: jdata,
+      crossDomain: true,
+      success:  function (res) {
+        console.log(res);
+
+        $('#block_btn').removeAttr('disabled');
+        $('#block_btn').removeClass('wait');   
+        window.location.hash = "services";
+        if (res.status == "error") {
+          alert("Oops! Search error. Sorry.");
+          return
+        }
+        $("#transactions").html("");
+        $("#results").html("<h5><b>Block Number</b>: " + text+"</h5>");
+          
+        $("#transactions").append("<tr><th>TxHash</th><th></th><th></th><th>Value</th></tr>");
+
+          json = res;
+          for (var i = 0; i < json.length; i++) {
+            $("#transactions").append("<tr>",
+              "<td>" + json[i].hash, "<td>" + json[i].from,
+              "<td>" + json[i].to,
+              '<td align="right">' + json[i].value)
+          };
+          
+        },
+      error: function (request, status, error) {
+        alert(error);
+      }
+    });
+  });
+
+$("#tx_btn").click(function getresponse(e){
+    e.preventDefault();
+    $("#tx_btn").attr('disabled', 'disabled');
+    $("#tx_btn").addClass('wait');
+    var text = $("#tx_in").val();
+    var jdata = JSON.stringify({'tx': text});
+    $("#tx_in").val("");
+    window.location.hash='';
+    $("#results").html("");
+      $.ajax({
+      type: 'POST',
+      url: '/tx',
+      dataType: "json",
+      contentType: "application/json",
+      data: jdata,
+      crossDomain: true,
+      success:  function (res) {
+        console.log(res);
+
+        $('#tx_btn').removeAttr('disabled');
+        $('#tx_btn').removeClass('wait');   
+        window.location.hash = "services";
+        if (res.status == "error") {
+          alert("Oops! Search error. Sorry.");
+          return
+        }
+        $("#transactions").html("");
+        $("#results").html("<h5><b>TxHash</b>: " + text+"</h5>");
+          
+        $("#transactions").append("<tr><th>TxHash</th><th></th><th></th><th>Value</th></tr>");
+
+          json = res;
+          for (var i = 0; i < json.length; i++) {
+            $("#transactions").append("<tr>",
+              "<td>" + json[i].hash, "<td>" + json[i].from,
+              "<td>" + json[i].to,
+              '<td align="right">' + json[i].value)
+          };
+          
+        },
+      error: function (request, status, error) {
+        alert(error);
+      }
+    });
+  });
 
 });
 

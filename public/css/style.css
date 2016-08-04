@@ -21,7 +21,7 @@ button.wait {
     color: transparent !important;
     border: 0 !important;
     background: url('../img/loading.gif') no-repeat scroll 0 0 transparent !important;
-    height: 100px;
+    height: 150px;
     z-index:100;
     position: absolute;
     margin-left:30%;
