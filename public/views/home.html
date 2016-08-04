@@ -1,0 +1,92 @@
+<!-- BEGIN MAIN CONTENT -->
+<div ng-controller="BlocksController">
+    <div class="row">
+        <div class="col-md-6 col-sm-6">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        <i class="icon-bar-chart font-red"></i>
+                        <span class="caption-subject font-red bold uppercase">Blocks</span>
+                    </div>
+                    <div class="actions">
+                        <div class="btn-group">
+                            <a class="btn btn-sm blue btn-outline" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> View All
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="table-scrollable table-scrollable-borderless" style="max-height:400px;">
+                        <table class="table table-hover table-light">
+                            <thead>
+                                <tr class="uppercase">
+                                    <th> seq # </th>
+                                    <th> <!--  description --> </th>
+                                    <th> Count </th>
+                                    <th> CFP Count </th>
+                                    <th> ether sent </th>
+                                    <th> ether amount </th>
+                                    <th> $ sent </th>
+                                    <th> $ amount </th>
+                                </tr>
+                            </thead>
+                            <tbody><tr ng-repeat="t in account.data track by $index">
+                                <td>{{t.seq}}</td>
+                                <td class="{{t.action}}">{{t.action}}</td>
+                                <td>{{t.count}}</td>
+                                <td>{{t.cfpCount}}</td>
+                                <td>{{t.etherSent}}</td>
+                                <td>{{t.etherAmount}}</td>
+                                <td>{{t.fiatSent}}</td>
+                                <td>{{t.fiatAmount}}</td>
+                            </tr>
+                        </tbody></table>
+                    </div>
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+
+        <div class="col-md-6 col-sm-6" >
+            <!-- BEGIN PORTLET-->
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        <i class="icon-bar-chart font-red"></i>
+                        <span class="caption-subject font-red bold uppercase">Transactions</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <ul class="feeds list-items">
+                        <li >
+                            <div class="col1">
+                                <div class="cont">
+                                    <div class="cont-col1">
+                                        <div class="label label-sm {{t.action}}">
+                                            <i class="fa {{t.action}}"></i>
+                                        </div>
+                                    </div>
+                                    <div class="cont-col2">
+                                        <div class="desc"> {{t.action}} 
+                                        <small ng-show="t.count != null">count: {{t.count}}</small>
+                                        <small ng-show="t.cfpCount != null"> {{t.cfpCount}}</small>
+                                        <small ng-show="t.netFiat != null">(${{t.netFiat | number}})</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col2">
+                                <div class="date"> {{t.date | date: 'hh:mm:ss'}} </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+</div>
+<!-- END MAIN CONTENT -->
