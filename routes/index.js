@@ -2,7 +2,6 @@ var mongoose = require( 'mongoose' );
 var Block     = mongoose.model( 'Block' );
 
 exports.addr = function(req, res){
-  
   // TODO: validate addr and tx
   var addr = req.body.addr;
 
@@ -13,7 +12,8 @@ exports.addr = function(req, res){
     var txQuery = "from";
 
   var findQuery = "transactions." + txQuery;
-  var addrFind = Block.find( { findQuery : addr } ).select("transactions");
+  var addrFind = Block.find( { $or: [{"transactions.to": addr}, {"transactions.from": addr}] })
+                      .select("transactions");
   addrFind.exec(function (err, docs) {
     if (!docs.length){
       res.write(JSON.stringify([]));
@@ -21,7 +21,7 @@ exports.addr = function(req, res){
     } else {
       // filter transactions
       var txDocs = filterTX(docs, txQuery, addr);
-      res.write(JSON.stringify(docs));
+      res.write(JSON.stringify(txDocs));
       res.end();
     }
   });
@@ -72,7 +72,7 @@ exports.test = function(req, res) {
   Block.find( function (err, docs) {
     res.write(JSON.stringify(docs));
         res.end();
-  });
+  }).limit(10);
 
 };
 
@@ -89,7 +89,10 @@ function sum( obj ) {
   Filter an array of TX 
 */
 function filterTX(txs, field, value) {
-  return txs.filter( function(obj) {
-    return obj[field]==value; 
+  var blockTX = txs.map(function(block) {
+    return block.transactions.filter(function(obj) {
+      return obj[field]==value;   
+    });
   });
+  return [].concat.apply([], blockTX);
 }
