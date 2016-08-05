@@ -132,11 +132,8 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                              '/js/controllers/AddressController.js',
                             '/plugins/datatables/datatables.min.css',
                             '/plugins/datatables/datatables.bootstrap.css',
-                            '/plugins/bootstrap-datepicker/bootstrap-datepicker3.min.css',
                             '/plugins/datatables/datatables.all.min.js',
-                            '/plugins/datatables/datatable.min.js',
-                             '/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js',
-                             '/js/table-ajax.js',
+                            '/plugins/datatables/datatable.min.js'
                         ]
                     });
                 }]
