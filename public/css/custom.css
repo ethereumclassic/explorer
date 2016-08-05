@@ -6,3 +6,9 @@ ul.scrollable {
     max-height: 400px;
     overflow-y: scroll;
 }
+#table_txs td{
+    font-size: 12px;
+    white-space:nowrap; 
+    overflow:hidden;
+    text-overflow: ellipsis;
+}
