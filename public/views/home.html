@@ -1,5 +1,4 @@
-<!-- BEGIN MAIN CONTENT -->
-<div ng-controller="BlocksController">
+
     <div class="row">
         <div class="col-md-6 col-sm-6">
             <!-- BEGIN PORTLET-->
@@ -29,7 +28,7 @@
                             </thead>
                             <tbody><tr ng-repeat="t in latest_blocks track by $index">
                                 <td>{{t.number}}</td>
-                                <td>{{t.miner}}</td>
+                                <td><a href="/addr/{{t.miner}}">{{t.miner}}</a></td>
                                 <td>{{t.transactions.length}}</td>
                             </tr>
                         </tbody></table>
@@ -85,5 +84,3 @@
         </div>
     </div>
 
-</div>
-<!-- END MAIN CONTENT -->
