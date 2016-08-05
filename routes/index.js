@@ -40,7 +40,7 @@ exports.block = function(req, res) {
   var txQuery = "number";
   var number = parseInt(req.body.block);
 
-  var blockFind = Block.findOne( { number : number });
+  var blockFind = Block.findOne( { number : number }).lean(true);
   blockFind.exec(function (err, doc) {
     console.log(doc)
     console.log(err)
@@ -59,7 +59,8 @@ exports.tx = function(req, res){
 
   var tx = req.body.tx.toLowerCase();
 
-  var txFind = Block.findOne( { "transactions.hash" : tx });
+  var txFind = Block.findOne( { "transactions.hash" : tx }, "transactions timestamp")
+                  .lean(true);
   txFind.exec(function (err, doc) {
     console.log(doc)
     if (!doc._id){

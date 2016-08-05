@@ -60,7 +60,7 @@ exports.data = function(req, res){
     var txHash = req.body.tx.toLowerCase();
     var tx = web3.eth.getTransaction(txHash);
 
-    res.write(JSON.stringify({"tx": tx}));
+    res.write(JSON.stringify(tx));
     res.end();
 
   } else {

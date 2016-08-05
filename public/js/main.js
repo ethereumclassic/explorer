@@ -157,6 +157,24 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                 }]
             }
         })
+
+        .state('tx', {
+            url: "/tx/{hash}",
+            templateUrl: "views/tx.html",
+            data: {pageTitle: 'Transaction'},
+            controller: "TxController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                             '/js/controllers/TxController.js'
+                        ]
+                    });
+                }]
+            }
+        })
 }]);
 
 /* Init global settings and run the app */
