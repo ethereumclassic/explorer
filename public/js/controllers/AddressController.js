@@ -15,7 +15,6 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       url: '/web3relay',
       data: {"addr": $scope.addrHash}
     }).success(function(data) {
-      console.log(data);
       $scope.addr = data;
     });
 
