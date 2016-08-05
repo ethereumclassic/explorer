@@ -39,3 +39,9 @@ ul.scrollable {
     padding: 12px 20px 15px;
     background-color: #fff;
 }
+.home-tx{
+    font-size: 12px;
+    white-space:nowrap; 
+    overflow:hidden;
+    text-overflow: ellipsis;
+}

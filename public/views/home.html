@@ -27,7 +27,7 @@
                                 </tr>
                             </thead>
                             <tbody><tr ng-repeat="t in latest_blocks track by $index">
-                                <td>{{t.number}}</td>
+                                <td><a href="/block/{{t.number}}">{{t.number}}</a></td>
                                 <td><a href="/addr/{{t.miner}}">{{t.miner}}</a></td>
                                 <td>{{t.transactions.length}}</td>
                             </tr>
@@ -58,22 +58,17 @@
                         <li ng-repeat="t in latest_txs track by $index">
                             <div class="col1">
                                 <div class="cont">
-                                    <div class="cont-col1">
-                                        <div class="label label-sm {{t.action}}">
-                                            <i class="fa {{t.action}}"></i>
-                                        </div>
-                                    </div>
-                                    <div class="cont-col2">
-                                        <div class="desc"> {{t.to}} 
-                                        <small>{{t.from}}</small>
-                                        <small > {{t.to}}</small>
-                                        <small>{{t.value | number}}</small>
+                                    <div class="cont-col2 home-tx">
+                                        TX <a href="/tx/{{t.hash}}">{{t.hash}}</a><br> 
+                                        <small>From <a href="/addr/{{t.from}}">{{t.from}}</a></small>
+                                        <small >To <a href="/addr/{{t.to}}">{{t.to}}</a></small><br>
+                                        <small>{{t.value}} Ether</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col2">
-                                <div class="date"> {{t.date | date: 'hh:mm:ss'}} </div>
+                                <div class="date"> {{t.timestamp | date: 'hh:mm:ss'}} </div>
                             </div>
                         </li>
                     </ul>
