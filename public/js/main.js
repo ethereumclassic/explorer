@@ -129,7 +129,14 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         name: 'BlocksApp',
                         insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
                         files: [
-                             '/js/controllers/AddressController.js'
+                             '/js/controllers/AddressController.js',
+                            '/plugins/datatables/datatables.min.css',
+                            '/plugins/datatables/datatables.bootstrap.css',
+                            '/plugins/bootstrap-datepicker/bootstrap-datepicker3.min.css',
+                            '/plugins/datatables/datatables.all.min.js',
+                            '/plugins/datatables/datatable.min.js',
+                             '/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js',
+                             '/js/table-ajax.js',
                         ]
                     });
                 }]
