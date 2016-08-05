@@ -14,7 +14,7 @@ exports.addr = function(req, res){
 
   var findQuery = "transactions." + txQuery;
   var addrFind = Block.find( { $or: [{"transactions.to": addr}, {"transactions.from": addr}] },
-                            "transactions timestamp")
+                            "transactions timestamp").sort('-number').limit(MAX_ENTRIES);
   addrFind.exec(function (err, docs) {
     if (!docs.length){
       res.write(JSON.stringify([]));
@@ -117,7 +117,7 @@ var sendTxs = function(data, res) {
   res.end();
 }
 
-const MAX_ENTRIES = 13;
+const MAX_ENTRIES = 10;
 
 const DATA_ACTIONS = {
   "latest_blocks": sendBlocks,
