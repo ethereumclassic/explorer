@@ -2,6 +2,9 @@ var mongoose = require( 'mongoose' );
 var Block     = mongoose.model( 'Block' );
 var filters = require('./filters')
 
+//var Memcached = require('memcached');
+//var memcached = new Memcached("localhost:11211");
+
 exports.addr = function(req, res){
   // TODO: validate addr and tx
   var addr = req.body.addr.toLowerCase();
@@ -14,7 +17,7 @@ exports.addr = function(req, res){
 
   var findQuery = "transactions." + txQuery;
   var addrFind = Block.find( { $or: [{"transactions.to": addr}, {"transactions.from": addr}] },
-                            "transactions timestamp").sort('-number').limit(MAX_ENTRIES);
+                            "transactions timestamp").lean(true).sort('-number').limit(MAX_ENTRIES);
   addrFind.exec(function (err, docs) {
     if (!docs.length){
       res.write(JSON.stringify([]));
@@ -99,7 +102,7 @@ exports.data = function(req, res){
 
 
 var getLatest = function(lim, res, callback) {
-  var blockFind = Block.find().sort('-number').limit(lim);
+  var blockFind = Block.find().lean(true).sort('-number').limit(lim);
   blockFind.exec(function (err, docs) {
     callback(docs, res);
   });

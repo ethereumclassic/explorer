@@ -7,7 +7,7 @@ function filterTX(txs, value) {
       return (obj.to==value || obj.from==value);   
     });
     return cleanTX.map(function(tx) { 
-      var ttx = tx.toObject();
+      var ttx = tx;
       ttx.timestamp = block.timestamp; 
       return ttx;
     });
