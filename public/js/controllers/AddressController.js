@@ -6,13 +6,23 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     });
 
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.hash;
-    $rootScope.addrHash = $stateParams.hash;
+    $scope.addrHash = $stateParams.hash;
+    $scope.addr = {"balance": 0, "count": 0};
 
-    var URL = '/addr';
-
+    //fetch web3 stuff
     $http({
       method: 'POST',
-      url: URL,
+      url: '/web3relay',
+      data: {"addr": $scope.addrHash}
+    }).success(function(data) {
+      console.log(data);
+      $scope.addr = data;
+    });
+
+    //fetch transactions
+    $http({
+      method: 'POST',
+      url: '/addr',
       data: {"addr": $scope.addrHash}
     }).success(function(data) {
       $("#table_txs").DataTable({
@@ -39,10 +49,13 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
                           return '<a href="/addr/'+data+'">'+data+'</a>'
                         else
                           return data
-                      }, "targets": [0,2,3]},
+                      }, "targets": [2,3]},
           { "render": function(data, type, row) {
                         return '<a href="/block/'+data+'">'+data+'</a>'
-                      }, "targets": [1]}
+                      }, "targets": [1]},
+          { "render": function(data, type, row) {
+                        return '<a href="/tx/'+data+'">'+data+'</a>'
+                      }, "targets": [0]},
           ]
       })
     });

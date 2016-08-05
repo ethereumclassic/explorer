@@ -3,54 +3,49 @@
   <div class="col-md-12 portlet light">
       <div class="portlet-body">
         <div class="row profile">
-            <div class="col-md-3 center">
+            <div class="col-md-6 center">
 
-              <div class="portlet sale-summary">
+              <div class="portlet">
                 <div class="portlet-title">
-                  Overview
+                  <div class="caption">Overview</div>
                 </div>
                 <div class="portlet-body">
-                  <ul class="list-unstyled">
-                    <li>
-                      <span class="sale-num" id='symLastPrice'>
-                      {{ addr.balance }} </span>
-                      <span class="sale-info">
+                  <div class="eth-stat">
+                    <span class="eth-stat-title">
+                      {{ addr.balance }} </span><br>
+                    <span class="eth-stat-text">
                       ETH Balance
-                      </span>
-                    </li>
-                    <li>
-                      <span class="sale-num" id='symChangeAbs'>
-                      0 </span>
-                      <span class="sale-info">
-                      Mined
-                      </span>
-                    </li>
-                    <li>
-                      <span class="sale-num" id='symChangeAbs'>
-                      {{ addr.count }}</span>
-                      <span class="sale-info">
-                      Transactions
-                      </span>
-                    </li>
-                    <li>
-                      <span class="sale-num" id='symChangeAbs'>
-                      {{ addr.follow_count }}0</span>
-                      <span class="sale-info">
-                      WATCHING
-                      </span>
-                    </li>
+                      </span><br> 
+                      <div class="margin-top-20">
+                      0 <span class="eth-stat-text">Mined</span>
+                      </div>
+                      <div class="margin-top-20">
+                      {{ addr.count }} <span class="eth-stat-text">Transactions</span>
+                      </div>
+                      
+                </div>
+              </div>
+            </div><!--end portlet-->
+          </div>
 
-                  </ul>
+          <div class="col-md-6 center">
+
+              <div class="portlet">
+                <div class="portlet-body">
+                  <div class="eth-stat">
 
                   <span class='btn blue-madison' ng-show="!isFollowing(addrHash)" ng-click="follow(addrHash)">WATCH <i class="fa fa-rss "></i></span>
                   <span class='btn grey'  ng-show="isFollowing(addrHash)" ng-click="unFollow(addrHash)">WATCHING <i class="fa fa-check "></i></span>
-
+                  <div class="margin-top-20">
+                      {{ addr.follow_count }}0 
+                      <span class="eth-stat-text">WATCHING</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </div><!--end portlet-->
           </div>
-      </div>
-    </div>
+      </div><!--end row-->
+    </div><!--end portlet-body-->
 
 
   <!-- Begin: Transaction Datatable -->
@@ -79,3 +74,4 @@
   </div>
   <!-- End: Datatable -->
   </div>
+</div>

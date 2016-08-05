@@ -8,6 +8,7 @@ var Web3 = require("web3");
 var web3;
 
 var extractTX = require('./filters').extractTX;
+var getLatestBlocks = require('./index').getLatestBlocks;
 
 
 if (typeof web3 !== "undefined") {
@@ -25,6 +26,7 @@ else
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
 
+/*
 exports.clientSocket = function(io) {
 
   newBlocks.watch(function (error, log) {
@@ -38,16 +40,27 @@ exports.clientSocket = function(io) {
   });
 
 }
+*/
 
 exports.data = function(req, res){
+  console.log(req.body)
 
   // TODO: error handling for invalid calls
-  var action = req.body.action.toLowerCase();
 
-  if (action in DATA_ACTIONS) {
-    
-    var data = getData(DATA_ACTIONS[action], {});
-    res.write(JSON.stringify(data));
+  if ("addr" in req.body) {
+    var addr = req.body.addr.toLowerCase();
+    var balance = web3.eth.getBalance(addr);
+    console.log(balance)
+    var count = web3.eth.getTransactionCount(addr);
+
+    res.write(JSON.stringify({"balance": balance, "count": count}));
+    res.end();
+
+  } else if ("tx" in req.body) {
+    var txHash = req.body.tx.toLowerCase();
+    var tx = web3.eth.getTransaction(txHash);
+
+    res.write(JSON.stringify({"tx": tx}));
     res.end();
 
   } else {
@@ -58,41 +71,3 @@ exports.data = function(req, res){
 
 };
   
-function getData(action, options) {
-  if (isNaN(options.limit))
-    var limit = MAX_ENTRIES;
-  else
-    var limit = parseInt(options.limit);
-
-  return action(limit);
-}
-
-function getLatest(lim) {
-  var blocks = [];
-  for (var i=0; i < lim; i++) {
-    blocks.push(web3.eth.getBlock(web3.eth.blockNumber - i));
-  }
-  return blocks;
-}
-
-/*
-  actually, everything should fetch from DB, not web3
-*/
-
-function getLatestBlocks(lim) {
-  var blocks = getLatest(lim);
-  return {"blocks": blocks}
-}
-
-function getLatestTxs(lim) {
-  var blocks = getLatest(lim);
-  var txs = extractTX(blocks);
-  return {"txs": txs}
-}
-
-const MAX_ENTRIES = 10;
-
-const DATA_ACTIONS = {
-  "latest_blocks": getLatestBlocks,
-  "latest_txs": getLatestTxs
-}

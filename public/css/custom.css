@@ -12,3 +12,30 @@ ul.scrollable {
     overflow:hidden;
     text-overflow: ellipsis;
 }
+.eth-stat {
+    padding-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #7f90a4;
+}
+.eth-stat-title {
+    color: #7f90a4;
+    font-size: 25px;
+    text-align: center;
+}
+.eth-stat-text {
+        color: #5b9bd1;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+}
+.portlet {
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding: 0;
+    border-radius: 4px;
+}
+.portlet.light {
+    padding: 12px 20px 15px;
+    background-color: #fff;
+}
