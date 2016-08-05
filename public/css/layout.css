@@ -4,6 +4,10 @@
     box-shadow: none;
 }
 
+#table_wait {
+    text-align: center;
+}
+
 @media print {
     .page-container,.page-container .page-content {
         padding: 0 !important;
