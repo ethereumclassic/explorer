@@ -50,25 +50,23 @@ exports.data = function(req, res){
 
     var addrData = {};
 
-    web3.eth.getBalance(addr, function(err, bal) {
-      if(err) {
-        console.error("AddrWeb3 error :" + err);
-        addrData = {"error": true};
-      } else {
-        addrData["balance"] = bal;
-      }
-    });
-    web3.eth.getTransactionCount(addr, function(err, count) {
-      if(err) {
-        console.error("AddrWeb3 error :" + err);
-        addrData = {"error": true};
-      } else {
-        addrData["count"] = count;
-      }
-    });
-
+    try {
+      addrData["balance"] = web3.eth.getBalance(addr);  
+    } catch(err) {
+      console.error("AddrWeb3 error :" + err);
+      addrData = {"error": true};
+    }
+    try {
+       addrData["count"] = web3.eth.getTransactionCount(addr);
+    } catch (err) {
+      console.error("AddrWeb3 error :" + err);
+      addrData = {"error": true};
+    }
+   
+    console.log(addrData)
     res.write(JSON.stringify(addrData));
     res.end();
+
 
   } else if ("tx" in req.body) {
     var txHash = req.body.tx.toLowerCase();
