@@ -1,7 +1,20 @@
 /*
   Filter an array of TX 
 */
-function filterTX(txs, field, value) {
+function filterTX(txs, value) {
+  var blockTX = txs.map(function(block) {
+    var cleanTX = block.transactions.filter(function(obj) {
+      return (obj.to==value || obj.from==value);   
+    });
+    return cleanTX.map(function(tx) { 
+      tx.timestamp = block.timestamp; 
+      return tx;
+    })
+  });
+  return [].concat.apply([], blockTX);
+}
+
+function filterBlock(block, field, value) {
   var blockTX = txs.map(function(block) {
     return block.transactions.filter(function(obj) {
       return obj[field]==value;   
@@ -19,7 +32,16 @@ function extractTX(blocks) {
   return [].concat.apply([], blockTX);
 }
 
+/* stupid datatable format */
+function datatableTX(txs) {
+  return txs.map(function(tx){
+    return [tx.blockNumber, tx.hash, tx.nonce, tx.from, tx.to, tx.value, tx.gas, tx.timestamp]
+  })
+}
+
 module.exports = {
   extractTX: extractTX,
-  filterTX: filterTX
+  filterBlock: filterBlock,
+  filterTX: filterTX,
+  datatableTX: datatableTX
 }

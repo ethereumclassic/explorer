@@ -1,7 +1,6 @@
 var mongoose = require( 'mongoose' );
 var Block     = mongoose.model( 'Block' );
-var filterTX = require('./filters').filterTX;
-var extractTX = require('./filters').extractTX;
+var filters = require('./filters')
 
 exports.addr = function(req, res){
   // TODO: validate addr and tx
@@ -22,8 +21,8 @@ exports.addr = function(req, res){
       res.end();
     } else {
       // filter transactions
-      var txDocs = filterTX(docs, txQuery, addr);
-      res.write(JSON.stringify(txDocs));
+      var txDocs = filters.filterTX(docs, addr);
+      res.write(JSON.stringify(filters.datatableTX(txDocs)));
       res.end();
     }
   });
@@ -65,7 +64,7 @@ exports.tx = function(req, res){
       res.end();
     } else {
       // filter transactions
-      var txDocs = filterTX([doc], "hash", tx)
+      var txDocs = filters.filterBlock(doc, "hash", tx)
       res.write(JSON.stringify(txDocs));
       res.end();
     }
@@ -118,7 +117,7 @@ var sendTxs = function(data, res) {
   res.end();
 }
 
-const MAX_ENTRIES = 20;
+const MAX_ENTRIES = 13;
 
 const DATA_ACTIONS = {
   "latest_blocks": sendBlocks,
