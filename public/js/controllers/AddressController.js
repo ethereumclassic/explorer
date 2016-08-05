@@ -59,7 +59,6 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           ]
       });
       $("#table_wait").remove();
-      $("#table_txs thead").show();
     });
 
 
