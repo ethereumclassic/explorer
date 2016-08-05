@@ -1,6 +1,6 @@
-# EthExplorer (In Progress)
+# ETCExplorer (In Progress)
 
-![EthExplorer Screenshot](http://i.imgur.com/NHFYq0x.png)
+![ETCExplorer Screenshot](http://i.imgur.com/NHFYq0x.png)
 
 ##License
 
