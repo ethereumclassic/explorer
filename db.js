@@ -3,7 +3,7 @@ var Schema   = mongoose.Schema;
 
 var Block = new Schema(
 {
-    "number": Number,
+    "number": {type: Number, index: {unique: true}},
     "hash": String,
     "parentHash": String,
     "nonce": String,
