@@ -39,11 +39,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           "lengthMenu": "_MENU_ transactions",
           "zeroRecords": "No transactions found",
           "infoEmpty": ":(",
-          "infoFiltered": "(filtered from _MAX_ total txs)",
-          "loadingRecords": '<img src="/img/loading.gif">',
-          "processing":     '<img src="/img/loading.gif">',
-          "loading": true,
-          "processing": true
+          "infoFiltered": "(filtered from _MAX_ total txs)"
         },
         "columnDefs": [ 
           {"type": "date", "targets": 6},
@@ -61,7 +57,9 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
                         return '<a href="/tx/'+data+'">'+data+'</a>'
                       }, "targets": [0]},
           ]
-      })
+      });
+      $("#table_wait").remove();
+      $("#table_txs thead").show();
     });
 
 
