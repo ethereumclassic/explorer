@@ -7,9 +7,10 @@ function filterTX(txs, value) {
       return (obj.to==value || obj.from==value);   
     });
     return cleanTX.map(function(tx) { 
-      tx.timestamp = block.timestamp; 
-      return tx;
-    })
+      var ttx = tx.toObject();
+      ttx.timestamp = block.timestamp; 
+      return ttx;
+    });
   });
   return [].concat.apply([], blockTX);
 }
@@ -35,7 +36,7 @@ function extractTX(blocks) {
 /* stupid datatable format */
 function datatableTX(txs) {
   return txs.map(function(tx){
-    return [tx.blockNumber, tx.hash, tx.nonce, tx.from, tx.to, tx.value, tx.gas, tx.timestamp]
+    return [tx.hash, tx.blockNumber, tx.from, tx.to, tx.value, tx.gas, tx.timestamp]
   })
 }
 

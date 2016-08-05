@@ -13,8 +13,8 @@ exports.addr = function(req, res){
     var txQuery = "from";
 
   var findQuery = "transactions." + txQuery;
-  var addrFind = Block.find( { $or: [{"transactions.to": addr}, {"transactions.from": addr}] })
-                      .select("transactions");
+  var addrFind = Block.find( { $or: [{"transactions.to": addr}, {"transactions.from": addr}] },
+                            "transactions timestamp")
   addrFind.exec(function (err, docs) {
     if (!docs.length){
       res.write(JSON.stringify([]));
