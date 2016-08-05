@@ -42,14 +42,14 @@ exports.block = function(req, res) {
 
   var blockFind = Block.findOne( { number : number }).lean(true);
   blockFind.exec(function (err, doc) {
-    if (!doc){
-      console.log("missing: " +number)
-      res.write(JSON.stringify({}));
-      res.end();
+    if (err || !doc) {
+      console.error("BlockFind error: " + err)
+      console.error(req.body);
+      res.write(JSON.stringify({"error": true}));
     } else {
       res.write(JSON.stringify(doc));
-      res.end();
     }
+    res.end();
   });
 
 };

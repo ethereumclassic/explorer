@@ -44,23 +44,46 @@ exports.clientSocket = function(io) {
 
 exports.data = function(req, res){
   console.log(req.body)
-
-  // TODO: error handling for invalid calls
-
+  
   if ("addr" in req.body) {
     var addr = req.body.addr.toLowerCase();
-    var balance = web3.eth.getBalance(addr);
-    var count = web3.eth.getTransactionCount(addr);
 
-    res.write(JSON.stringify({"balance": balance, "count": count}));
+    var addrData = {};
+
+    web3.eth.getBalance(addr, function(err, bal) {
+      if(err) {
+        console.error("AddrWeb3 error :" + err);
+        res.write(JSON.stringify({"error": true}));
+        res.end();
+      } else {
+        addrData["balance"] = bal;
+      }
+    });
+    web3.eth.getTransactionCount(addr, function(err, count) {
+      if(err) {
+        console.error("AddrWeb3 error :" + err);
+        res.write(JSON.stringify({"error": true}));
+        res.end();
+      } else {
+        addrData["count"] = count;
+      }
+    });
+
+    res.write(JSON.stringify(addrData));
     res.end();
 
   } else if ("tx" in req.body) {
     var txHash = req.body.tx.toLowerCase();
-    var tx = web3.eth.getTransaction(txHash);
 
-    res.write(JSON.stringify(tx));
-    res.end();
+    web3.eth.getTransaction(txHash, function(err, tx) {
+      if(err || !tx) {
+        console.error("TxWeb3 error :" + err)
+        res.write(JSON.stringify({"error": true}));
+      } else {
+        res.write(JSON.stringify(tx));
+      }
+      res.end();
+    });
 
   } else {
   

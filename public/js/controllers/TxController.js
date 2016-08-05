@@ -1,4 +1,4 @@
-angular.module('BlocksApp').controller('TxController', function($stateParams, $rootScope, $scope, $http, $timeout) {
+angular.module('BlocksApp').controller('TxController', function($stateParams, $rootScope, $scope, $http, $location) {
     $scope.$on('$viewContentLoaded', function() {   
         // initialize core components
         App.initAjax();
@@ -14,8 +14,11 @@ angular.module('BlocksApp').controller('TxController', function($stateParams, $r
       url: '/web3relay',
       data: {"tx": $scope.hash}
     }).success(function(data) {
-      console.log(data);
-      $scope.tx = data;
+      console.log(data)
+      if (data.error)
+        $location.path("/err404/transaction/" + $scope.hash);
+      else
+        $scope.tx = data;
     });
 
 
