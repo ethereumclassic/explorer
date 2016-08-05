@@ -144,8 +144,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
         else {
             console.log('Aborting because block number: ' + blockData.number.toString() + 
                 ' already exists in DB.');
-            //process.exit(9);
-            return;
+            process.exit(9);
         }
 
     })
