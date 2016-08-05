@@ -49,30 +49,22 @@ By default the partials are loaded through AngularJS ng-include directive.
 ***/
 
 /* Setup Layout Part - Header */
-BlocksApp.controller('HeaderController', ['$scope', function($scope) {
+BlocksApp.controller('HeaderController', ['$scope', '$location', function($scope, $location) {
     $scope.$on('$includeContentLoaded', function() {
         Layout.initHeader(); // init header
     });
+
+    $scope.searchQuery = function(search) {
+        console.log(search);
+        // TODO: VALIDATE THIS STUFF, figure out where to go
+        $location.path("/addr/" + search);
+    }
 }]);
 
-/* Setup Layout Part - Sidebar */
-BlocksApp.controller('SidebarController', ['$scope', '$rootScope', '$location', '$anchorScroll', 
-    function($scope, $rootScope, $location, $anchorScroll) {
-    $scope.$on('$includeContentLoaded', function() {
-        Layout.initSidebar(); // init sidebar
-        this.charts = $rootScope.charts;
-    });
-}]);
-
+/* Search Bar */
 BlocksApp.controller('PageHeadController', ['$scope', function($scope) {
     $scope.$on('$includeContentLoaded', function() {        
-        //Demo.init(); // init theme panel
-    });
-}]);
-
-BlocksApp.controller('ThemePanelController', ['$scope', function($scope) {
-    $scope.$on('$includeContentLoaded', function() {
-        Settings.init();
+        
     });
 }]);
 
@@ -120,9 +112,26 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         name: 'BlocksApp',
                         insertBefore: '#ng_load_plugins_before', 
                         files: [
-                            '/css/charts_light.css',
                             '/js/controllers/TransactionsController.js'
                         ]}]);
+                }]
+            }
+        })
+
+        .state('address', {
+            url: "/addr/{hash}",
+            templateUrl: "views/address.html",
+            data: {pageTitle: 'Address'},
+            controller: "AddressController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                             '/js/controllers/AddressController.js'
+                        ]
+                    });
                 }]
             }
         })
