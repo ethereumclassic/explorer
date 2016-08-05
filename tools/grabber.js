@@ -44,6 +44,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
 
     // check if done
     if(blockHashOrNumber == undefined) {
+        listenBlocks(config, web3);
         return; 
     }
 
@@ -143,7 +144,8 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
         else {
             console.log('Aborting because block number: ' + blockData.number.toString() + 
                 ' already exists in DB.');
-            process.exit(9);
+            //process.exit(9);
+            return;
         }
 
     })
