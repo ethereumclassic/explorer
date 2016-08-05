@@ -112,7 +112,7 @@ var sendBlocks = function(data, res) {
 }
 
 var sendTxs = function(data, res) {
-  var txs = extractTX(data);
+  var txs = filters.extractTX(data);
   res.write(JSON.stringify({"txs": txs}));
   res.end();
 }
