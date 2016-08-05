@@ -1,0 +1,114 @@
+<div ng-controller="AddressController">
+<!-- BEGIN PAGE CONTENT-->
+  <div class="row">
+    <div class="portlet light">
+      <div class="portlet-body">
+        <div class="row profile">
+            <div class="col-md-3 center">
+              <img src="{{ company.logo }}" class="img-responsive company-logo" alt=""/>
+              <h1>{{company.symbol}}</h1>
+              <h5>{{company.name}}</h5>
+
+              <!--<p>{{ company.blurb }} {{ company.description }}</p>-->
+              <p>
+                <a href="{{ company.external_url }}">
+                {{ company.external_url }} </a>
+              </p>
+
+
+              <div class="portlet sale-summary">
+                <div class="portlet-body">
+                  <ul class="list-unstyled">
+                    <li>
+                      <span class="sale-num" id='symLastPrice'>
+                      {{ quote.last_price }} </span>
+                      <span class="sale-info">
+                      ETH Balance
+                      </span>
+                    </li>
+                    <li>
+                      <span class="sale-num" id='symChangeAbs'>
+                      {{ quote.change_abs }} ({{ quote.change_rel }}%) </span>
+                      <span class="sale-info">
+                      Mined
+                      </span>
+                    </li>
+                    <li>
+                      <span class="sale-num" id='symChangeAbs'>
+                      {{ quote.volume }}</span>
+                      <span class="sale-info">
+                      Number of Transactions
+                      </span>
+                    </li>
+                    <li>
+                      <span class="sale-num" id='symChangeAbs'>
+                      {{ company.follow_count }}</span>
+                      <span class="sale-info">
+                      WATCHING
+                      </span>
+                    </li>
+
+                  </ul>
+
+                  <span class='btn blue-madison' ng-show="!isFollowing(company.key)" ng-click="follow(company.key)">WATCH <i class="fa fa-rss "></i></span>
+                  <span class='btn grey'  ng-show="isFollowing(company.key)" ng-click="unFollow(company.key)">WATCHING <i class="fa fa-check "></i></span>
+
+                </div>
+              </div>
+            </div>
+            </div>
+
+            <div class="col-md-3 profile-info">
+                <div ng-show="quote" class="portlet sale-summary">
+                    <div class="portlet-title">
+                      <div class="tools">
+                        <a class="reload" href="javascript:;">
+                        </a>
+                      </div>
+                    </div>
+                    <div class="portlet-body">
+                      <ul class="list-unstyled">
+                        <li>
+                          <span class="sale-info">
+                          ETH Balance <i class="fa fa-img-up"></i>
+                          </span>
+                          <span class="sale-num" id='symLastPrice'>
+                          {{ account.balance }} </span>
+                        </li>
+                        <li>
+                          <span class="sale-info">
+                          Mined <i class="fa fa-img-down"></i>
+                          </span>
+                          <span class="sale-num" id='symBidPrice'>
+                          {{ quote.bid_price }} </span>
+                        </li>
+                        <li>
+                          <span class="sale-info">
+                          Number of Transactions </span>
+                          <span class="sale-num" id='symBidSize'>
+                          {{ quote.bid_size }} </span>
+                        </li>
+                        <li>
+                          <span class="sale-info">
+                          ASK </span>
+                          <span class="sale-num" id='symAskPrice'>
+                          {{ quote.ask_price }} </span>
+                        </li>
+                        <li>
+                          <span class="sale-info">
+                          ASK SIZE </span>
+                          <span class="sale-num" id='symAskSize'>
+                          {{ quote.ask_size }} </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+              </div>
+              <!--end col-md-3-->
+          </div>
+            <!--end row-->
+        </div>
+
+      </div>
+    </div>
+</div>

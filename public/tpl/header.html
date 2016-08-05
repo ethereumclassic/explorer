@@ -15,11 +15,11 @@
         <div class="top-menu">
             <ul class="nav navbar-nav pull-right">
                 <li class="dropdown dropdown-user dropdown-dark">
-                    <form class="search-form" action="extra_search.html" method="GET">
+                    <form class="search-form">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search" name="query">
+                            <input type="text" class="form-control" placeholder="Search by Address / Txhash / BlockNum" ng-model="searchInput">
                             <span class="input-group-btn">
-                                <a href="javascript:;" class="btn submit">
+                                <a class="btn" ng-click="searchQuery(searchInput)">
                                     <i class="icon-magnifier"></i>
                                 </a>
                             </span>
