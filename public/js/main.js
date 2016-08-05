@@ -87,14 +87,14 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             url: "/home",
             templateUrl: "views/home.html",            
             data: {pageTitle: 'Blockchain Explorer'},
-            controller: "BlocksController",
+            controller: "HomeController",
             resolve: {
                 deps: ['$ocLazyLoad', function($ocLazyLoad) {
                     return $ocLazyLoad.load([{
                         name: 'BlocksApp',
                         insertBefore: '#ng_load_plugins_before', 
                         files: [
-                            '/js/controllers/BlocksController.js'
+                            '/js/controllers/HomeController.js'
                         ]}]);
                 }]
             }
@@ -134,6 +134,24 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                             '/plugins/datatables/datatables.bootstrap.css',
                             '/plugins/datatables/datatables.all.min.js',
                             '/plugins/datatables/datatable.min.js'
+                        ]
+                    });
+                }]
+            }
+        })
+
+        .state('block', {
+            url: "/block/{number}",
+            templateUrl: "views/block.html",
+            data: {pageTitle: 'Block'},
+            controller: "BlockController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                             '/js/controllers/BlockController.js'
                         ]
                     });
                 }]

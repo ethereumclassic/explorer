@@ -1,4 +1,4 @@
-angular.module('BlocksApp').controller('BlocksController', function($rootScope, $scope, $http, $timeout) {
+angular.module('BlocksApp').controller('HomeController', function($rootScope, $scope, $http, $timeout) {
     $scope.$on('$viewContentLoaded', function() {   
         // initialize core components
         App.initAjax();
