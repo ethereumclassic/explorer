@@ -4,9 +4,21 @@
       <div class="portlet-body">
 
         <table class="eth-stat col-md-6 table table-hover table-light">
-          <tr ng-repeat="(key, val) in tx"><td width="25%">{{key}}</td><td>{{val}}</td></tr>
+          
+          <tr ><td width="25%">hash</td><td>{{tx.hash}}</td></tr>
+          <tr ><td width="25%">blockNumber</td>
+                <td><a href="/block/{{tx.blockNumber}}">{{tx.blockNumber}}</a></td>
+          </tr>
+          <tr ><td width="25%">from</td>
+                <td><a href="/tx/{{tx.from}}">{{tx.from}}</a></td></tr>
+          <tr ><td width="25%">to</td>
+                <td><a href="/tx/{{tx.to}}">{{tx.to}}</a></td></tr>
+          <tr ><td width="25%">value</td><td>{{tx.value}}</td></tr>
+          <tr ><td width="25%">gas</td><td>{{tx.gas}}</td></tr>
+          <tr ><td width="25%">gasPrice</td><td>{{tx.gasPrice}}</td></tr>
+          <tr ><td width="25%">nonce</td><td>{{tx.nonce}}</td></tr>
         </table>
-
+        TODO (me): add input data
     </div>
 
 
