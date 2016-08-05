@@ -56,8 +56,15 @@ BlocksApp.controller('HeaderController', ['$scope', '$location', function($scope
 
     $scope.searchQuery = function(search) {
         console.log(search);
-        // TODO: VALIDATE THIS STUFF, figure out where to go
-        $location.path("/addr/" + search);
+        if (isAddress(search)) 
+            $location.path("/addr/" + search);
+        else if (!isNaN(search))
+            $location.path("/block/" + search);
+        else if (isTransaction(search))
+            $location.path("/tx/" + search);
+        else
+            console.log("bad search query: " + search)
+
     }
 }]);
 

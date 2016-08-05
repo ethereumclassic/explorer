@@ -50,7 +50,6 @@ exports.data = function(req, res){
   if ("addr" in req.body) {
     var addr = req.body.addr.toLowerCase();
     var balance = web3.eth.getBalance(addr);
-    console.log(balance)
     var count = web3.eth.getTransactionCount(addr);
 
     res.write(JSON.stringify({"balance": balance, "count": count}));
