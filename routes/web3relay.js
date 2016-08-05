@@ -53,8 +53,7 @@ exports.data = function(req, res){
     web3.eth.getBalance(addr, function(err, bal) {
       if(err) {
         console.error("AddrWeb3 error :" + err);
-        res.write(JSON.stringify({"error": true}));
-        res.end();
+        addrData = {"error": true};
       } else {
         addrData["balance"] = bal;
       }
@@ -62,8 +61,7 @@ exports.data = function(req, res){
     web3.eth.getTransactionCount(addr, function(err, count) {
       if(err) {
         console.error("AddrWeb3 error :" + err);
-        res.write(JSON.stringify({"error": true}));
-        res.end();
+        addrData = {"error": true};
       } else {
         addrData["count"] = count;
       }
