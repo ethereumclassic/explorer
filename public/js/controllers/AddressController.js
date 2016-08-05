@@ -39,7 +39,8 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           "lengthMenu": "_MENU_ transactions",
           "zeroRecords": "No transactions found",
           "infoEmpty": "No transactionss available",
-          "infoFiltered": "(filtered from _MAX_ total txs)"
+          "infoFiltered": "(filtered from _MAX_ total txs)",
+          "loadingRecords": '<img src="/img/loading.gif">'
         },
         "columnDefs": [ 
           {"type": "date", "targets": 6},
