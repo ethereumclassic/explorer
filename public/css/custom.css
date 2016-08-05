@@ -45,3 +45,21 @@ ul.scrollable {
     overflow:hidden;
     text-overflow: ellipsis;
 }
+.page-404 {text-align: center;}
+.page-404 .number {
+    position: relative;
+    top: 20px;
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: right;
+    letter-spacing: -10px;
+    line-height: 128px;
+    font-size: 128px;
+    font-weight: 300;
+}
+.page-404 .details {
+    margin-left: 40px;
+    display: inline-block;
+    text-align:left;
+}

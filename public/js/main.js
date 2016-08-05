@@ -182,6 +182,24 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                 }]
             }
         })
+
+        .state('err404', {
+            url: "/err404/{thing}/{hash}",
+            templateUrl: "views/err_404.html",
+            data: {pageTitle: '404 Not Found.'},
+            controller: "ErrController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', 
+                        files: [
+                             '/js/controllers/ErrController.js'
+                        ]
+                    });
+                }]
+            }
+        })
 }]);
 
 /* Init global settings and run the app */
