@@ -44,7 +44,6 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
 
     // check if done
     if(blockHashOrNumber == undefined) {
-        listenBlocks(config, web3);
         return; 
     }
 
@@ -80,6 +79,8 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 else {
                     writeBlockToDB(config, blockData);
                 }
+                if('listenOnly' in config && config.listenOnly === true) 
+                    return;
 
                 if('hash' in blockData && 'number' in blockData) {
                     // If currently working on an interval (typeof blockHashOrNumber === 'object') and 
@@ -119,10 +120,16 @@ var writeBlockToDB = function(config, blockData) {
     //var blockContents = JSON.stringify(blockData, null, 4);
     new Block(blockData).save( function( err, block, count ){
         if ( typeof err !== 'undefined' && err ) {
-           console.log('Error: Aborted due to error on ' + 
-                'block number ' + blockData.number.toString() + ': ' + 
+            if (err.code == 11000) {
+                console.log('Skip: Duplicate key ' + 
+                blockData.number.toString() + ': ' + 
                 err);
-           process.exit(9);
+            } else {
+               console.log('Error: Aborted due to error on ' + 
+                    'block number ' + blockData.number.toString() + ': ' + 
+                    err);
+               process.exit(9);
+           }
         } else {
             if(!('quiet' in config && config.quiet === true)) {
                 console.log('DB successfully written for block number ' +
