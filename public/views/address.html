@@ -1,48 +1,40 @@
-<div ng-controller="AddressController">
 <!-- BEGIN PAGE CONTENT-->
-  <div class="row">
-    <div class="portlet light">
+<div class="row">
+  <div class="col-md-12 portlet light">
       <div class="portlet-body">
         <div class="row profile">
             <div class="col-md-3 center">
-              <img src="{{ company.logo }}" class="img-responsive company-logo" alt=""/>
-              <h1>{{company.symbol}}</h1>
-              <h5>{{company.name}}</h5>
-
-              <!--<p>{{ company.blurb }} {{ company.description }}</p>-->
-              <p>
-                <a href="{{ company.external_url }}">
-                {{ company.external_url }} </a>
-              </p>
-
 
               <div class="portlet sale-summary">
+                <div class="portlet-title">
+                  Overview
+                </div>
                 <div class="portlet-body">
                   <ul class="list-unstyled">
                     <li>
                       <span class="sale-num" id='symLastPrice'>
-                      {{ quote.last_price }} </span>
+                      {{ addr.balance }} </span>
                       <span class="sale-info">
                       ETH Balance
                       </span>
                     </li>
                     <li>
                       <span class="sale-num" id='symChangeAbs'>
-                      {{ quote.change_abs }} ({{ quote.change_rel }}%) </span>
+                      0 </span>
                       <span class="sale-info">
                       Mined
                       </span>
                     </li>
                     <li>
                       <span class="sale-num" id='symChangeAbs'>
-                      {{ quote.volume }}</span>
+                      {{ addr.count }}</span>
                       <span class="sale-info">
-                      Number of Transactions
+                      Transactions
                       </span>
                     </li>
                     <li>
                       <span class="sale-num" id='symChangeAbs'>
-                      {{ company.follow_count }}</span>
+                      {{ addr.follow_count }}0</span>
                       <span class="sale-info">
                       WATCHING
                       </span>
@@ -50,13 +42,99 @@
 
                   </ul>
 
-                  <span class='btn blue-madison' ng-show="!isFollowing(company.key)" ng-click="follow(company.key)">WATCH <i class="fa fa-rss "></i></span>
-                  <span class='btn grey'  ng-show="isFollowing(company.key)" ng-click="unFollow(company.key)">WATCHING <i class="fa fa-check "></i></span>
+                  <span class='btn blue-madison' ng-show="!isFollowing(addrHash)" ng-click="follow(addrHash)">WATCH <i class="fa fa-rss "></i></span>
+                  <span class='btn grey'  ng-show="isFollowing(addrHash)" ng-click="unFollow(addrHash)">WATCHING <i class="fa fa-check "></i></span>
 
                 </div>
               </div>
             </div>
-            </div>
+          </div>
+      </div>
+    </div>
+
+
+  <!-- Begin: life time stats -->
+  <div class="portlet light portlet-datatable col-md-12">
+      <div class="portlet-title">
+          <div class="caption"><i class="fa fa-bank"></i> Transactions </div>
+      </div>
+      <div class="portlet-body">
+          <div class="table-container">
+              <table class="table table-striped table-hover" id="table_txs">
+                  <thead>
+                      <tr role="row" class="heading">
+                          <th width="5%"> Record&nbsp;# </th>
+                          <th width="15%"> Date </th>
+                          <th width="15%"> Customer </th>
+                          <th width="10%"> Ship&nbsp;To </th>
+                          <th width="10%"> Price </th>
+                          <th width="10%"> Amount </th>
+                          <th width="10%"> Status </th>
+                          <th width="10%"> Actions </th>
+                      </tr>
+                      <tr role="row" class="filter">
+                          <td>
+                              <input type="text" class="form-control form-filter input-sm" name="order_id"> </td>
+                          <td>
+                              <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
+                                  <input type="text" class="form-control form-filter input-sm" readonly name="order_date_from" placeholder="From">
+                                  <span class="input-group-btn">
+                                      <button class="btn btn-sm default" type="button">
+                                          <i class="fa fa-calendar"></i>
+                                      </button>
+                                  </span>
+                              </div>
+                              <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
+                                  <input type="text" class="form-control form-filter input-sm" readonly name="order_date_to" placeholder="To">
+                                  <span class="input-group-btn">
+                                      <button class="btn btn-sm default" type="button">
+                                          <i class="fa fa-calendar"></i>
+                                      </button>
+                                  </span>
+                              </div>
+                          </td>
+                          <td>
+                              <input type="text" class="form-control form-filter input-sm" name="order_customer_name"> </td>
+                          <td>
+                              <input type="text" class="form-control form-filter input-sm" name="order_ship_to"> </td>
+                          <td>
+                              <div class="margin-bottom-5">
+                                  <input type="text" class="form-control form-filter input-sm" name="order_price_from" placeholder="From" /> </div>
+                              <input type="text" class="form-control form-filter input-sm" name="order_price_to" placeholder="To" /> </td>
+                          <td>
+                              <div class="margin-bottom-5">
+                                  <input type="text" class="form-control form-filter input-sm margin-bottom-5 clearfix" name="order_quantity_from" placeholder="From" /> </div>
+                              <input type="text" class="form-control form-filter input-sm" name="order_quantity_to" placeholder="To" /> </td>
+                          <td>
+                              <select name="order_status" class="form-control form-filter input-sm">
+                                  <option value="">Select...</option>
+                                  <option value="pending">Pending</option>
+                                  <option value="closed">Closed</option>
+                                  <option value="hold">On Hold</option>
+                                  <option value="fraud">Fraud</option>
+                              </select>
+                          </td>
+                          <td>
+                              <div class="margin-bottom-5">
+                                  <button class="btn btn-sm yellow filter-submit margin-bottom">
+                                      <i class="fa fa-search"></i> Search</button>
+                              </div>
+                              <button class="btn btn-sm red filter-cancel">
+                                  <i class="fa fa-times"></i> Reset</button>
+                          </td>
+                      </tr>
+                  </thead>
+                  <tbody> </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+  <!-- End: life time stats -->
+  </div>
+
+
+
+            <div class="row profile">
 
             <div class="col-md-3 profile-info">
                 <div ng-show="quote" class="portlet sale-summary">
@@ -111,4 +189,4 @@
 
       </div>
     </div>
-</div>
+
