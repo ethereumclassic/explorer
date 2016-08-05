@@ -1,12 +1,13 @@
 div.page-logo {overflow: visible;}
 img.logo-default {
-    max-height:100px;
+    max-height: 100px;
+    height: 70px;
 }
 ul.scrollable {
     max-height: 400px;
     overflow-y: scroll;
 }
-#table_txs td{
+#table_txs td {
     font-size: 12px;
     white-space:nowrap; 
     overflow:hidden;
@@ -24,7 +25,7 @@ ul.scrollable {
     text-align: center;
 }
 .eth-stat-text {
-        color: #5b9bd1;
+    color: #5b9bd1;
     font-size: 13px;
     font-weight: 800;
     text-align: center;
@@ -61,5 +62,51 @@ ul.scrollable {
 .page-404 .details {
     margin-left: 40px;
     display: inline-block;
-    text-align:left;
+    text-align: left;
+}
+.page-logo a {
+    text-decoration: none;
+}
+tr.ng-scope {
+    white-space: nowrap;
+}
+li.ng-scope {
+    width: calc(100% - 16px);
+}
+.cont-col2.home-tx {
+    padding: 8px;
+}
+.cont {
+    width: calc(100% - 4px);
+}
+.table-scrollable {
+    margin: 0 !important;
+}
+@media(max-width: 487px) {
+    .container {
+        margin: 0 !important;
+    }
+    .page-header .page-header-top .menu-toggler {
+        margin: 33px 3px 0 0;
+    }
+}
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-button {
+    height: 0px;
+    width: 0px;
+}
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+    height: 0px;
+    width: 0px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #444d58;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+    background-color: transparent;
 }
