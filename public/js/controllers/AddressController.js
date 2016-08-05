@@ -2,28 +2,23 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     $scope.$on('$viewContentLoaded', function() {   
         // initialize core components
         App.initAjax();
+        TableAjax.init();
     });
 
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.hash;
+    $rootScope.addrHash = $stateParams.hash;
 
     var URL = '/addr';
 
     $http({
       method: 'POST',
       url: URL,
-      data: {"action": "latest_blocks"}
+      data: {"addr": $scope.addrHash}
     }).success(function(data) {
-      $scope.latest_blocks = data.blocks;
+      //$scope.transactions = data;
+      console.log(data)
+      TableAjax.handleRecords(data);
     });
-
-    $http({
-      method: 'POST',
-      url: URL,
-      data: {"action": "latest_txs"}
-    }).success(function(data) {
-      $scope.latest_txs = data.txs;
-    });
-
 
 
 })
