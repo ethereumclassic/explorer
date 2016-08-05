@@ -38,10 +38,12 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
         "language": {
           "lengthMenu": "_MENU_ transactions",
           "zeroRecords": "No transactions found",
-          "infoEmpty": "No transactionss available",
+          "infoEmpty": ":(",
           "infoFiltered": "(filtered from _MAX_ total txs)",
           "loadingRecords": '<img src="/img/loading.gif">',
-          "processing":     '<img src="/img/loading.gif">'
+          "processing":     '<img src="/img/loading.gif">',
+          "loading": true,
+          "processing": true
         },
         "columnDefs": [ 
           {"type": "date", "targets": 6},
