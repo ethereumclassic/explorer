@@ -42,7 +42,8 @@ exports.block = function(req, res) {
 
   var blockFind = Block.findOne( { number : number }).lean(true);
   blockFind.exec(function (err, doc) {
-    if (!doc._id){
+    if (!doc){
+      console.log("missing: " +number)
       res.write(JSON.stringify({}));
       res.end();
     } else {
@@ -60,7 +61,8 @@ exports.tx = function(req, res){
   var txFind = Block.findOne( { "transactions.hash" : tx }, "transactions timestamp")
                   .lean(true);
   txFind.exec(function (err, doc) {
-    if (!doc._id){
+    if (!doc){
+      console.log("missing: " +tx)
       res.write(JSON.stringify({}));
       res.end();
     } else {
