@@ -496,12 +496,8 @@
 .page-header .page-header-top .menu-toggler {
     float: right;
     display: none;
-    margin: 23px 3px 0 13px;
-    width: 40px;
-    height: 30px;
-    background: url(../img/menu-toggler.png) center center no-repeat;
+    margin: 23px 3px 0 0;
     opacity: .7;
-    filter: alpha(opacity=70);
 }
 
 .page-header .page-header-top .menu-toggler:hover {
