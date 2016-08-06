@@ -1,52 +1,46 @@
 <!-- BEGIN PAGE CONTENT-->
 <div class="row">
   <div class="col-md-12 portlet light">
+      <div class="portlet-title">
+        <div class="caption">Overview</div>
+      </div>
       <div class="portlet-body">
-        <div class="row profile">
+        <div class="row">
             <div class="col-md-6 center">
-
-              <div class="portlet">
-                <div class="portlet-title">
-                  <div class="caption">Overview</div>
-                </div>
-                <div class="portlet-body">
-                  <div class="eth-stat">
-                    <span class="eth-stat-title">
-                      {{ addr.balance }} </span><br>
-                    <span class="eth-stat-text">
-                      ETH Balance
-                      </span><br> 
-                      <div class="margin-top-20">
-                      0 <span class="eth-stat-text">Mined</span>
-                      </div>
-                      <div class="margin-top-20">
-                      {{ addr.count }} <span class="eth-stat-text">Transactions</span>
-                      </div>
-                      
-                </div>
-              </div>
-            </div><!--end portlet-->
-          </div>
-
-          <div class="col-md-6 center">
-
-              <div class="portlet">
-                <div class="portlet-body">
-                  <div class="eth-stat">
-
-                  <span class='btn blue-madison' ng-show="!isFollowing(addrHash)" ng-click="follow(addrHash)">WATCH <i class="fa fa-rss "></i></span>
-                  <span class='btn grey'  ng-show="isFollowing(addrHash)" ng-click="unFollow(addrHash)">WATCHING <i class="fa fa-check "></i></span>
+              <div class="eth-stat">
+                <span class="eth-stat-title">
+                  {{ addr.balance }} </span><br>
+                <span class="eth-stat-text">
+                  ETH Balance
+                  </span><br> 
                   <div class="margin-top-20">
-                      {{ addr.follow_count }}0 
-                      <span class="eth-stat-text">WATCHING</span>
+                  0 <span class="eth-stat-text">Mined</span>
+                  </div>
+                  <div class="margin-top-20">
+                  {{ addr.count }} <span class="eth-stat-text">Transactions</span>
+                  </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 center">
+                <div class="portlet">
+                  <div class="portlet-body">
+                    <div class="eth-stat">
+
+                    <span class='btn blue-madison' ng-show="!isFollowing(addrHash)" ng-click="follow(addrHash)">WATCH <i class="fa fa-rss "></i></span>
+                    <span class='btn grey'  ng-show="isFollowing(addrHash)" ng-click="unFollow(addrHash)">WATCHING <i class="fa fa-check "></i></span>
+                    <div class="margin-top-20">
+                        {{ addr.follow_count }}0 
+                        <span class="eth-stat-text">WATCHING</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div><!--end portlet-->
-          </div>
+            </div>
+
       </div><!--end row-->
     </div><!--end portlet-body-->
-
+  </div><!--end portlet-->
 
   <!-- Begin: Transaction Datatable -->
   <div class="portlet light portlet-datatable col-md-12">
