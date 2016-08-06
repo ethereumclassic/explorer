@@ -12,8 +12,9 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     $http({
       method: 'POST',
       url: '/web3relay',
-      data: {"addr": $scope.addrHash}
+      data: {"addr": $scope.addrHash, "options": ["balance", "count", "bytecode"]}
     }).success(function(data) {
+      console.log(data)
       $scope.addr = data;
       if (data.isContract)
         $rootScope.$state.current.data["pageTitle"] = "Contract Address";

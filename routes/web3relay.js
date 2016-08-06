@@ -47,33 +47,39 @@ exports.data = function(req, res){
   
   if ("addr" in req.body) {
     var addr = req.body.addr.toLowerCase();
+    var options = req.body.options;
 
     var addrData = {};
 
-    try {
-      addrData["balance"] = web3.eth.getBalance(addr);  
-    } catch(err) {
-      console.error("AddrWeb3 error :" + err);
-      addrData = {"error": true};
+    if (options.indexOf("balance") > -1) {
+      try {
+        addrData["balance"] = web3.eth.getBalance(addr);  
+      } catch(err) {
+        console.error("AddrWeb3 error :" + err);
+        addrData = {"error": true};
+      }
     }
-    try {
-       addrData["count"] = web3.eth.getTransactionCount(addr);
-    } catch (err) {
-      console.error("AddrWeb3 error :" + err);
-      addrData = {"error": true};
+    if (options.indexOf("count") > -1) {
+      try {
+         addrData["count"] = web3.eth.getTransactionCount(addr);
+      } catch (err) {
+        console.error("AddrWeb3 error :" + err);
+        addrData = {"error": true};
+      }
     }
-    try {
-       addrData["bytecode"] = web3.eth.getCode(addr);
-       if (addrData["bytecode"].length > 2) 
-          addrData["isContract"] = true;
-       else
-          addrData["isContract"] = false;
-    } catch (err) {
-      console.error("AddrWeb3 error :" + err);
-      addrData = {"error": true};
+    if (options.indexOf("bytecode") > -1) {
+      try {
+         addrData["bytecode"] = web3.eth.getCode(addr);
+         if (addrData["bytecode"].length > 2) 
+            addrData["isContract"] = true;
+         else
+            addrData["isContract"] = false;
+      } catch (err) {
+        console.error("AddrWeb3 error :" + err);
+        addrData = {"error": true};
+      }
     }
    
-    console.log(addrData)
     res.write(JSON.stringify(addrData));
     res.end();
 
