@@ -62,6 +62,16 @@ exports.data = function(req, res){
       console.error("AddrWeb3 error :" + err);
       addrData = {"error": true};
     }
+    try {
+       addrData["bytecode"] = web3.eth.getCode(addr);
+       if (addrData["bytecode"].length > 2) 
+          addrData["isContract"] = true;
+       else
+          addrData["isContract"] = false;
+    } catch (err) {
+      console.error("AddrWeb3 error :" + err);
+      addrData = {"error": true};
+    }
    
     console.log(addrData)
     res.write(JSON.stringify(addrData));

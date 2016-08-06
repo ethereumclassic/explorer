@@ -15,8 +15,9 @@ exports.data = function(req, res){
 
     addrData["balance"] = new BigNumber(75380000001024);
     addrData["count"] = 139;
+    addrData["isContract"] = true;
+    addrData["bytecode"] = "0x606060405236156100f8576000357c010000000000000000000000000000000000000000000000000000000090048063173825d9146101605780632f54bf6e1461";
     
-    console.log(addrData)
     res.write(JSON.stringify(addrData));
     res.end();
 
