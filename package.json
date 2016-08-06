@@ -6,6 +6,7 @@
   "repository": "https://github.com/ethereumproject/explorer",
   "license": "MIT",
   "dependencies": {
+    "bignumber.js": "^2.4.0",
     "body-parser": "^1.15.2",
     "ejs": "~0.8.5",
     "express": "^4.14.0",

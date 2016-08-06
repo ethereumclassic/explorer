@@ -23,9 +23,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-// streams from web3
-// var web3socket = require('./routes/web3relay').clientSocket;
-var web3relay = require('./routes/web3relay');
+if (app.get('env') === 'development') 
+  var web3relay = require('./routes/web3dummy');
+else
+  var web3relay = require('./routes/web3relay');
 
 // client
 
