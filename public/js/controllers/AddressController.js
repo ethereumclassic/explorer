@@ -15,6 +15,8 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       data: {"addr": $scope.addrHash}
     }).success(function(data) {
       $scope.addr = data;
+      if (data.isContract)
+        $rootScope.$state.current.data["pageTitle"] = "Contract Address";
     });
 
     //fetch transactions
