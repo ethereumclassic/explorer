@@ -176,7 +176,8 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         name: 'BlocksApp',
                         insertBefore: '#ng_load_plugins_before', 
                         files: [
-                             '/js/controllers/ContractController.js'
+                             '/js/controllers/ContractController.js',
+                             '/js/custom.js'
                         ]
                     });
                 }]
