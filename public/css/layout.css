@@ -8,6 +8,9 @@
     text-align: center;
 }
 
+.left { float: left; }
+.right { float: right; }
+
 @media print {
     .page-container,.page-container .page-content {
         padding: 0 !important;
