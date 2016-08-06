@@ -165,6 +165,24 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             }
         })
 
+        .state('contract', {
+            url: "/contract/{addr}",
+            templateUrl: "views/contract.html",
+            data: {pageTitle: 'Verify Contract'},
+            controller: "ContractController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', 
+                        files: [
+                             '/js/controllers/ContractController.js'
+                        ]
+                    });
+                }]
+            }
+        })
+
         .state('err404', {
             url: "/err404/{thing}/{hash}",
             templateUrl: "views/err_404.html",
