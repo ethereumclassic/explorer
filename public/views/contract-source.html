@@ -1,0 +1,24 @@
+<div class="col-md-12">
+  <div class="row" style="margin-bottom:20px;" ng-show="!contract.isVerified">
+    <span class="eth-stat" >
+    <i style="color: red" class="fa fa-wheelchair"></i> Contract Source Code Unverified
+    </span><br>
+    <span class="eth-stat-text">Verify And Publish Source Code.</span>
+  </div>
+
+  <div class="row" ng-show="contract.isVerified">
+    <p class="eth-stat">
+    <i style="color: green" class="fa fa-check-circle-o"></i> Contract Source Code Verified
+    </p>
+    Contract Source Code <i class="fa fa-code"></i>
+    <pre class="code-js"></pre>
+    <br>
+    Contract ABI <i class="fa fa-cogs"></i>
+    <pre class="code-js"></pre><br>
+  </div>
+
+  <div class="row">
+    Contract Bytecode <i class="fa fa-building-o"></i>
+    <pre class="code-bytecode" ng-class="{verified: contract.isVerified}">{{addr.bytecode}}</pre>
+  </div>
+</div>

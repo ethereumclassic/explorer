@@ -1,0 +1,123 @@
+div.page-logo {overflow: visible;}
+img.logo-default {
+    max-height: 100px;
+    height: 70px;
+}
+ul.scrollable {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+#table_txs td {
+    font-size: 12px;
+    white-space:nowrap; 
+    overflow:hidden;
+    text-overflow: ellipsis;
+}
+.eth-stat {
+    padding-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #7f90a4;
+}
+.eth-stat-title {
+    color: #7f90a4;
+    font-size: 25px;
+    text-align: center;
+}
+.eth-stat-text {
+    color: #5b9bd1;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+}
+.portlet {
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding: 0;
+    border-radius: 4px;
+}
+.portlet.light {
+    padding: 12px 20px 15px;
+    background-color: #fff;
+}
+.home-tx{
+    font-size: 12px;
+    white-space:nowrap; 
+    overflow:hidden;
+    text-overflow: ellipsis;
+}
+.page-404 {text-align: center;}
+.page-404 .number {
+    position: relative;
+    top: 20px;
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: right;
+    letter-spacing: -10px;
+    line-height: 128px;
+    font-size: 128px;
+    font-weight: 300;
+}
+.page-404 .details {
+    margin-left: 40px;
+    display: inline-block;
+    text-align: left;
+}
+pre {
+    margin-top: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+pre.code-js, .verified{
+    max-height: 200px; 
+}
+i.verified:before{
+  content:"\f1ce"
+}
+.page-logo a {
+    text-decoration: none;
+}
+tr.ng-scope {
+    white-space: nowrap;
+}
+li.ng-scope {
+    width: calc(100% - 16px);
+}
+.cont-col2.home-tx {
+    padding: 8px;
+}
+.cont {
+    width: calc(100% - 4px);
+}
+.table-scrollable {
+    margin: 0 !important;
+}
+@media(max-width: 487px) {
+    .container {
+        margin: 0 !important;
+    }
+    .page-header .page-header-top .menu-toggler {
+        margin: 33px 3px 0 0;
+    }
+}
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-button {
+    height: 0px;
+    width: 0px;
+}
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+    height: 0px;
+    width: 0px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #444d58;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}

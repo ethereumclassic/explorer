@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>    <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>     <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>     <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <!-- BASICS -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Ethereum Classic Explorer</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/isotope.css" media="screen" />  
+    <link rel="stylesheet" href="/js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- skin -->
+    <link rel="stylesheet" href="/css/default.css">
+    <link rel="icon" type="image/png" href="/favicon.ico">
+  </head>
+   
+  <body>
+    <section id="header" class="appear"></section>
+    <div class="navbar navbar-fixed-top" role="navigation" data-0="line-height:100px; height:100px; background-color:rgba(0,0,0,0.3);" data-300="line-height:60px; height:60px; background-color:rgba(0,0,0,1);">
+       <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="fa fa-bars color-white"></span>
+          </button>
+          <h1><a class="navbar-brand" href="index.html" data-0="line-height:90px;" data-300="line-height:50px;"><img class="logo" src="/img/logo.png">&nbsp; Ethereum Classic Explorer
+          </a></h1>
+        </div>
+      </div>
+    </div>
+
+    <section class="featured">
+      <div class="container"> 
+        <div class="row mar-bot40">
+          <div class="col-md-6 col-md-offset-3">
+            
+            <div class="align-center">
+              <h3 class="white">Search the Blockchain</h3>
+            <br>
+    <form>
+    <input id="addr_in" class="form-control" type = "text" placeholder = "Address: eg. 0x12356">
+    <button href="#services" class="form-control button" id="addr_btn" type="submit">Search Address</button>
+    </form><br>
+    <form>
+    <input  id="tx_in" class="form-control" type = "text" placeholder = "Transaction Hash: eg. 0xd8blah">
+    <button href="#services" class="form-control button" id="tx_btn" type="submit">Search Transaction</button>
+    </form><br>
+    <form>
+    <input id="block_in" class="form-control" type = "text" placeholder = "Block Number: eg. 192000">
+    <button href="#services" class="form-control button" id="block_btn" type="submit">Search Block</button>
+    </form><br>
+    <p><a style="color:#fff;">Sorry this is so ugly, it's a temporary page until I get something better put up. If you do frontend stuff and want to help, email elaine.ou@gmail.com.</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+
+    <a name="services"></a>
+    <section id="section-works" class="section appear clearfix">
+      <div class="container">
+        
+        <div class="row mar-bot40">
+          <div class="col-md-12">
+            <div class="section-header">
+            <h4 id="linkedin_name"></h4>
+              <h2 class="section-heading animated" data-animation="bounceInUp">Stuff you searched for</h2>
+              <div id="results"></div>
+            </div>
+            <table id="transactions" class="table-striped table"></table>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+
+
+    
+  <section id="footer" class="section footer">
+    <div class="container">
+      <div class="row animated opacity mar-bot20" data-andown="fadeIn" data-animation="animation">
+        <div class="col-sm-12 align-center">
+          <ul class="social-network social-circle">
+            <li><a href="https://www.ethereumclassic.com" class="icoRss" title="Rss"><i class="fa fa-rss"></i></a></li>
+            <li><a href="https://twitter.com/eiaine" class="icoTwitter" title="Twitter"><i class="fa fa-twitter"></i></a></li>
+          </ul>         
+        </div>
+      </div>
+
+      <div class="row align-center copyright">
+          <div class="col-sm-12"><p>Copyright &copy; 2016 EthereumClassic</p></div>
+      </div>
+    </div>
+
+  </section>
+
+<script src="/js/jquery.js"></script>
+<script>
+
+$(document).ready(function () {
+
+  $("#addr_btn").click(function getresponse(e){
+    e.preventDefault();
+    $("#addr_btn").attr('disabled', 'disabled');
+    $("#addr_btn").addClass('wait');
+    var text = $("#addr_in").val();
+    var jdata = JSON.stringify({'addr': text, "txin": true});
+    $("#addr_in").val("");
+    window.location.hash='';
+    $("#results").html("");
+      $.ajax({
+      type: 'POST',
+      url: '/addr',
+      dataType: "json",
+      contentType: "application/json",
+      data: jdata,
+      crossDomain: true,
+      success:  function (res) {
+        console.log(res);
+
+        $('#addr_btn').removeAttr('disabled');
+        $('#addr_btn').removeClass('wait');   
+        window.location.hash = "services";
+        if (res.status == "error") {
+          alert("Oops! Search error. Sorry.");
+          return
+        }
+        $("#transactions").html("");
+        $("#results").html("<h5><b>Address</b>: " + text+"</h5>");
+          
+        $("#transactions").append("<tr><th>TxHash</th><th>from</th><th>to</th><th>Value</th></tr>");
+
+          json = res;
+          for (var i = 0; i < json.length; i++) {
+            $("#transactions").append("<tr>",
+              '<td class="txhash">' + json[i].hash, "<td>" + json[i].from,
+              "<td>" + json[i].to,
+              '<td align="right">' + json[i].value)
+          };
+          
+        },
+      error: function (request, status, error) {
+        alert(error);
+      }
+    });
+  });
+
+$("#block_btn").click(function getresponse(e){
+    e.preventDefault();
+    $("#block_btn").attr('disabled', 'disabled');
+    $("#block_btn").addClass('wait');
+    var text = $("#block_in").val();
+    var jdata = JSON.stringify({'block': text});
+    $("#block_in").val("");
+    window.location.hash='';
+    $("#results").html("");
+      $.ajax({
+      type: 'POST',
+      url: '/block',
+      dataType: "json",
+      contentType: "application/json",
+      data: jdata,
+      crossDomain: true,
+      success:  function (res) {
+        console.log(res);
+
+        $('#block_btn').removeAttr('disabled');
+        $('#block_btn').removeClass('wait');   
+        window.location.hash = "services";
+        if (res.status == "error") {
+          alert("Oops! Search error. Sorry.");
+          return
+        }
+        $("#transactions").html("");
+        $("#results").html("<h5><b>Block Number</b>: " + text+"</h5>");
+          
+        $("#transactions").append("<tr><th>TxHash</th><th></th><th></th><th>Value</th></tr>");
+
+          json = res;
+          for (var i = 0; i < json.length; i++) {
+            $("#transactions").append("<tr>",
+              "<td>" + json[i].hash, "<td>" + json[i].from,
+              "<td>" + json[i].to,
+              '<td align="right">' + json[i].value)
+          };
+          
+        },
+      error: function (request, status, error) {
+        alert(error);
+      }
+    });
+  });
+
+$("#tx_btn").click(function getresponse(e){
+    e.preventDefault();
+    $("#tx_btn").attr('disabled', 'disabled');
+    $("#tx_btn").addClass('wait');
+    var text = $("#tx_in").val();
+    var jdata = JSON.stringify({'tx': text});
+    $("#tx_in").val("");
+    window.location.hash='';
+    $("#results").html("");
+      $.ajax({
+      type: 'POST',
+      url: '/tx',
+      dataType: "json",
+      contentType: "application/json",
+      data: jdata,
+      crossDomain: true,
+      success:  function (res) {
+        console.log(res);
+
+        $('#tx_btn').removeAttr('disabled');
+        $('#tx_btn').removeClass('wait');   
+        window.location.hash = "services";
+        if (res.status == "error") {
+          alert("Oops! Search error. Sorry.");
+          return
+        }
+        $("#transactions").html("");
+        $("#results").html("<h5><b>TxHash</b>: " + text+"</h5>");
+          
+        $("#transactions").append("<tr><th>TxHash</th><th></th><th></th><th>Value</th></tr>");
+
+          json = res;
+          for (var i = 0; i < json.length; i++) {
+            $("#transactions").append("<tr>",
+              '<td class="txhash">' + json[i].hash, "<td>" + json[i].from,
+              "<td>" + json[i].to,
+              '<td align="right">' + json[i].value)
+          };
+          
+        },
+      error: function (request, status, error) {
+        alert(error);
+      }
+    });
+  });
+
+});
+
+</script>
+
+  <a href="#header" class="scrollup"><i class="fa fa-chevron-up"></i></a> 
+
+  <script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+  <script src="/js/jquery.js"></script>
+  <script src="/js/jquery.easing.1.3.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/jquery.isotope.min.js"></script>
+  <script src="/js/jquery.nicescroll.min.js"></script>
+  <script src="/js/fancybox/jquery.fancybox.pack.js"></script>
+  <script src="/js/skrollr.min.js"></script>    
+  <script src="/js/jquery.scrollTo-1.4.3.1-min.js"></script>
+  <script src="/js/jquery.localscroll-1.2.7-min.js"></script>
+  <script src="/js/stellar.js"></script>
+  <script src="/js/jquery.appear.js"></script>
+  <script src="/js/validate.js"></script>
+  <script src="/js/main.js"></script>
+  </body>
+</html>
