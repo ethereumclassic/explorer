@@ -64,6 +64,17 @@ ul.scrollable {
     display: inline-block;
     text-align: left;
 }
+pre {
+    margin-top: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+pre.code-js, .verified{
+    max-height: 200px; 
+}
+i.verified:before{
+  content:"\f1ce"
+}
 .page-logo a {
     text-decoration: none;
 }

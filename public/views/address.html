@@ -50,8 +50,12 @@
               <li class="active">
                   <a href="#tab_addr_1" data-toggle="tab" aria-expanded="true"> Transactions </a>
               </li>
-              <li class="" ng-show="{{isContract}}">
-                  <a href="#tab_addr_2" data-toggle="tab" aria-expanded="false"> Contract Source </a>
+              <!-- TODO: Internal TX
+              <li class="" ng-show="addr.isContract">
+                  <a href="#tab_addr_2" data-toggle="tab" aria-expanded="false"> Internal Transactions </a>
+              </li>-->
+              <li class="" ng-show="addr.isContract">
+                  <a href="#tab_addr_3" data-toggle="tab" aria-expanded="false"> Contract Source </a>
               </li>
           </ul>
           <div class="tab-content">
@@ -73,8 +77,11 @@
               </table>
               <div id="table_wait"><img src="/img/loading.gif" data-toggle="tooltip" data-placement="right" title="Crunching data...."/></div>
             </div><!-- End: Datatable tab -->
-            <div class="tab-pane" id="tab_addr_2" ng-show="{{isContract}}">
-              <p> Contract address </p>
+            <!-- TODO: Support internal transactions 
+            <div class="tab-pane" id="tab_addr_2" ng-show="addr.isContract">
+            </div>-->
+            <div class="tab-pane" id="tab_addr_3" ng-show="addr.isContract">
+              <contract-source></contract-source>
             </div>
           </div>
         </div>

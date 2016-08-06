@@ -2,7 +2,6 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     $scope.$on('$viewContentLoaded', function() {   
         // initialize core components
         App.initAjax();
-        //TableAjax.init();
     });
 
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.hash;
@@ -61,4 +60,10 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     });
 
 
+})
+.directive('contractSource', function() {
+  return {
+    restrict: 'E',
+    templateUrl: '/views/contract-source.html'
+  };
 })
