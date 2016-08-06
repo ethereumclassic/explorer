@@ -18,6 +18,10 @@ Clone the repo
 
 Download [Nodejs and npm](https://docs.npmjs.com/getting-started/installing-node "Nodejs install") if you don't have them
 
+Install dependencies:
+
+``npm install`
+
 Start the program. All dependencies will be automatically downloaded
 
 `npm start`
