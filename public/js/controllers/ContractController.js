@@ -8,6 +8,12 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
     $scope.addrHash = $stateParams.addr;
     $scope.contract = {};
 
+    //fetch compiler options
+    $http.get('COMPILERS.json')
+       .then(function(res){
+          $scope.compilerVersions = res.data;                
+        });
+
     //fetch web3 stuff
     $http({
       method: 'POST',
