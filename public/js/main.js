@@ -107,24 +107,6 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             }
         })
 
-        // Transactions
-        .state('transactions', {
-            url: "/transactions",
-            templateUrl: "views/transactions.html",            
-            data: {pageTitle: 'Transactions and Stuff'},
-            controller: "TransactionsController",
-            resolve: {
-                deps: ['$ocLazyLoad', function($ocLazyLoad) {
-                    return $ocLazyLoad.load([{
-                        name: 'BlocksApp',
-                        insertBefore: '#ng_load_plugins_before', 
-                        files: [
-                            '/js/controllers/TransactionsController.js'
-                        ]}]);
-                }]
-            }
-        })
-
         .state('address', {
             url: "/addr/{hash}",
             templateUrl: "views/address.html",
