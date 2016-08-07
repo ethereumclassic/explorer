@@ -6,6 +6,7 @@
 
 var Web3 = require("web3");
 var web3;
+var etherUnits = require("etherUnits.js")
 
 var extractTX = require('./filters').extractTX;
 var getLatestBlocks = require('./index').getLatestBlocks;
@@ -52,6 +53,7 @@ exports.data = function(req, res){
 
     try {
       addrData["balance"] = web3.eth.getBalance(addr);  
+      addrData["balance"] = etherUnits.toEther(addrData["balance"], 'wei');
     } catch(err) {
       console.error("AddrWeb3 error :" + err);
       addrData = {"error": true};
@@ -86,7 +88,9 @@ exports.data = function(req, res){
         console.error("TxWeb3 error :" + err)
         res.write(JSON.stringify({"error": true}));
       } else {
-        res.write(JSON.stringify(tx));
+        var ttx = tx;
+        ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
+        res.write(JSON.stringify(ttx));
       }
       res.end();
     });
