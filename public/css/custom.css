@@ -72,6 +72,10 @@ pre {
 pre.code-js, .verified{
     max-height: 200px; 
 }
+.code {
+    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+    font-size: 13px;
+}
 i.verified:before{
   content:"\f1ce"
 }
