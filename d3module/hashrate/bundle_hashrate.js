@@ -139,16 +139,6 @@ function mySecondFunction(arg1, arg2, callback) {
         .style("text-anchor", "middle")
         .text("Date");
 
-
-    // Add the title
-    svg.append("text")
-        .attr("x", (width / 2))
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        .text("ETC Hashrate");
-
     callback(null, 'three');
 }
 function myLastFunction(arg1, callback) {
