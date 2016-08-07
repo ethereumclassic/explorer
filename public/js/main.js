@@ -182,9 +182,9 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                              '/js/controllers/StatsController.js',
                              '/css/stats.css',
                              "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.10/d3.js",
-                             "https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.css",
-                             "https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.js",
-                             "http://nvd3.org/assets/js/data/stream_layers.js",
+                             //"https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.css",
+                             //"https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.js",
+                             //"http://nvd3.org/assets/js/data/stream_layers.js",
                              "/plugins/async.min.js",
                              '/js/stats/bundle_hashrate.js'
                         ]
