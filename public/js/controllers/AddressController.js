@@ -19,6 +19,9 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
         $rootScope.$state.current.data["pageTitle"] = "Contract Address";
     });
 
+    // fix units
+    $scope.addr = etherUnits.toEther(addr.balance, 'wei');
+
     //fetch transactions
     $http({
       method: 'POST',
