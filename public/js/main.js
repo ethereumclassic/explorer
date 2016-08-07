@@ -54,16 +54,19 @@ BlocksApp.controller('HeaderController', ['$scope', '$location', function($scope
         Layout.initHeader(); // init header
     });
 
+    $scope.form = {};
     $scope.searchQuery = function(search) {
-        console.log(search);
+        $scope.form.searchInput="";
+        $scope.form.searchForm.$setPristine();
+        $scope.form.searchForm.$setUntouched();
         if (isAddress(search)) 
             $location.path("/addr/" + search);
         else if (!isNaN(search))
             $location.path("/block/" + search);
         else if (isTransaction(search))
             $location.path("/tx/" + search);
-        else
-            console.log("bad search query: " + search)
+        else 
+            $scope.form.searchInput = search;
 
     }
 }]);
