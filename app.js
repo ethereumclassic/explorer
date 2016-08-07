@@ -28,6 +28,9 @@ if (app.get('env') === 'development')
 else
   var web3relay = require('./routes/web3relay');
 
+var compile = require('./routes/compiler');
+
+
 // client
 
 app.get('/', function(req, res) {
@@ -45,7 +48,7 @@ app.post('/tx', routes.tx);
 app.post('/block', routes.block);
 app.post('/data', routes.data);
 app.post('/web3relay', web3relay.data);
-app.post('/web3compile', web3relay.compile);
+app.post('/compile', compile.compileSolc);
 
 app.get('/test', function(req, res) {
   res.render('test');
