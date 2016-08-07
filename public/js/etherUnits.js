@@ -1,4 +1,6 @@
 'use strict';
+var BigNumber = require('bignumber.js');
+
 var etherUnits = function() {}
 etherUnits.unitMap = {
 	'wei': '1',
@@ -53,4 +55,5 @@ etherUnits.toWei = function(number, unit) {
 	var returnValue = new BigNumber(String(number)).times(this.getValueOfUnit(unit));
 	return returnValue.toString(10);
 }
+
 module.exports = etherUnits;
