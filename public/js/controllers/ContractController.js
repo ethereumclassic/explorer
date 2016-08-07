@@ -5,8 +5,6 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
     });
 
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.addr;
-    $scope.addrHash = $stateParams.addr;
-    $scope.contract = {};
 
     //fetch compiler options
     $http.get('COMPILERS.json')
@@ -14,13 +12,34 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
           $scope.compilerVersions = res.data;                
         });
 
-    //fetch web3 stuff
-    $http({
-      method: 'POST',
-      url: '/web3relay',
-      data: {"addr": $scope.addrHash, "options": ["bytecode"]}
-    }).success(function(data) {
-      $scope.contract = data;
-    });
+    $scope.form = {};
+    $scope.contract = {"address": $stateParams.addr} 
+
+    $scope.submitCode = function() {
+      console.log($scope.contract)
+      // validate
+      $scope.errors = {};
+      if (!isAddress($scope.contract.address)) 
+        $scope.errors.address = "Invalid Address";
+      if ($scope.contract.name.length <2)
+        $scope.errors.name = "Contract Name Required";
+      if ($scope.contract.version == "undefined")
+        $scope.errors.version = "Compiler Version Required"
+      if ($scope.contract.code.length < 10)
+        $scope.errors.code = "Invalid Contract Code"
+
+      if (Object.keys($scope.errors) < 1) {
+        // send to web3 for validation
+        $http({
+          method: 'POST',
+          url: '/web3compile',
+          data: $scope.contract
+        }).success(function(data) {
+          $scope.contract.bytecode = data;
+        });
+      }
+      else
+        return;
+    }
 
 })
