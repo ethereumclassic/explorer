@@ -44,7 +44,8 @@ app.post('/addr', routes.addr);
 app.post('/tx', routes.tx);
 app.post('/block', routes.block);
 app.post('/data', routes.data);
-app.post('/web3relay', web3relay.data)
+app.post('/web3relay', web3relay.data);
+app.post('/web3compile', web3relay.compile);
 
 app.get('/test', function(req, res) {
   res.render('test');
@@ -81,7 +82,7 @@ app.use(function(err, req, res, next) {
 });
 
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+//var io = require('socket.io')(http);
 
 // web3socket(io);
 

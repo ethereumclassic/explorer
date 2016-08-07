@@ -55,4 +55,9 @@ exports.data = function(req, res){
   }
 
 };
-  
+
+exports.compile = function(req, res) {
+  console.log(req.body);
+  res.write(JSON.stringify({"valid": true}));
+  res.end();
+}
