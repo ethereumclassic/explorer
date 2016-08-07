@@ -104,4 +104,6 @@ exports.data = function(req, res){
   }
 
 };
+
+exports.eth = web3.eth;
   

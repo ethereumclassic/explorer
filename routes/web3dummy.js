@@ -56,8 +56,8 @@ exports.data = function(req, res){
 
 };
 
-exports.compile = function(req, res) {
-  console.log(req.body);
-  res.write(JSON.stringify({"valid": true}));
-  res.end();
+exports.eth = new function() {
+  this.getCode = function(addr) {
+    return "0x606060405236156100f8576000357c010000000000000000000000000000000000000000000000000000000090048063173825d9146101605780632f54bf6e1461";
+  }
 }
