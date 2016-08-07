@@ -5,15 +5,15 @@
  
         <div class="tabbable-line">
           <ul class="nav nav-tabs ">
-              <li class="active">
-                  <a href="#tab_contract_1" data-toggle="tab" aria-expanded="true" ng-show="!validationComplete"> Source Code </a>
+              <li ng-class="{active: !contract.compiled}">
+                  <a href="#tab_contract_1" data-toggle="tab" aria-expanded="true"> Source Code </a>
               </li>
-              <li class="" ng-show="contract.compiled">
-                  <a href="#tab_contract_2" data-toggle="tab" aria-expanded="false"> Contract Source </a>
+              <li ng-show="contract.compiled" ng-class="{active: contract.compiled}">
+                  <a href="#tab_contract_2" data-toggle="tab" aria-expanded="true"> Bytecode and ABI </a>
               </li>
           </ul>
           <div class="tab-content">
-            <div class="tab-pane active" id="tab_contract_1"><!-- source code tab -->
+            <div class="tab-pane" ng-class="{active: !contract.compiled}" id="tab_contract_1"><!-- source code tab -->
 
               <h4>Verify and Publish Contract Source Code </h4>
               <div class="note">
@@ -79,7 +79,8 @@
               </div></form>
               
             </div><!-- End: source code tab -->
-            <div class="tab-pane" id="tab_contract_2" ng-show="contract.compiled">
+
+            <div class="tab-pane" id="tab_contract_2" ng-class="{active: contract.compiled}" ng-show="contract.compiled">
 
             <div class="row">
               <div class="col-sm-12" ng-show="contract.valid">
