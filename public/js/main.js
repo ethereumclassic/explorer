@@ -168,6 +168,31 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             }
         })
 
+        .state('stats', {
+            url: "/stats/{chart}",
+            templateUrl: "views/stats/index.html",
+            data: {pageTitle: 'Transaction'},
+            controller: "StatsController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                             '/js/controllers/StatsController.js',
+                             '/css/stats.css',
+                             "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.10/d3.js",
+                             "https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.css",
+                             "https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.js",
+                             "http://nvd3.org/assets/js/data/stream_layers.js",
+                             "/plugins/async.min.js",
+                             '/js/stats/bundle_hashrate.js'
+                        ]
+                    });
+                }]
+            }
+        })
+
         .state('err404', {
             url: "/err404/{thing}/{hash}",
             templateUrl: "views/err_404.html",
