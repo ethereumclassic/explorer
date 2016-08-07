@@ -1,4 +1,8 @@
-# ETCExplorer (In Progress)
+# ETCExplorer (In Progress) 
+
+CURRENT DEVELOPMENT STAGE STAGE: ALPHA 
+
+Follow the project progress at: [ETC Block Explorer Development](https://trello.com/b/W3ftl57z/etc-block-explorer-development) 
 
 ##License
 
