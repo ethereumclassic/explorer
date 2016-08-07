@@ -1,4 +1,8 @@
-# ETCExplorer (In Progress)
+# ETCExplorer (In Progress) 
+
+CURRENT DEVELOPMENT STAGE STAGE: ALPHA 
+
+Follow the project progress at: [ETC Block Explorer Development](https://trello.com/b/W3ftl57z/etc-block-explorer-development) 
 
 ##License
 
@@ -8,10 +12,6 @@ Code in the MIT branch is under the MIT License (shocker, amirite)
 
 But seriously, license file has a TL;DR, at least look at that before using this code in a project
 
-##Installation
-
-Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git "Git installation") if you haven't already
-
 Clone the repo
 
 `git clone https://github.com/ethereumproject/explorer`
@@ -20,16 +20,13 @@ Download [Nodejs and npm](https://docs.npmjs.com/getting-started/installing-node
 
 Install dependencies:
 
-``npm install`
+`npm install`
 
-Start the program. All dependencies will be automatically downloaded
+### Populate the DB
 
-`npm start`
+This will fetch and parse the entire blockchain.
 
-Then visit http://localhost:3000 in your browser of choice. You might get an error message:
+`node ./tools/grabber.js`
 
-`geth --rpc --rpcaddr "localhost" --rpcport "8545"`
+TODO (Elaine): define options in config.json
 
-Install [geth](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum "Geth install") if you don't already have it, then run the above command.
-
-Then refresh the page in your browser 

@@ -4,13 +4,6 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
         App.initAjax();
     });
 
-    $scope.charts = $rootScope.charts;
-
-    // set sidebar closed and body solid layout mode
-    $rootScope.settings.layout.pageContentWhite = true;
-    $rootScope.settings.layout.pageBodySolid = false;
-    $rootScope.settings.layout.pageSidebarClosed = false;
-
     var URL = '/data';
 
     $http({

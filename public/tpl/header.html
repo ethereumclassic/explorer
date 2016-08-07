@@ -15,11 +15,11 @@
         <div class="top-menu">
             <ul class="nav navbar-nav pull-right">
                 <li class="dropdown dropdown-user dropdown-dark">
-                    <form class="search-form">
+                    <form name="form.searchForm" class="search-form">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search by Address / Txhash / BlockNum" ng-model="searchInput">
+                            <input type="text" name="explorerSearch" class="form-control" placeholder="Search by Address / Txhash / BlockNum" ng-model="form.searchInput" ng-keyup="$event.keyCode == 13 ? searchQuery(form.searchInput) : null">
                             <span class="input-group-btn">
-                                <a class="btn" ng-click="searchQuery(searchInput)">
+                                <a class="btn" ng-click="searchQuery(form.searchInput)">
                                     <i class="icon-magnifier"></i>
                                 </a>
                             </span>
@@ -102,8 +102,8 @@
                                                     <i class="icon-puzzle"></i> Top Miners </a>
                                             </li>
                                             <li>
-                                                <a href="/">
-                                                    <i class="icon-calendar"></i> Hash Rate </a>
+                                                <a href="/stats/hashrate">
+                                                    <i class="fa fa-line-chart"></i> HashRate Growth Chart </a>
                                             </li>
                                             <li>
                                                 <a href="/">
