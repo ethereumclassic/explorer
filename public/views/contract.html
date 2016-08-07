@@ -8,7 +8,7 @@
               <li class="active">
                   <a href="#tab_contract_1" data-toggle="tab" aria-expanded="true"> Source Code </a>
               </li>
-              <li class="" ng-show="contract.compiled">
+              <li class="" ng-show="!contract.compiled">
                   <a href="#tab_contract_2" data-toggle="tab" aria-expanded="false"> Contract Source </a>
               </li>
           </ul>
@@ -75,14 +75,47 @@
               </div>
               <div class="row">
               <button type="button" class="btn btn-info" ng-click="submitCode()">Validate Code</button>
-              <button type="button" class="btn btn-secondary" ng-click="resetCode()">Reset</button>
+              <button type="button" class="btn grey-cascade" ng-click="resetCode()">Reset</button>
               </div>
              
             </div><!-- End: source code tab -->
             <div class="tab-pane" id="tab_contract_2" ng-show="contract.compiled">
 
+            <div class="row">
+              <div class="col-sm-12" ng-show="contract.verifyPass">
+                <h4>Contract Source Code Verified <i class="fa fa-smile-o"></i></h4>
+                <p>
+                <i class="fa fa-check-circle-o font-green-sharp"></i> Note: Contract was created by transaction <a href="/tx/{{contract.txHash}}">{{contract.txHash}}</a><br>
+                <i class="fa fa-check-circle-o font-green-sharp"></i> View the verified result at <a href="/addr/{{contract.address}}">{{contract.address}}</a>.
+                </p>
+              </div>
+              <div class="col-sm-12" ng-show="!contract.verifyPass">
+                <h4>Unable to Verify Code</h4>
+                <p>
+                <i class="fa fa-check-circle-o"></i> Note: Contract was created by transaction <a href="/tx/{{contract.txHash}}">{{contract.txHash}}</a><br>
+                <i class="fa fa-times-circle-o font-red-mint"></i> The compiled result does not match the input creation bytecode located at <a href="/addr/{{contract.address}}">{{contract.address}}</a>.
+                </p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-12 code well">
+                <b>Compiler Version:</b> {{compiler.version}}<br>
+                <b>Optimization Enabled:</b> {{compiler.optimization}}<br>
+                
+                <div ng-repeat="v in verifiedContracts">
+                  <br><b>ContractName:</b><br>
+                  <pre>{{v.name}}</pre>
+                  <b>ContractBytecode:</b><br>
+                  <pre>{{v.bytecode}}</pre>
+                  <b>ContractABI:</b><br>
+                  <pre class="code-js">{{v.abi}}</pre>
+                  <hr>
+                </div>
 
-
+                <button type="button" class="btn grey-cascade" ng-click="startOver()">Start Over</button>
+              </div>
+            </div>
 
             </div>
 
