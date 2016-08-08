@@ -74,7 +74,7 @@ var testValidCode = function(output, data, bytecode, response) {
   }
 
   // compare to bytecode at address
-  if (!output.contracts[data.contractName])
+  if (!output.contracts || !output.contracts[data.contractName])
     data.valid = false;
   else if (output.contracts[data.contractName].bytecode == bytecode){
     data.valid = true;
