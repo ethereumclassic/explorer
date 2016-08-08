@@ -1,4 +1,4 @@
-angular.module('BlocksApp').controller('ContractController', function($stateParams, $rootScope, $scope, $http, $timeout) {
+angular.module('BlocksApp').controller('ContractController', function($stateParams, $rootScope, $scope, $http) {
     $scope.$on('$viewContentLoaded', function() {   
         // initialize core components
         App.initAjax();
@@ -14,28 +14,31 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
 
     $scope.form = {};
     $scope.contract = {"address": $stateParams.addr} 
-
+    $scope.errors = {};
+    
     $scope.submitCode = function() {
       console.log($scope.contract)
       // validate
-      $scope.errors = {};
+      
       if (!isAddress($scope.contract.address)) 
         $scope.errors.address = "Invalid Address";
-      if ($scope.contract.name.length <2)
+      if (typeof $scope.contract.name == "undefined")          
         $scope.errors.name = "Contract Name Required";
-      if ($scope.contract.version == "undefined")
+      if (typeof $scope.contract.version == "undefined")
         $scope.errors.version = "Compiler Version Required"
-      if ($scope.contract.code.length < 10)
+      if (typeof $scope.contract.code == "undefined")
         $scope.errors.code = "Invalid Contract Code"
 
       if (Object.keys($scope.errors) < 1) {
         // send to web3 for validation
         $http({
           method: 'POST',
-          url: '/web3compile',
+          url: '/compile',
           data: $scope.contract
         }).success(function(data) {
-          $scope.contract.bytecode = data;
+          console.log(data);
+          $scope.contract = data;
+          $scope.contract.compiled = true;
         });
       }
       else

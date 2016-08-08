@@ -105,7 +105,7 @@
                 <b>Compiler Version:</b> {{contract.version}}<br>
                 <b>Optimization Enabled:</b> {{contract.optimization}}<br>
                 
-                <div ng-repeat="v in verifiedContracts">
+                <div ng-repeat="v in contract.verifiedContracts">
                   <br><b>ContractName:</b><br>
                   <pre>{{v.name}}</pre>
                   <b>ContractBytecode:</b><br>
