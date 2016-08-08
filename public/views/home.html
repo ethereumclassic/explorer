@@ -16,32 +16,32 @@
         <div class="portlet light">
             <div class="portlet-title">
                 <div class="caption caption-md">
-                    <i class="icon-bar-chart font-red"></i>
+                    <i class="fa fa-cubes font-red"></i>
                     <span class="caption-subject font-red bold uppercase">Blocks</span>
                 </div>
                 <div class="actions">
                     <div class="btn-group">
-                        <a class="btn btn-sm blue btn-outline" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> View All
+                        <a class="btn btn-sm blue btn-outline" href="javascript:;"> View All
                         </a>
                     </div>
                 </div>
             </div>
             <div class="portlet-body">
-                <div class="table-scrollable table-scrollable-borderless">
-                    <table class="table table-hover table-light">
-                        <thead>
-                            <tr class="uppercase">
-                                <th> Height </th>
-                                <th> Miner </th>
-                                <th> Txns </th>
-                            </tr>
-                        </thead>
-                        <tbody><tr ng-repeat="t in latest_blocks track by $index">
-                            <td><a href="/block/{{t.number}}">{{t.number}}</a></td>
-                            <td><a href="/addr/{{t.miner}}">{{t.extraData}}</a></td>
-                            <td>{{t.transactions.length}}</td>
-                        </tr>
-                    </tbody></table>
+                <div class="todo-tasklist">
+                    <div ng-repeat="t in latest_blocks track by $index" class="todo-tasklist-item todo-tasklist-item-border-green row">
+                        <!--TODO: color by known miners -->
+                        <div class="col-sm-5">
+                            <span class="todo-tasklist-item-title"><i class="fa fa-cube"></i> <a href="/block/{{t.number}}">{{t.number}}</a></span><br>
+                            <span class="todo-tasklist-date">
+                                <i class="fa fa-hourglass-o"></i>{{t.timestamp | timeDuration }} ago</span>
+                        </div>
+                        <div class="todo-tasklist-controls col-sm-7">
+                            <div class="todo-tasklist-item-text"><a href="/addr/{{t.miner}}">{{t.extraData}}</a><br>
+                            by <a href="/addr/{{t.miner}}">{{t.miner}}</a><br>
+                            {{t.transactions.length}} txns
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
                 </div>
                 <div class="actions">
                     <div class="btn-group">
-                        <a class="btn btn-sm blue btn-outline" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> View All
+                        <a class="btn btn-sm blue btn-outline" href="javascript:;"> View All
                         </a>
                     </div>
                 </div>                    

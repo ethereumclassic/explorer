@@ -106,7 +106,9 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         name: 'BlocksApp',
                         insertBefore: '#ng_load_plugins_before', 
                         files: [
-                            '/js/controllers/HomeController.js'
+                            '/js/controllers/HomeController.js',
+                            '/css/todo-2.min.css',
+                            '/js/timeConverter.js'
                         ]}]);
                 }]
             }
@@ -164,7 +166,8 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         name: 'BlocksApp',
                         insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
                         files: [
-                             '/js/controllers/TxController.js'
+                             '/js/controllers/TxController.js',
+                             '/js/timeConverter.js'
                         ]
                     });
                 }]
