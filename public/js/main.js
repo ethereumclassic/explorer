@@ -57,16 +57,16 @@ BlocksApp.controller('HeaderController', ['$scope', '$location', function($scope
     $scope.form = {};
     $scope.searchQuery = function(s) {
         var search = s.toLowerCase();
-        
+
         $scope.form.searchInput="";
         $scope.form.searchForm.$setPristine();
         $scope.form.searchForm.$setUntouched();
         if (isAddress(search)) 
             $location.path("/addr/" + search);
-        else if (!isNaN(search))
-            $location.path("/block/" + search);
         else if (isTransaction(search))
             $location.path("/tx/" + search);
+        else if (!isNaN(search))
+            $location.path("/block/" + search);
         else 
             $scope.form.searchInput = search;
 
