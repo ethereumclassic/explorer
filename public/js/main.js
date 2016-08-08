@@ -193,7 +193,9 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             templateUrl: "views/stats/index.html",
             data: {pageTitle: 'Transaction'},
             controller: "StatsController",
-
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
                         insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
                         files: [
                              '/js/controllers/StatsController.js',
