@@ -98,12 +98,6 @@ tr.ng-scope {
 li.ng-scope {
     width: calc(100% - 16px);
 }
-.cont-col2.home-tx {
-    padding: 8px;
-}
-.cont {
-    width: calc(100% - 4px);
-}
 .table-scrollable {
     margin: 0 !important;
 }
