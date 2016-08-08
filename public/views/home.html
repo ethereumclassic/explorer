@@ -1,79 +1,89 @@
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <!--<div class="note note-success">
+            <h4 class="block">Updates</h4>
+            <p> Thank you for your patience as we fill in the pieces. For more info check out
+                <a href="https://github.com/ethereumproject/explorer" target="_blank"> the official github respository </a>
+            </p>
+        </div>-->
+    </div>
+</div>
 
-    <div class="row">
-        <div class="col-md-6 col-sm-6">
-            <!-- BEGIN PORTLET-->
-            <div class="portlet light">
-                <div class="portlet-title">
-                    <div class="caption caption-md">
-                        <i class="icon-bar-chart font-red"></i>
-                        <span class="caption-subject font-red bold uppercase">Blocks</span>
-                    </div>
-                    <div class="actions">
-                        <div class="btn-group">
-                            <a class="btn btn-sm blue btn-outline" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> View All
-                            </a>
-                        </div>
-                    </div>
+<div class="row">
+    <div class="col-md-6 col-sm-6">
+        <!-- BEGIN PORTLET-->
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-red"></i>
+                    <span class="caption-subject font-red bold uppercase">Blocks</span>
                 </div>
-                <div class="portlet-body">
-                    <div class="table-scrollable table-scrollable-borderless">
-                        <table class="table table-hover table-light">
-                            <thead>
-                                <tr class="uppercase">
-                                    <th> Height </th>
-                                    <th> Miner </th>
-                                    <th> Txns </th>
-                                </tr>
-                            </thead>
-                            <tbody><tr ng-repeat="t in latest_blocks track by $index">
-                                <td><a href="/block/{{t.number}}">{{t.number}}</a></td>
-                                <td><a href="/addr/{{t.miner}}">{{t.miner}}</a></td>
-                                <td>{{t.transactions.length}}</td>
-                            </tr>
-                        </tbody></table>
+                <div class="actions">
+                    <div class="btn-group">
+                        <a class="btn btn-sm blue btn-outline" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> View All
+                        </a>
                     </div>
                 </div>
             </div>
-            <!-- END PORTLET-->
-        </div>
-        <div class="col-md-6 col-sm-6" >
-            <!-- BEGIN PORTLET-->
-            <div class="portlet light">
-                <div class="portlet-title">
-                    <div class="caption caption-md">
-                        <i class="icon-bar-chart font-red"></i>
-                        <span class="caption-subject font-red bold uppercase">Transactions</span>
-                    </div>
-                    <div class="actions">
-                        <div class="btn-group">
-                            <a class="btn btn-sm blue btn-outline" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> View All
-                            </a>
-                        </div>
-                    </div>                    
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <table class="table table-hover table-light">
+                        <thead>
+                            <tr class="uppercase">
+                                <th> Height </th>
+                                <th> Miner </th>
+                                <th> Txns </th>
+                            </tr>
+                        </thead>
+                        <tbody><tr ng-repeat="t in latest_blocks track by $index">
+                            <td><a href="/block/{{t.number}}">{{t.number}}</a></td>
+                            <td><a href="/addr/{{t.miner}}">{{t.miner}}</a></td>
+                            <td>{{t.transactions.length}}</td>
+                        </tr>
+                    </tbody></table>
                 </div>
-                <div class="portlet-body">
-                    <ul class="feeds list-items scrollable">
-                        <li ng-repeat="t in latest_txs track by $index">
-                            <div class="col1">
-                                <div class="cont">
-                                    <div class="cont-col2 home-tx">
-                                        TX <a href="/tx/{{t.hash}}">{{t.hash}}</a><br> 
-                                        <small>From <a href="/addr/{{t.from}}">{{t.from}}</a></small>
-                                        <small >To <a href="/addr/{{t.to}}">{{t.to}}</a></small><br>
-                                        <small>{{t.value}} Ether</small>
-                                        </div>
+            </div>
+        </div>
+        <!-- END PORTLET-->
+    </div>
+    <div class="col-md-6 col-sm-6" >
+        <!-- BEGIN PORTLET-->
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-red"></i>
+                    <span class="caption-subject font-red bold uppercase">Transactions</span>
+                </div>
+                <div class="actions">
+                    <div class="btn-group">
+                        <a class="btn btn-sm blue btn-outline" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> View All
+                        </a>
+                    </div>
+                </div>                    
+            </div>
+            <div class="portlet-body">
+                <ul class="feeds list-items scrollable">
+                    <li ng-repeat="t in latest_txs track by $index">
+                        <div class="col1">
+                            <div class="cont">
+                                <div class="cont-col2 home-tx">
+                                    TX <a href="/tx/{{t.hash}}">{{t.hash}}</a><br> 
+                                    <small>From <a href="/addr/{{t.from}}">{{t.from}}</a></small>
+                                    <small >To <a href="/addr/{{t.to}}">{{t.to}}</a></small><br>
+                                    <small>{{t.value}} Ether</small>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col2">
-                                <div class="date"> {{t.timestamp | date: 'hh:mm:ss'}} </div>
-                            </div>
-                        </li>
-                    </ul>
+                        </div>
+                        <div class="col2">
+                            <div class="date"> {{t.timestamp | date: 'hh:mm:ss'}} </div>
+                        </div>
+                    </li>
+                </ul>
 
-                </div>
             </div>
-            <!-- END PORTLET-->
         </div>
+        <!-- END PORTLET-->
     </div>
+</div>
 

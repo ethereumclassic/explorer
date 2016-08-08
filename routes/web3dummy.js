@@ -4,6 +4,7 @@
     Stand-in for local testing of web3 calls
 */
 var BigNumber = require('bignumber.js');
+var etherUnits = require("etherUnits.js")
 
 exports.data = function(req, res){
   console.log(req.body)
@@ -17,6 +18,7 @@ exports.data = function(req, res){
 
     if (options.indexOf("balance") > -1) {
       addrData["balance"] = new BigNumber(75380000001024);
+      addrData["balance"] = etherUnits.toEther(addrData["balance"], 'wei');
     }
     if (options.indexOf("count") > -1) {
       addrData["count"] = 139;
@@ -42,7 +44,7 @@ exports.data = function(req, res){
       nonce: 3042,
       to: "0x7172e090ef7aad8fb5b58052040587aaf248d7be",
       transactionIndex: 5,
-      value: 400000000000000000000
+      value: etherUnits.toEther( new BigNumber("400000000000000000000"), "wei")
     }
 
     res.write(JSON.stringify(tx));

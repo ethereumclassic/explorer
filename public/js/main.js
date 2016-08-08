@@ -54,16 +54,21 @@ BlocksApp.controller('HeaderController', ['$scope', '$location', function($scope
         Layout.initHeader(); // init header
     });
 
-    $scope.searchQuery = function(search) {
-        console.log(search);
+    $scope.form = {};
+    $scope.searchQuery = function(s) {
+        var search = s.toLowerCase();
+
+        $scope.form.searchInput="";
+        $scope.form.searchForm.$setPristine();
+        $scope.form.searchForm.$setUntouched();
         if (isAddress(search)) 
             $location.path("/addr/" + search);
-        else if (!isNaN(search))
-            $location.path("/block/" + search);
         else if (isTransaction(search))
             $location.path("/tx/" + search);
-        else
-            console.log("bad search query: " + search)
+        else if (!isNaN(search))
+            $location.path("/block/" + search);
+        else 
+            $scope.form.searchInput = search;
 
     }
 }]);
@@ -178,6 +183,27 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         files: [
                              '/js/controllers/ContractController.js',
                              '/js/custom.js'
+                         ]
+                     });
+                }]
+            }
+        })
+        .state('stats', {
+            url: "/stats/{chart}",
+            templateUrl: "views/stats/index.html",
+            data: {pageTitle: 'Transaction'},
+            controller: "StatsController",
+
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                             '/js/controllers/StatsController.js',
+                             '/css/stats.css',
+                             "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.10/d3.js",
+                             //"https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.css",
+                             //"https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.js",
+                             //"http://nvd3.org/assets/js/data/stream_layers.js",
+                             "/plugins/async.min.js",
+                             '/js/stats/bundle_hashrate.js'
                         ]
                     });
                 }]
