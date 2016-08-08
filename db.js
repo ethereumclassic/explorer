@@ -36,7 +36,7 @@ var Block = new Schema(
         }
     ],
     "uncles": [String]
-});
+}, {collection: "Block"});
 
 var Contract = new Schema(
 {
@@ -48,11 +48,12 @@ var Contract = new Schema(
     "sourceCode": String,
     "abi": String,
     "byteCode": String
-});
+}, {collection: "Contract"});
 
-var blockDB = mongoose.model('Block', Block);
-var contractDB = mongoose.model('Contract', Contract);
+mongoose.model('Block', Block);
+mongoose.model('Contract', Contract);
 module.exports.Block = mongoose.model('Block');
 module.exports.Contract = mongoose.model('Contract');
 
 mongoose.connect( 'mongodb://localhost/blockDB' );
+mongoose.set('debug', true);
