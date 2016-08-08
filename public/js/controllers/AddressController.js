@@ -75,7 +75,6 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     templateUrl: '/views/contract-source.html',
     scope: false,
     link: function(scope, elem, attrs){
-        console.log(scope.addrHash)
         //fetch contract stuff
         $http({
           method: 'POST',

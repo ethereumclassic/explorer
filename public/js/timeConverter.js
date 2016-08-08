@@ -1,7 +1,8 @@
 /*
   Convert milliseconds to something that doesn't suck
 */
-var getDuration = function(millis){
+var getDuration = function(timestamp){
+    var millis = Date.now() - timestamp*1000;
     var dur = [];
     var units = [
         {label:"millis",    mod:1000},
