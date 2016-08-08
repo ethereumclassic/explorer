@@ -53,4 +53,18 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
       }
     }
 
+    $scope.resetCode = function() {
+      $scope.form.contract.$setPristine();
+      $scope.form.contract.$setUntouched();
+      $scope.contract = {"address": $stateParams.addr} 
+      $scope.errors = {};
+    }
+    $scope.startOver = function() {
+      $scope.contract.compiled = false;
+      $scope.form.contract.$setPristine();
+      $scope.form.contract.$setUntouched();
+      $scope.contract = {"address": $stateParams.addr} 
+      $scope.errors = {};
+    }
+
 })
