@@ -1,7 +1,7 @@
 var solc = require('solc');
 
 // var eth = require('./web3dummy').eth;
-var web3relay = require('./web3relay').eth;
+var eth = require('./web3relay').eth;
 
 var Contract = require('./contracts');
 
@@ -32,6 +32,8 @@ var compileSolc = function(req, res) {
   var optimise = (optimization) ? 1 : 0;
 
   var bytecode = eth.getCode(address);
+  if (bytecode.substring(0,2)=="0x")
+    bytecode = bytecode.substring(2);
 
   var data = {
     "address": address,
@@ -50,8 +52,7 @@ var compileSolc = function(req, res) {
     } else {
 
       // TODO (Elaine): install versions locally
-      solc.loadRemoteVersion(version, function(err, solcV) {
-          
+      solc.loadRemoteVersion(version, function(err, solcV) {          
         var output = solcV.compile(input, optimise); 
         testValidCode(output, data, bytecode, res);
       });
@@ -68,7 +69,7 @@ var testValidCode = function(output, data, bytecode, response) {
   for (var contractName in output.contracts) {
     // code and ABI that are needed by web3
     console.log(contractName + ': ' + output.contracts[contractName].bytecode);
-    console.log(contractName + ': ' + JSON.parse(output.contracts[contractName].interface));
+    console.log("compare: " + bytecode);
     verifiedContracts.push({"name": contractName, 
                             "abi": output.contracts[contractName].interface,
                             "bytecode": output.contracts[contractName].bytecode});
@@ -77,7 +78,7 @@ var testValidCode = function(output, data, bytecode, response) {
   // compare to bytecode at address
   if (!output.contracts || !output.contracts[data.contractName])
     data.valid = false;
-  else if (output.contracts[data.contractName].bytecode == bytecode){
+  else if (output.contracts[data.contractName].bytecode.indexOf(bytecode) > -1){
     data.valid = true;
     //write to db
     data.abi = output.contracts[data.contractName].interface;
