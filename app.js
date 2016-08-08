@@ -48,11 +48,8 @@ app.post('/tx', routes.tx);
 app.post('/block', routes.block);
 app.post('/data', routes.data);
 app.post('/web3relay', web3relay.data);
-app.post('/compile', compile.compileSolc);
+app.post('/compile', compile.compiler);
 
-app.get('/test', function(req, res) {
-  res.render('test');
-});
 
 // let angular catch them
 app.use(function(req, res) {
