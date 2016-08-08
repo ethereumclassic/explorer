@@ -1,24 +1,44 @@
 <div class="col-md-12">
-  <div class="row" style="margin-bottom:20px;" ng-show="!contract.isVerified">
+  <div class="row" style="margin-bottom:20px;" ng-show="!contract.valid">
     <span class="eth-stat" >
     <i style="color: red" class="fa fa-wheelchair"></i> Contract Source Code Unverified
     </span><br>
     <span class="eth-stat-text"><a href="/contract/{{addrHash}}">Verify And Publish Source Code.</a></span>
   </div>
 
-  <div class="row" ng-show="contract.isVerified">
+  <div class="row" ng-show="contract.valid">
     <p class="eth-stat">
     <i style="color: green" class="fa fa-check-circle-o"></i> Contract Source Code Verified
     </p>
+  </div>
+  <div class="row" ng-show="contract.valid">
+    <div class="col-md-6 center">
+      <div class="eth-stat">
+          <div class="margin-top-20">
+          <span class="eth-stat-text">Contract Name: </span>
+          <span ng-model="contract.contractName">{{contract.contractName}}</span>
+          </div>
+          <div class="margin-top-20">
+          <span class="eth-stat-text">Compiler Version: </span>
+          <span ng-model="contract.compilerVersion">{{contract.compilerVersion}}</span>
+          </div>
+          <div class="margin-top-20">
+          <span class="eth-stat-text">Optimization Enabled: </span>
+          <span ng-model="contract.optimization">{{contract.optimization}}</span>
+          </div>
+      </div>
+    </div>
+  </div><!--end row-->
+  <div class="row" ng-show="contract.valid">
     Contract Source Code <i class="fa fa-code"></i>
-    <pre class="code-js"></pre>
+    <pre class="code-js" ng-model="contract.sourceCode">{{contract.sourceCode}}</pre>
     <br>
     Contract ABI <i class="fa fa-cogs"></i>
-    <pre class="code-js"></pre><br>
+    <pre class="code-js" ng-model="contract.abi">{{contract.abi}}</pre><br>
   </div>
 
-  <div class="row">
+  <div class="row" ng-show="contract.valid">
     Contract Bytecode <i class="fa fa-building-o"></i>
-    <pre class="code-bytecode" ng-class="{verified: contract.isVerified}">{{addr.bytecode}}</pre>
+    <pre class="code-bytecode" ng-class="{verified: contract.valid}">{{addr.bytecode}}</pre>
   </div>
 </div>

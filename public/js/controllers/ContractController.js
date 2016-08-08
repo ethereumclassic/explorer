@@ -30,11 +30,14 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
         $scope.errors.code = "Invalid Contract Code"
 
       if (Object.keys($scope.errors) < 1) {
+        var contractReq = $scope.contract;
+        contractReq.action = "compile";
+
         // send to web3 for validation
         $http({
           method: 'POST',
           url: '/compile',
-          data: $scope.contract
+          data: contractReq
         }).success(function(data) {
           console.log(data);
           $scope.contract = data;
