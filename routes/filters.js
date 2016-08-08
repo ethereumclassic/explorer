@@ -10,7 +10,7 @@ function filterTX(txs, value) {
     });
     return cleanTX.map(function(tx) { 
       var ttx = tx;
-      ttx.value = etherUnits.toEther(new BigNumber(tx.value), 'wei');
+      ttx.value = tx.value;
       ttx.timestamp = block.timestamp; 
       return ttx;
     });
