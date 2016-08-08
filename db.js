@@ -36,7 +36,7 @@ var Block = new Schema(
         }
     ],
     "uncles": [String]
-}, {collection: "Block"});
+});
 
 var Contract = new Schema(
 {
