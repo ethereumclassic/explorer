@@ -55,7 +55,9 @@ BlocksApp.controller('HeaderController', ['$scope', '$location', function($scope
     });
 
     $scope.form = {};
-    $scope.searchQuery = function(search) {
+    $scope.searchQuery = function(s) {
+        var search = s.toLowerCase();
+        
         $scope.form.searchInput="";
         $scope.form.searchForm.$setPristine();
         $scope.form.searchForm.$setUntouched();
