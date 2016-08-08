@@ -7,7 +7,7 @@ var getDuration = function(timestamp){
     var units = [
         {label:"millis",    mod:1000},
         {label:"seconds",   mod:60},
-        {label:"minutes",   mod:60},
+        {label:"mins",   mod:60},
         {label:"hours",     mod:24},
         {label:"days",      mod:31}
     ];
