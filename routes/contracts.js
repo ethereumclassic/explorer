@@ -20,8 +20,6 @@ exports.addContract = function(contract) {
 exports.findContract = function(address, res) {
   var contractFind = Contract.findOne({ address : address}).lean(true);
   contractFind.exec(function(err, doc) {
-    console.log(err);
-    console.log(doc)
     if (err) {
       console.error("ContractFind error: " + err);
       console.error("bad address: " + address);
