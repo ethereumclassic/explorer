@@ -127,7 +127,8 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                             '/plugins/datatables/datatables.min.css',
                             '/plugins/datatables/datatables.bootstrap.css',
                             '/plugins/datatables/datatables.all.min.js',
-                            '/plugins/datatables/datatable.min.js'
+                            '/plugins/datatables/datatable.min.js',
+                            '/js/timeConverter.js'
                         ]
                     });
                 }]
