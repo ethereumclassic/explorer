@@ -38,7 +38,7 @@
                         </thead>
                         <tbody><tr ng-repeat="t in latest_blocks track by $index">
                             <td><a href="/block/{{t.number}}">{{t.number}}</a></td>
-                            <td><a href="/addr/{{t.miner}}">{{t.miner}}</a></td>
+                            <td><a href="/addr/{{t.miner}}">{{t.extraData}}</a></td>
                             <td>{{t.transactions.length}}</td>
                         </tr>
                     </tbody></table>

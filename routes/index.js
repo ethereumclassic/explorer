@@ -47,7 +47,8 @@ exports.block = function(req, res) {
       console.error(req.body);
       res.write(JSON.stringify({"error": true}));
     } else {
-      res.write(JSON.stringify(doc));
+      var block = filters.filterBlocks([doc]);
+      res.write(JSON.stringify(block[0]));
     }
     res.end();
   });
@@ -102,7 +103,8 @@ exports.data = function(req, res){
 
 
 var getLatest = function(lim, res, callback) {
-  var blockFind = Block.find().lean(true).sort('-number').limit(lim);
+  var blockFind = Block.find({}, "number transactions timestamp miner extraData")
+                      .lean(true).sort('-number').limit(lim);
   blockFind.exec(function (err, docs) {
     callback(docs, res);
   });
@@ -110,7 +112,7 @@ var getLatest = function(lim, res, callback) {
 
 /* get blocks from db */
 var sendBlocks = function(data, res) {
-  res.write(JSON.stringify({"blocks": data}));
+  res.write(JSON.stringify({"blocks": filters.filterBlocks(data)}));
   res.end();
 }
 
