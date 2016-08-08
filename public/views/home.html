@@ -63,22 +63,20 @@
                 </div>                    
             </div>
             <div class="portlet-body">
-                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 338px;"><div class="scroller" style="height: 338px; overflow: hidden; width: auto;">
-                    <div class="general-item-list">
-                        <div class="item"  ng-repeat="t in latest_txs track by $index">
-                        <div class="item-head">
-                            <div class="truncate-txhash" style="float:left">
-                                TX <a href="/tx/{{t.hash}}" class="primary-link">{{t.hash}}</a>
-                            </div>
-                            <div class="item-date" style="float:right">{{t.timestamp | timeDuration }} ago</div>
+                <div class="general-item-list scrollable">
+                    <div class="item"  ng-repeat="t in latest_txs track by $index">
+                    <div class="item-head">
+                        <div class="truncate-txhash" style="float:left">
+                            TX <a href="/tx/{{t.hash}}" class="primary-link">{{t.hash}}</a>
                         </div>
-                        <div class="item-body"> 
-                          <small><span class="truncate-addrhash">From <a href="/addr/{{t.from}}">{{t.from}}</a></span> 
-                          <span class="truncate-addrhash">To <a href="/addr/{{t.to}}">{{t.to}}</a></span></small><br>
-                          <small>{{t.value}} Ether</small></div>
+                        <div class="item-date" style="float:right">{{t.timestamp | timeDuration }} ago</div>
+                    </div>
+                    <div class="item-body"> 
+                      <small><span class="truncate-addrhash">From <a href="/addr/{{t.from}}">{{t.from}}</a></span> 
+                      <span class="truncate-addrhash">To <a href="/addr/{{t.to}}">{{t.to}}</a></span></small><br>
+                      <small>{{t.value}} Ether</small></div>
                     </div>
                 </div>
-                </div></div>
 
             </div>
         </div>

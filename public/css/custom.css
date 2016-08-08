@@ -129,7 +129,7 @@ li.ng-scope {
     width: 0px;
 }
 ::-webkit-scrollbar-thumb {
-    background-color: #444d58;
+    background-color: rgba(68, 77, 88, 0.27);
     border-radius: 10px;
 }
 ::-webkit-scrollbar-track {
