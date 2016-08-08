@@ -44,6 +44,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           "infoFiltered": "(filtered from _MAX_ total txs)"
         },
         "columnDefs": [ 
+          { "targets": [ 5 ], "visible": false, "searchable": false },
           {"type": "date", "targets": 6},
           {"orderable": false, "targets": [0,2,3]},
           { "render": function(data, type, row) {
@@ -58,6 +59,9 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           { "render": function(data, type, row) {
                         return '<a href="/tx/'+data+'">'+data+'</a>'
                       }, "targets": [0]},
+          { "render": function(data, type, row) {
+                        return getDuration(data).toString();
+                      }, "targets": [6]},
           ]
       });
       $("#table_wait").remove();
