@@ -105,14 +105,14 @@
             <hr>
             <div class="row">
               <div class="col-sm-12 code well">
-                <b>Compiler Version:</b> {{contract.version}}<br>
+                <b>Compiler Version:</b> {{contract.compilerVersion}}<br>
                 <b>Optimization Enabled:</b> {{contract.optimization}}<br>
                 
                 <div ng-repeat="v in contract.verifiedContracts">
                   <br><b>ContractName:</b><br>
-                  <pre>{{v.contractName}}</pre>
+                  <pre>{{v.name}}</pre>
                   <b>ContractBytecode:</b><br>
-                  <pre>{{v.byteCode}}</pre>
+                  <pre>{{v.bytecode}}</pre>
                   <b>ContractABI:</b><br>
                   <pre class="code-js">{{v.abi}}</pre>
                   <hr>

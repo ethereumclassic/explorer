@@ -28,7 +28,8 @@ var compileSolc = function(req, res) {
   var version = req.body.version;
   var name = req.body.name;
   var input = req.body.code;
-  var optimise = (req.body.optimization) ? 1 : 0;
+  var optimization = (req.body.optimization) ? true : false;
+  var optimise = (optimization) ? 1 : 0;
 
   var bytecode = eth.getCode(address);
 
@@ -36,7 +37,7 @@ var compileSolc = function(req, res) {
     "address": address,
     "creationTransaction": "", // deal with this later
     "compilerVersion": version,
-    "optimization": req.body.optimization,
+    "optimization": optimization,
     "contractName": name,
     "sourceCode": input
   }
