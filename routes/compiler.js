@@ -1,7 +1,7 @@
 var solc = require('solc');
 
-var eth = require('./web3dummy').eth;
-//var web3relay = require('./web3relay').eth;
+// var eth = require('./web3dummy').eth;
+var web3relay = require('./web3relay').eth;
 
 var Contract = require('./contracts');
 
