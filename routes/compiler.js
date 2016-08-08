@@ -69,7 +69,6 @@ var testValidCode = function(output, data, bytecode, response) {
   for (var contractName in output.contracts) {
     // code and ABI that are needed by web3
     console.log(contractName + ': ' + output.contracts[contractName].bytecode);
-    console.log("compare: " + bytecode);
     verifiedContracts.push({"name": contractName, 
                             "abi": output.contracts[contractName].interface,
                             "bytecode": output.contracts[contractName].bytecode});
