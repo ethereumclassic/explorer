@@ -3,9 +3,10 @@ img.logo-default {
     max-height: 100px;
     height: 70px;
 }
-ul.scrollable {
+.scrollable {
     max-height: 400px;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 #table_txs td {
     font-size: 12px;
