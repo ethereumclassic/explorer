@@ -10,7 +10,6 @@ function filterTX(txs, value) {
     });
     return cleanTX.map(function(tx) { 
       var ttx = tx;
-      ttx.value = tx.value;
       ttx.timestamp = block.timestamp; 
       return ttx;
     });
@@ -20,8 +19,13 @@ function filterTX(txs, value) {
 
 function filterBlock(block, field, value) {
   var blockTX = txs.map(function(block) {
-    return block.transactions.filter(function(obj) {
+    var cleanTX = block.transactions.filter(function(obj) {
       return obj[field]==value;   
+    });
+    return cleanTX.map(function(tx) { 
+      var ttx = tx;
+      ttx.timestamp = block.timestamp; 
+      return ttx;
     });
   });
   return [].concat.apply([], blockTX);
@@ -41,6 +45,15 @@ function extractTX(blocks) {
   return [].concat.apply([], blockTX);
 }
 
+/* make blocks human readable */
+function filterBlocks(blocks) {
+  return blocks.map(function(block) {
+    var b = block;
+    b.extraData = hex2ascii(block.extraData);
+    return b;
+  })
+}
+
 /* stupid datatable format */
 function datatableTX(txs) {
   return txs.map(function(tx){
@@ -49,9 +62,18 @@ function datatableTX(txs) {
   })
 }
 
+var hex2ascii = function (hexIn) {
+    var hex = hexIn.toString();
+    var str = '';
+    for (var i = 0; i < hex.length; i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    return str;
+}
+
 module.exports = {
   extractTX: extractTX,
   filterBlock: filterBlock,
+  filterBlocks: filterBlocks,
   filterTX: filterTX,
   datatableTX: datatableTX
 }
