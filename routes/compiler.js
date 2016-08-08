@@ -3,12 +3,25 @@ var solc = require('solc');
 var eth = require('./web3dummy').eth;
 //var web3relay = require('./web3relay').eth;
 
+var Contract = require('./contracts');
+
 /* 
   TODO: support other languages
 */
-
-exports.compileSolc = function(req, res) {
+exports.compiler = function(req, res) {
   console.log(req.body);
+  if (!("action" in req.body))
+    res.status(400).send();
+  if (req.body.action=="compile") {
+    compileSolc(req, res);
+  } else if (req.body.action=="find") {
+    Contract.findContract(req.body.addr, res);
+  }
+
+}
+
+
+var compileSolc = function(req, res) {
 
   // get bytecode at address
   var address = req.body.address;
@@ -22,9 +35,10 @@ exports.compileSolc = function(req, res) {
   var data = {
     "address": address,
     "creationTransaction": "", // deal with this later
-    "version": version,
+    "compilerVersion": version,
     "optimization": req.body.optimization,
-    "name": name
+    "contractName": name,
+    "sourceCode": input
   }
 
   try {
@@ -60,11 +74,15 @@ var testValidCode = function(output, data, bytecode, response) {
   }
 
   // compare to bytecode at address
-  if (!output.contracts[data.name])
+  if (!output.contracts[data.contractName])
     data.valid = false;
-  else if (output.contracts[data.name].bytecode == bytecode)
+  else if (output.contracts[data.contractName].bytecode == bytecode){
     data.valid = true;
-  else
+    //write to db
+    data.abi = output.contracts[data.contractName].interface;
+    data.byteCode = bytecode;
+    Contract.addContract(data);
+  }  else
     data.valid = false;
 
   data["verifiedContracts"] = verifiedContracts;
