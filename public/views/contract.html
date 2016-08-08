@@ -74,7 +74,13 @@
               </div>
               </div>
               <div class="row">
-              <button type="button" class="btn btn-info" ng-click="submitCode()">Validate Code</button>
+              <button type="button" data-loading-text="Compiling..." class="btn btn-info" ng-click="submitCode()" data-style="expand-right" id="submitCodeBtn">Validate Code 
+                <span class="ladda-spinner"></span>
+                <span class="ladda-spinner"></span>
+                <div class="ladda-progress" style="width: 115px;"></div>
+              </button>
+
+
               <button type="button" class="btn grey-cascade" ng-click="resetCode()">Reset</button>
               </div></form>
               

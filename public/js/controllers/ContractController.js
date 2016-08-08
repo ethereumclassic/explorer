@@ -18,6 +18,9 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
     
     $scope.submitCode = function() {
       console.log($scope.contract)
+      $scope.errors = {};
+      $("#submitCodeBtn").button("loading");
+
       // validate
       
       if (!isAddress($scope.contract.address)) 
@@ -39,13 +42,15 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
           url: '/compile',
           data: contractReq
         }).success(function(data) {
+          $("#submitCodeBtn").button("reset");
           console.log(data);
           $scope.contract = data;
           $scope.contract.compiled = true;
         });
-      }
-      else
+      } else {
+        $("#submitCodeBtn").button("reset");
         return;
+      }
     }
 
 })
