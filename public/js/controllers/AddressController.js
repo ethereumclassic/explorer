@@ -16,8 +16,9 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     }).success(function(data) {
       console.log(data)
       $scope.addr = data;
-      if (data.isContract)
+      if (data.isContract) {
         $rootScope.$state.current.data["pageTitle"] = "Contract Address";
+      }
     });
 
     //fetch transactions
@@ -64,9 +65,22 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
 
 
 })
-.directive('contractSource', function() {
+.directive('contractSource', function($http) {
   return {
     restrict: 'E',
-    templateUrl: '/views/contract-source.html'
-  };
+    templateUrl: '/views/contract-source.html',
+    scope: false,
+    link: function(scope, elem, attrs){
+        console.log(scope.addrHash)
+        //fetch contract stuff
+        $http({
+          method: 'POST',
+          url: '/compile',
+          data: {"addr": scope.addrHash, "action": "find"}
+        }).success(function(data) {
+          console.log(data);
+          scope.contract = data;
+        });
+      }
+  }
 })
