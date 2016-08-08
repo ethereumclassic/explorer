@@ -6,24 +6,36 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
 
     var URL = '/data';
 
-    $http({
-      method: 'POST',
-      url: URL,
-      data: {"action": "latest_blocks"}
-    }).success(function(data) {
-      $scope.latest_blocks = data.blocks;
-    });
 
-    $http({
-      method: 'POST',
-      url: URL,
-      data: {"action": "latest_txs"}
-    }).success(function(data) {
-      $scope.latest_txs = data.txs;
-    });
+    $scope.reloadBlocks = function() {
+      $scope.blockLoading = true;
+      $http({
+        method: 'POST',
+        url: URL,
+        data: {"action": "latest_blocks"}
+      }).success(function(data) {
+        $scope.blockLoading = false;
+        $scope.latest_blocks = data.blocks;
+      });
+    }
+    
 
+    $scope.reloadTransactions = function() {
+      $scope.txLoading = true;
+      $http({
+        method: 'POST',
+        url: URL,
+        data: {"action": "latest_txs"}
+      }).success(function(data) {
+        $scope.latest_txs = data.txs;
+        $scope.txLoading = false;
+      });  
+    }
 
-
+    $scope.reloadBlocks();
+    $scope.reloadTransactions();
+    $scope.txLoading = false;
+    $scope.blockLoading = false;
 })
 
 angular.module('BlocksApp').filter('timeDuration', function() {
