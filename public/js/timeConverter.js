@@ -15,6 +15,8 @@ var getDuration = function(timestamp){
     units.forEach(function(u){
         var val = millis % u.mod;
         millis = (millis - val) / u.mod;
+        if (u.label == "millis")
+            return;
         if (val > 0)
             dur.push({"label": u.label, "val": val});
     });
