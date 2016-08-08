@@ -3,6 +3,15 @@ img.logo-default {
     max-height: 100px;
     height: 70px;
 }
+.truncate-txhash, .truncate-addrhash{
+    white-space:nowrap; 
+    overflow:hidden;
+    text-overflow: ellipsis;
+    max-width:220px;
+}
+.truncate-addrhash {
+    max-width:200px;   
+}
 .scrollable {
     max-height: 400px;
     overflow-y: scroll;
@@ -107,8 +116,8 @@ li.ng-scope {
     }
 }
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 4px;
+    height: 6px;
 }
 ::-webkit-scrollbar-button {
     height: 0px;
