@@ -26,9 +26,3 @@ angular.module('BlocksApp').controller('TxController', function($stateParams, $r
 
 
 })
-angular.module('BlocksApp')
-.filter('timeDuration', function() {
-  return function(timestamp) {
-    return getDuration(timestamp).toString();
-  };
-})

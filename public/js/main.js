@@ -166,8 +166,7 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         name: 'BlocksApp',
                         insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
                         files: [
-                             '/js/controllers/TxController.js',
-                             '/js/timeConverter.js'
+                             '/js/controllers/TxController.js'
                         ]
                     });
                 }]
@@ -234,6 +233,12 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             }
         })
 }]);
+
+BlocksApp.filter('timeDuration', function() {
+  return function(timestamp) {
+    return getDuration(timestamp).toString();
+  };
+})
 
 /* Init global settings and run the app */
 BlocksApp.run(["$rootScope", "settings", "$state", function($rootScope, settings, $state) {

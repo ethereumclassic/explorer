@@ -64,11 +64,3 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
         }
   }
 })
-
-
-angular.module('BlocksApp')
-.filter('timeDuration', function() {
-  return function(timestamp) {
-    return getDuration(timestamp).toString();
-  };
-})
