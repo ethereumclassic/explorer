@@ -18,17 +18,13 @@ function filterTX(txs, value) {
 }
 
 function filterBlock(block, field, value) {
-  var blockTX = txs.map(function(block) {
-    var cleanTX = block.transactions.filter(function(obj) {
-      return obj[field]==value;   
-    });
-    return cleanTX.map(function(tx) { 
-      var ttx = tx;
-      ttx.timestamp = block.timestamp; 
-      return ttx;
-    });
+  var tx = block.transactions.filter(function(obj) {
+    return obj[field]==value;   
   });
-  return [].concat.apply([], blockTX);
+  tx = tx[0];
+  if (typeof tx !== "undefined")
+    tx.timestamp = block.timestamp; 
+  return tx;
 }
 
 /* extract transactions from blocks */
