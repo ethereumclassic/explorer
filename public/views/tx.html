@@ -10,7 +10,7 @@
                 <td><a href="/block/{{tx.blockNumber}}">{{tx.blockNumber}}</a></td>
           </tr>
           <tr ><td width="25%">Time</td>
-                <td></td>
+                <td>{{tx.datetime | date:'yyyy-MM-dd HH:mm:ss Z' }} ({{tx.timestamp | timeDuration}} ago)</td>
           </tr>
           <tr ><td width="25%">from</td>
                 <td><a href="/addr/{{tx.from}}">{{tx.from}}</a></td></tr>
@@ -23,7 +23,6 @@
           <tr ><td width="25%">Input Data</td><td><pre class="code">{{tx.input}}</pre></td></tr>
         </table>
     </div>
-    TODO (probably me): add timestamp
 
   </div>
 </div>
