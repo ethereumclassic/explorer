@@ -239,6 +239,11 @@ BlocksApp.filter('timeDuration', function() {
     return getDuration(timestamp).toString();
   };
 })
+.filter('totalDifficulty', function() {
+  return function(hashes) {
+    return getDifficulty(hashes);
+  };
+});   
 
 /* Init global settings and run the app */
 BlocksApp.run(["$rootScope", "settings", "$state", function($rootScope, settings, $state) {
