@@ -45,47 +45,65 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
     scope: true,
     link: function(scope, elem, attrs){
       scope.stats = {};
-      //fetch stats stuff 
+
       // TODO (Elaine): use our own API
-      var statsURL = "http://cors.io/?u=http://ec2-52-42-175-9.us-west-2.compute.amazonaws.com/api/eth.json";
-      $http.get(statsURL)
-       .then(function(res){
-          console.log(res.data)
+      var ethURL = "http://cors.io/?u=https://api.minergate.com/1.0/eth/status";
+      var etcURL = "http://cors.io/?u=https://api.minergate.com/1.0/etc/status";
+      var etcPriceURL = "https://coinmarketcap-nexuist.rhcloud.com/api/etc";
+      var ethPriceURL = "https://coinmarketcap-nexuist.rhcloud.com/api/eth"
+      scope.stats.ethDiff = 1;
+      scope.stats.ethHashrate = 1;
+      scope.stats.usdEth = 1;
 
-          scope.stats.usdEtc = res.data[0].substr(1,res.data[0].length);
-          scope.stats.usdEth = res.data[10].substr(1,res.data[0].length);
-          scope.stats.etcHashrate = res.data[9];
 
-          scope.stats.usdEtcEth = parseInt(100*parseFloat(scope.stats.usdEtc)/parseFloat(scope.stats.usdEth));
-          scope.stats.etcEthHash = parseInt(parseFloat(res.data[9])/(10*parseFloat(res.data[19])));
-          scope.stats.ethChange = parseFloat(res.data[13].substr(2, res.data[13].length))
-        });
-          //get eth stuff
-       var ethURL = "https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=latest&boolean=true&apikey=9MJJ3W4RR5XWSM2YDJ3VCI98QA8XVWCQWC"
+      
       $http.get(ethURL)
        .then(function(res){
-          try {
-            scope.stats.ethDiff = parseInt(res.data.result.totalDifficulty);
-            scope.stats.etcEthDiff = 100*parseInt(scope.stats.etcDiff/scope.stats.ethDiff);
-          } catch (e) {
-            console.error(e);
-            scope.stats.ethDiff = 1;
-          }
+          scope.stats.ethHashrate = parseInt(res.data.instantHashrate);
+          scope.stats.etcEthHash = parseInt(100*scope.stats.etcHashrate/scope.stats.ethHashrate);
 
+          scope.stats.ethDiff = parseInt(res.data.totalDifficulty);
+          scope.stats.etcEthDiff = parseInt(100*scope.stats.etcDiff/scope.stats.ethDiff);
         });
+      $http.get(etcURL)
+       .then(function(res){
+          scope.stats.etcHashrate = parseInt(res.data.instantHashrate);
+          scope.stats.etcEthHash = parseInt(100*scope.stats.etcHashrate/scope.stats.ethHashrate);
 
-        $http.get("/latestblock")
-         .then(function(res){
-          try {
-            scope.stats.etcDiff = parseInt(res.data.totalDifficulty);
-            scope.stats.etcEthDiff = 100*parseInt(scope.stats.etcDiff/scope.stats.ethDiff);
-          } catch (e) {
-            console.error(e);
-            scope.stats.etcDiff = 1;
-          }
-
-        });       
+          scope.stats.etcDiff = parseInt(res.data.totalDifficulty);
+          scope.stats.etcEthDiff = parseInt(100*scope.stats.etcDiff/scope.stats.ethDiff);
+        });
+      $http.get(etcPriceURL)
+       .then(function(res){
+          scope.stats.usdEtc = res.data.price["usd"].toFixed(2);
+          scope.stats.usdEtcEth = parseInt(100*scope.stats.usdEtc/scope.stats.usdEth);
+        });
+      $http.get(ethPriceURL)
+       .then(function(res){
+          scope.stats.usdEth = res.data.price["usd"].toFixed(2);
+          scope.stats.usdEtcEth = parseInt(100*scope.stats.usdEtc/scope.stats.usdEth);
+          scope.stats.ethChange = parseFloat(res.data.change);
+        });
 
       }
   }
-})
+});
+
+// Create the XHR object.
+function createCORSRequest(method, url) {
+  var xhr = new XMLHttpRequest();
+  if ("withCredentials" in xhr) {
+    // XHR for Chrome/Firefox/Opera/Safari.
+    xhr.open(method, url, true);
+  } else if (typeof XDomainRequest != "undefined") {
+    // XDomainRequest for IE.
+    xhr = new XDomainRequest();
+    xhr.open(method, url);
+  } else {
+    // CORS not supported.
+    xhr = null;
+  }
+  return xhr;
+}
+
+

@@ -31,7 +31,7 @@
             <div class="display">
                 <div class="number">
                     <h3 class="font-red-haze">
-                        <span data-counter="counterup" data-value="stats.etcHashrate">{{stats.etcHashrate}}</span>
+                        <span data-counter="counterup" data-value="stats.etcHashrate">{{stats.etcHashrate | totalDifficulty}}/s</span>
                     </h3>
                     <small>ETC Avg Hashrate</small>
                 </div>
@@ -39,7 +39,7 @@
             <div class="progress-info">
                 <div class="progress">
                     <span style="width: {{stats.etcEthHash}}%;" class="progress-bar progress-bar-success red-haze">
-                        <span class="sr-only">{{stats.etcEthHash}}% change</span>
+                        <span class="sr-only">{{stats.etcEthHash}}% </span>
                     </span>
                 </div>
                 <div class="status">
@@ -54,13 +54,10 @@
             <div class="display">
                 <div class="number">
                     <h3 class="font-blue-sharp">
-                        <span data-counter="counterup" data-value="{{stats.etcEthDiff}}">{{stats.etcEthDiff}}</span>
-                        <small class="font-blue-sharp">%</small>
+                        <span data-counter="counterup" data-value="{{stats.etcEthDiff}}">{{stats.etcDiff | teraHashes}}</span>
+                        <small class="font-blue-sharp">TH</small>
                     </h3>
                     <small>TOTAL DIFFICULTY</small>
-                </div>
-                <div class="icon">
-                    <i class="icon-puzzle"></i>
                 </div>
             </div>
             <div class="progress-info">
