@@ -3,12 +3,24 @@
   <div class="col-md-12 portlet light">
       <div class="portlet-body">
 
-        <table class="eth-stat col-md-6 table table-hover table-light">
-          <tr ng-repeat="(key, val) in block"><td width="25%">{{key}}</td><td>{{val}}</td></tr>
+        <table class="col-md-6 table table-hover table-light">
+          <tr ><td width="25%">height</td><td>{{block.number}}</td></tr>
+          <tr ><td width="25%">Time</td>
+                <td>{{block.datetime | date:'yyyy-MM-dd HH:mm:ss Z' }} ({{block.timestamp | timeDuration}} ago)</td>
+          </tr>
+          <tr ><td width="25%">Hash</td><td>{{block.hash}}</td></tr>
+          <tr ><td width="25%">parentHash</td><td><a href="/block/{{block.number - 1}}">{{block.parentHash}}</td></tr>
+          <tr ><td width="25%">sha3 Uncles</td><td>{{block.sha3Uncles}}</td></tr>
+          <tr ><td width="25%">Mined By</td><td><a href="/addr/{{block.miner}}">{{block.parentHash}}</td></tr>
+          <tr ><td width="25%">Difficulty</td><td>{{block.difficulty | totalDifficulty}}</td></tr>
+          <tr ><td width="25%">Total Difficulty</td><td>{{block.totalDifficulty | teraHashes | number}} TH</td></tr>
+          <tr ><td width="25%">Gas Limit</td><td>{{block.gasLimit | number}}</td></tr>
+          <tr ><td width="25%">Gas Used</td><td>{{block.gasUsed | number}}</td></tr>
+          <tr ><td width="25%">nonce</td><td>{{block.nonce}}</td></tr>
+          <tr ><td width="25%">Extra Data</td><td>{{block.extraData}}</td></tr>
         </table>
-        TODO (me): link to transactions, miner address. show extra data
     </div>
-
+    <!--TODO: calculate block reward -->
 
   </div>
 </div>
