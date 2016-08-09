@@ -62,7 +62,7 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
           scope.stats.ethHashrate = parseInt(res.data.instantHashrate);
           scope.stats.etcEthHash = parseInt(100*scope.stats.etcHashrate/scope.stats.ethHashrate);
 
-          scope.stats.ethDiff = parseInt(res.data.totalDifficulty);
+          scope.stats.ethDiff = res.data.difficulty.toFixed(2);
           scope.stats.etcEthDiff = parseInt(100*scope.stats.etcDiff/scope.stats.ethDiff);
         });
       $http.get(etcURL)
@@ -70,7 +70,7 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
           scope.stats.etcHashrate = parseInt(res.data.instantHashrate);
           scope.stats.etcEthHash = parseInt(100*scope.stats.etcHashrate/scope.stats.ethHashrate);
 
-          scope.stats.etcDiff = parseInt(res.data.totalDifficulty);
+          scope.stats.etcDiff = res.data.difficulty.toFixed(2);
           scope.stats.etcEthDiff = parseInt(100*scope.stats.etcDiff/scope.stats.ethDiff);
         });
       $http.get(etcPriceURL)

@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" style="margin-top:10px;margin-bottom:10px;">
     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
         <div class="dashboard-stat2 ">
             <div class="display">
@@ -54,10 +54,12 @@
             <div class="display">
                 <div class="number">
                     <h3 class="font-blue-sharp">
-                        <span data-counter="counterup" data-value="{{stats.etcEthDiff}}">{{stats.etcDiff | teraHashes}}</span>
-                        <small class="font-blue-sharp">TH</small>
+                        <span data-counter="counterup" data-value="{{stats.etcEthDiff}}">{{stats.etcDiff | totalDifficulty}}</span>
                     </h3>
-                    <small>TOTAL DIFFICULTY</small>
+                    <small>DIFFICULTY</small>
+                </div>
+                <div class="icon">
+                    <i class="icon-puzzle"></i>
                 </div>
             </div>
             <div class="progress-info">
@@ -67,7 +69,7 @@
                     </span>
                 </div>
                 <div class="status">
-                    <div class="status-title"> ETC/ETH total difficulty </div>
+                    <div class="status-title"> ETC/ETH difficulty </div>
                     <div class="status-number"> {{stats.etcEthDiff}}% </div>
                 </div>
             </div>
