@@ -1,10 +1,10 @@
+<summary-stats></summary-stats>
 <div class="row">
-    <div class="col-md-10 offset-md-1">
+    <div class="col-md-12 offset-md-1">
         <div class="note note-success">
-            <h4 class="block">Updates</h4>
-            <p> Now you can verify contract source code. </p>
+            <p> Now you can verify contract source code. We are in the process of adding charts and stuff.</p>
             <p>For more info about our progress check out
-                <a href="https://github.com/ethereumproject/explorer" target="_blank"> the official github respository </a>
+                <a href="https://github.com/ethereumproject/explorer" target="_blank"> the official github respository</a>. Better yet, help us improve this :)
             </p>
         </div>
     </div>
@@ -28,7 +28,7 @@
             </div>
             <div class="portlet-body">
                 <div class="todo-tasklist scrollable">
-                    <div ng-repeat="t in latest_blocks track by $index" class="todo-tasklist-item item-border-green row" ng-class="(t.extraData.indexOf('bw.com') > -1) ? 'item-border-red': '';(t.extraData.indexOf('Pool') > -1) ? 'item-border-blue': ''">
+                    <div ng-repeat="t in latest_blocks track by $index" class="todo-tasklist-item item-border-green row" ng-class="(t.extraData.indexOf('bw') > -1) ? 'item-border-red': '';(t.extraData.indexOf('Pool') > -1) ? 'item-border-blue': ''">
                         <!--TODO: color by known miners -->
                         <div class="col-sm-5">
                             <span class="todo-tasklist-item-title"><i class="fa fa-cube"></i> <a href="/block/{{t.number}}">{{t.number}}</a></span><br>
