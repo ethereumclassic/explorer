@@ -26,11 +26,10 @@ var getDifficulty = function(hashes) {
     unit = 'G';
   }
 
-  if(hashes >= Math.pow(1000, 4) && hashes < Math.pow(1000, 5)) {
+  if(hashes >= Math.pow(1000, 4) ) {
     result = hashes / Math.pow(1000, 4);
     unit = 'T';
   }
-  console.log(hashes)
   return result.toFixed(2) + ' ' + unit + 'H';
 }
 

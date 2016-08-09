@@ -107,8 +107,7 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         insertBefore: '#ng_load_plugins_before', 
                         files: [
                             '/js/controllers/HomeController.js',
-                            '/css/todo-2.min.css',
-                            '/js/filters.js'
+                            '/css/todo-2.min.css'
                         ]}]);
                 }]
             }
@@ -129,8 +128,7 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                             '/plugins/datatables/datatables.min.css',
                             '/plugins/datatables/datatables.bootstrap.css',
                             '/plugins/datatables/datatables.all.min.js',
-                            '/plugins/datatables/datatable.min.js',
-                            '/js/filters.js'
+                            '/plugins/datatables/datatable.min.js'
                         ]
                     });
                 }]
@@ -243,7 +241,13 @@ BlocksApp.filter('timeDuration', function() {
   return function(hashes) {
     return getDifficulty(hashes);
   };
-});   
+}) 
+.filter('teraHashes', function() {
+    return function(hashes) {
+        var result = hashes / Math.pow(1000, 4);
+        return parseInt(result);
+  }
+})
 
 /* Init global settings and run the app */
 BlocksApp.run(["$rootScope", "settings", "$state", function($rootScope, settings, $state) {
