@@ -19,8 +19,7 @@ angular.module('BlocksApp').controller('BlockController', function($stateParams,
       else {
         $scope.block = data;
         $scope.block.transactions = data.transactions.length;
-        delete $scope.block.logsBloom;
-        delete $scope.block._id;
+        $scope.block.datetime = new Date(data.timestamp*1000); 
       }
     });
 
