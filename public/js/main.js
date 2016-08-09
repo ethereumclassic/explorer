@@ -108,7 +108,7 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         files: [
                             '/js/controllers/HomeController.js',
                             '/css/todo-2.min.css',
-                            '/js/timeConverter.js'
+                            '/js/filters.js'
                         ]}]);
                 }]
             }
@@ -130,7 +130,7 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                             '/plugins/datatables/datatables.bootstrap.css',
                             '/plugins/datatables/datatables.all.min.js',
                             '/plugins/datatables/datatable.min.js',
-                            '/js/timeConverter.js'
+                            '/js/filters.js'
                         ]
                     });
                 }]
