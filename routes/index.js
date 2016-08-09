@@ -101,6 +101,18 @@ exports.data = function(req, res){
 
 };
 
+/* 
+  temporary blockstats here
+*/
+exports.latestBlock = function(req, res) {
+  var block = Block.findOne({}, "totalDifficulty")
+                      .lean(true).sort('-number');
+  block.exec(function (err, doc) {
+    res.write(JSON.stringify(doc));
+    res.end();
+  });
+} 
+
 
 var getLatest = function(lim, res, callback) {
   var blockFind = Block.find({}, "number transactions timestamp miner extraData")
