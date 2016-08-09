@@ -50,6 +50,9 @@ app.post('/data', routes.data);
 app.post('/web3relay', web3relay.data);
 app.post('/compile', compile.compiler);
 
+// TODO: build stats API. this is temporary
+app.get('/latestblock', routes.latestBlock);
+
 
 // let angular catch them
 app.use(function(req, res) {
