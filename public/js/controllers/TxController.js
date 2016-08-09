@@ -8,20 +8,27 @@ angular.module('BlocksApp').controller('TxController', function($stateParams, $r
     $scope.hash = $stateParams.hash;
     $scope.tx = {"hash": $scope.hash};
 
-    //fetch web3 stuff
+    //fetch from db
     $http({
       method: 'POST',
-      url: '/web3relay',
+      url: '/tx',
       data: {"tx": $scope.hash}
     }).success(function(data) {
       console.log(data)
       if (data.error)
         $location.path("/err404/transaction/" + $scope.hash);
-      else
+      else {
         $scope.tx = data;
+        if (data.timestamp)
+          $scope.tx.datetime = new Date(data.timestamp*1000); 
+      }
     });
 
 
-
-
+})
+angular.module('BlocksApp')
+.filter('timeDuration', function() {
+  return function(timestamp) {
+    return getDuration(timestamp).toString();
+  };
 })
