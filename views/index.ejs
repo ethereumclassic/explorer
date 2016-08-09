@@ -55,7 +55,7 @@
                     <!-- BEGIN CONTAINER -->
                     <div class="page-container">
                         <!-- BEGIN PAGE HEAD -->
-                        <div data-ng-include="'tpl/page-head.html'" data-ng-controller="PageHeadController" class="page-head"> </div>
+                        <div ng-show="!isHome" data-ng-include="'tpl/page-head.html'" data-ng-controller="PageHeadController" class="page-head"> </div>
                         <!-- END PAGE HEAD -->
                         <!-- BEGIN PAGE CONTENT -->
                         <div class="page-content">
