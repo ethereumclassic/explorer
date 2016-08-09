@@ -54,7 +54,8 @@
             <div class="display">
                 <div class="number">
                     <h3 class="font-blue-sharp">
-                        <span data-counter="counterup" data-value="{{stats.etcEthDiff}}">{{stats.etcDiff}}</span>
+                        <span data-counter="counterup" data-value="{{stats.etcEthDiff}}">{{stats.etcEthDiff}}</span>
+                        <small class="font-blue-sharp">%</small>
                     </h3>
                     <small>TOTAL DIFFICULTY</small>
                 </div>
@@ -64,7 +65,7 @@
             </div>
             <div class="progress-info">
                 <div class="progress">
-                    <span style="width: 45%;" class="progress-bar progress-bar-success blue-sharp">
+                    <span style="width: {{stats.etcEthDiff}}%;" class="progress-bar progress-bar-success blue-sharp">
                         <span class="sr-only">{{stats.etcEthDiff}}% etc/eth difficulty</span>
                     </span>
                 </div>
