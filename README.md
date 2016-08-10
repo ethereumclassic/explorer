@@ -1,5 +1,7 @@
 # ETCExplorer (In Progress) 
 
+Staging server: [unforked.info](http://unforked.info)
+
 CURRENT DEVELOPMENT STAGE STAGE: ALPHA 
 
 Follow the project progress at: [ETC Block Explorer Development](https://trello.com/b/W3ftl57z/etc-block-explorer-development) 
