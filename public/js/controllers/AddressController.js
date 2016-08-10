@@ -21,6 +21,16 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       }
     });
 
+    // fetch ethf balance 
+    $http({
+      method: 'POST',
+      url: '/fiat',
+      data: {"addr": $scope.addrHash}
+    }).success(function(data) {
+      console.log(data)
+      $scope.addr.ethfiat = data.balance;
+    });
+
     //fetch transactions
     $http({
       method: 'POST',
