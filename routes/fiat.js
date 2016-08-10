@@ -1,7 +1,7 @@
 var http = require('http');
 var etherUnits = require("etherUnits.js")
 
-exports.fiat = function(req, res) {
+module.exports = function(req, res) {
   var addr = req.body.addr;
   if (typeof addr !== "undefined")
     addr = addr.toLowerCase();

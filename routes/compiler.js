@@ -8,7 +8,7 @@ var Contract = require('./contracts');
 /* 
   TODO: support other languages
 */
-exports.compiler = function(req, res) {
+module.exports = function(req, res) {
   console.log(req.body);
   if (!("action" in req.body))
     res.status(400).send();
