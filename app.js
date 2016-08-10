@@ -29,6 +29,7 @@ else
   var web3relay = require('./routes/web3relay');
 
 var compile = require('./routes/compiler');
+var fiat = require('./routes/fiat');
 
 
 // client
@@ -48,6 +49,7 @@ app.post('/tx', routes.tx);
 app.post('/block', routes.block);
 app.post('/data', routes.data);
 app.post('/web3relay', web3relay.data);
+app.post('/fiat', fiat.fiat);
 app.post('/compile', compile.compiler);
 
 // TODO: build stats API. this is temporary
