@@ -16,7 +16,13 @@ Install dependencies:
 
 `npm install`
 
-### Populate the DB
+Install mongodb:
+
+MacOS: `brew install mongodb`
+
+Ubuntu: `sudo apt-get install -y mongodb-org`
+
+## Populate the DB
 
 This will fetch and parse the entire blockchain.
 
@@ -45,5 +51,6 @@ Basic settings:
 
 <b>Note 2: ```terminateAtExistingDB``` and ```listenOnly``` are mutually exclusive. Do not use ```terminateAtExistingDB``` when in ```listenOnly``` mode.</b>
 
-Run:
+### Run:
+
 `node ./tools/grabber.js`
