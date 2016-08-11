@@ -1,5 +1,5 @@
 var http = require('http');
-var etherUnits = require("etherUnits.js")
+var etherUnits = require(__lib + "etherUnits.js")
 
 module.exports = function(req, res) {
   var addr = req.body.addr;

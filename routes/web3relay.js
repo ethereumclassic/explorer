@@ -8,7 +8,7 @@ var Web3 = require("web3");
 var web3;
 
 var BigNumber = require('bignumber.js');
-var etherUnits = require("etherUnits.js")
+var etherUnits = require(__lib + "etherUnits.js")
 
 var extractTX = require('./filters').extractTX;
 var getLatestBlocks = require('./index').getLatestBlocks;
