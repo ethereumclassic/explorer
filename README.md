@@ -47,7 +47,7 @@ Basic settings:
 
 ```listenOnly``` When true, the grabber will create a filter to receive the latest blocks from geth as they arrive. It will <b>not</b> continue to populate older block numbers. 
 
-<b>Note: When ```listenOnly``` is set to ```true```, the ```blocks``` function is ignored. </b>
+<b>Note: When ```listenOnly``` is set to ```true```, the ```blocks``` option is ignored. </b>
 
 <b>Note 2: ```terminateAtExistingDB``` and ```listenOnly``` are mutually exclusive. Do not use ```terminateAtExistingDB``` when in ```listenOnly``` mode.</b>
 
