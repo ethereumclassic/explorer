@@ -1,16 +1,12 @@
 # ETCExplorer (In Progress) 
 
+Staging server: [unforked.info](http://unforked.info)
+
 CURRENT DEVELOPMENT STAGE STAGE: ALPHA 
 
 Follow the project progress at: [ETC Block Explorer Development](https://trello.com/b/W3ftl57z/etc-block-explorer-development) 
 
-##License
-
-The code in this branch is licensed under GPLv3 (see LICENSE file)
-
-Code in the MIT branch is under the MIT License (shocker, amirite)
-
-But seriously, license file has a TL;DR, at least look at that before using this code in a project
+## Local installation
 
 Clone the repo
 

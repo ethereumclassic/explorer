@@ -7,12 +7,16 @@
       <div class="portlet-body">
         <div class="row">
             <div class="col-md-6 center">
-              <div class="eth-stat">
+              <div >
                 <span class="eth-stat-title">
-                  {{ addr.balance }} </span><br>
+                  {{ addr.balance | number: 10 }} </span><br>
                 <span class="eth-stat-text">
                   ETC Balance
                   </span><br> 
+                  <div class="margin-top-20">
+                  <span class="fade">{{ addr.ethfiat | number: 10 }}</span> <span class="eth-stat-text fade">ETH-F balance
+                  </span> <a href="http://etherscan.io/address/{{addrHash}}" target="_blank"><i class="fa fa-external-link"></i></a>
+                  </div>
                   <div class="margin-top-20">
                   0 <span class="eth-stat-text">Mined</span>
                   </div>
@@ -25,7 +29,6 @@
             <div class="col-md-6 center">
                 <div class="portlet">
                   <div class="portlet-body">
-                    <div class="eth-stat">
 
                     <span class='btn blue-madison' ng-show="!isFollowing(addrHash)" ng-click="follow(addrHash)">WATCH <i class="fa fa-rss "></i></span>
                     <span class='btn grey'  ng-show="isFollowing(addrHash)" ng-click="unFollow(addrHash)">WATCHING <i class="fa fa-check "></i></span>
@@ -33,7 +36,6 @@
                         {{ addr.follow_count }}0 
                         <span class="eth-stat-text">WATCHING</span>
                     </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -65,12 +67,12 @@
                   <thead>
                       <tr role="row" class="heading">
                           <th width="15%"> TxHash </th>
-                          <th width="7%"> Block </th>
+                          <th width="8%"> Block </th>
                           <th width="15%"> From </th>
                           <th width="15%"> To </th>
                           <th width="10%"> ETC </th>
-                          <th width="5%"> gas </th>
-                          <th width="8%"> Time </th>
+                          <th width="0%"> gas </th>
+                          <th width="12%"> Age </th>
                       </tr>
                   </thead>
                   <tbody></tbody>

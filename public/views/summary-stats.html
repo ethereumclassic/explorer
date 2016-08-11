@@ -1,0 +1,105 @@
+<div class="row" style="margin-top:10px;margin-bottom:10px;">
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="dashboard-stat2 ">
+            <div class="display">
+                <div class="number">
+                    <h3 class="font-green-sharp">
+                        <small class="font-green-sharp">$</small>
+                        <span data-counter="counterup" data-value="stats.usdEtc">{{stats.usdEtc}}</span>
+                    </h3>
+                    <small>ETC Price</small>
+                </div>
+                <div class="icon">
+                    <i class="icon-fire"></i>
+                </div>
+            </div>
+            <div class="progress-info">
+                <div class="progress">
+                    <span style="width: {{stats.usdEtcEth}}%;" class="progress-bar progress-bar-success green-sharp">
+                        <span class="sr-only">{{stats.usdEtcEth}}% ETC/ETH USD price</span>
+                    </span>
+                </div>
+                <div class="status">
+                    <div class="status-title"> ETC/ETH USD Price </div>
+                    <div class="status-number"> {{stats.usdEtcEth}}% </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="dashboard-stat2 ">
+            <div class="display">
+                <div class="number">
+                    <h3 class="font-red-haze">
+                        <span data-counter="counterup" data-value="stats.etcHashrate">{{stats.etcHashrate | totalDifficulty}}/s</span>
+                    </h3>
+                    <small>ETC Avg Hashrate</small>
+                </div>
+            </div>
+            <div class="progress-info">
+                <div class="progress">
+                    <span style="width: {{stats.etcEthHash}}%;" class="progress-bar progress-bar-success red-haze">
+                        <span class="sr-only">{{stats.etcEthHash}}% </span>
+                    </span>
+                </div>
+                <div class="status">
+                    <div class="status-title"> ETC/ETH Hashrate </div>
+                    <div class="status-number"> {{stats.etcEthHash}}% </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="dashboard-stat2 ">
+            <div class="display">
+                <div class="number">
+                    <h3 class="font-blue-sharp">
+                        <span data-counter="counterup" data-value="{{stats.etcEthDiff}}">{{stats.etcDiff | totalDifficulty}}</span>
+                    </h3>
+                    <small>DIFFICULTY</small>
+                </div>
+                <div class="icon">
+                    <i class="icon-puzzle"></i>
+                </div>
+            </div>
+            <div class="progress-info">
+                <div class="progress">
+                    <span style="width: {{stats.etcEthDiff}}%;" class="progress-bar progress-bar-success blue-sharp">
+                        <span class="sr-only">{{stats.etcEthDiff}}% etc/eth difficulty</span>
+                    </span>
+                </div>
+                <div class="status">
+                    <div class="status-title"> ETC/ETH difficulty </div>
+                    <div class="status-number"> {{stats.etcEthDiff}}% </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="dashboard-stat2 ">
+            <div class="display">
+                <div class="number">
+                    <h3 class="font-purple-soft">
+                        <small class="font-purple-soft">$</small>
+                        <span data-counter="counterup" data-value="{{stats.usdEth}}">{{stats.usdEth}}</span>
+                    </h3>
+                    <small>ETH PRICE</small>
+                </div>
+                <div class="icon">
+                    <i class="icon-trash"></i>
+                </div>
+            </div>
+            <div class="progress-info">
+                <div class="progress">
+                    <span style="width: {{stats.ethChange}}%;" class="progress-bar progress-bar-success purple-soft">
+                        <span class="sr-only">{{stats.ethChange}}% change</span>
+                    </span>
+                </div>
+                <div class="status">
+                    <div class="status-title"> change </div>
+                    <div class="status-number"> {{stats.ethChange}}% </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

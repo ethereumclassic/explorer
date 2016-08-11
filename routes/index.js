@@ -5,7 +5,34 @@ var filters = require('./filters')
 //var Memcached = require('memcached');
 //var memcached = new Memcached("localhost:11211");
 
-exports.addr = function(req, res){
+module.exports = function(app){
+  if (app.get('env') === 'development') 
+    var web3relay = require('./web3dummy');
+  else
+    var web3relay = require('./web3relay');
+
+
+  var compile = require('./compiler');
+  var fiat = require('./fiat');
+
+  /* 
+    Local DB: data request format
+    { "address": "0x1234blah", "txin": true } 
+    { "tx": "0x1234blah" }
+    { "block": "1234" }
+  */
+  app.post('/addr', getAddr);
+  app.post('/tx', getTx);
+  app.post('/block', getBlock);
+  app.post('/data', getData);
+
+  app.post('/web3relay', web3relay.data);
+  app.post('/fiat', fiat);
+  app.post('/compile', compile);
+
+}
+
+var getAddr = function(req, res){
   // TODO: validate addr and tx
   var addr = req.body.addr.toLowerCase();
 
@@ -34,7 +61,7 @@ exports.addr = function(req, res){
  
 
 
-exports.block = function(req, res) {
+var getBlock = function(req, res) {
 
   // TODO: support queries for block hash
   var txQuery = "number";
@@ -47,14 +74,15 @@ exports.block = function(req, res) {
       console.error(req.body);
       res.write(JSON.stringify({"error": true}));
     } else {
-      res.write(JSON.stringify(doc));
+      var block = filters.filterBlocks([doc]);
+      res.write(JSON.stringify(block[0]));
     }
     res.end();
   });
 
 };
 
-exports.tx = function(req, res){
+var getTx = function(req, res){
 
   var tx = req.body.tx.toLowerCase();
 
@@ -78,7 +106,7 @@ exports.tx = function(req, res){
 /*
   Fetch data from DB
 */
-exports.data = function(req, res){
+var getData = function(req, res){
 
   // TODO: error handling for invalid calls
   var action = req.body.action.toLowerCase();
@@ -100,9 +128,22 @@ exports.data = function(req, res){
 
 };
 
+/* 
+  temporary blockstats here
+*/
+var latestBlock = function(req, res) {
+  var block = Block.findOne({}, "totalDifficulty")
+                      .lean(true).sort('-number');
+  block.exec(function (err, doc) {
+    res.write(JSON.stringify(doc));
+    res.end();
+  });
+} 
+
 
 var getLatest = function(lim, res, callback) {
-  var blockFind = Block.find().lean(true).sort('-number').limit(lim);
+  var blockFind = Block.find({}, "number transactions timestamp miner extraData")
+                      .lean(true).sort('-number').limit(lim);
   blockFind.exec(function (err, docs) {
     callback(docs, res);
   });
@@ -110,7 +151,7 @@ var getLatest = function(lim, res, callback) {
 
 /* get blocks from db */
 var sendBlocks = function(data, res) {
-  res.write(JSON.stringify({"blocks": data}));
+  res.write(JSON.stringify({"blocks": filters.filterBlocks(data)}));
   res.end();
 }
 

@@ -12,11 +12,23 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     $http({
       method: 'POST',
       url: '/web3relay',
+      data: {"addr": $scope.addrHash, "options": ["balance", "count", "bytecode"]}
+    }).success(function(data) {
+      console.log(data)
+      $scope.addr = data;
+      if (data.isContract) {
+        $rootScope.$state.current.data["pageTitle"] = "Contract Address";
+      }
+    });
+
+    // fetch ethf balance 
+    $http({
+      method: 'POST',
+      url: '/fiat',
       data: {"addr": $scope.addrHash}
     }).success(function(data) {
-      $scope.addr = data;
-      if (data.isContract)
-        $rootScope.$state.current.data["pageTitle"] = "Contract Address";
+      console.log(data)
+      $scope.addr.ethfiat = data.balance;
     });
 
     //fetch transactions
@@ -42,6 +54,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           "infoFiltered": "(filtered from _MAX_ total txs)"
         },
         "columnDefs": [ 
+          { "targets": [ 5 ], "visible": false, "searchable": false },
           {"type": "date", "targets": 6},
           {"orderable": false, "targets": [0,2,3]},
           { "render": function(data, type, row) {
@@ -56,6 +69,9 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           { "render": function(data, type, row) {
                         return '<a href="/tx/'+data+'">'+data+'</a>'
                       }, "targets": [0]},
+          { "render": function(data, type, row) {
+                        return getDuration(data).toString();
+                      }, "targets": [6]},
           ]
       });
       $("#table_wait").remove();
@@ -63,9 +79,21 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
 
 
 })
-.directive('contractSource', function() {
+.directive('contractSource', function($http) {
   return {
     restrict: 'E',
-    templateUrl: '/views/contract-source.html'
-  };
+    templateUrl: '/views/contract-source.html',
+    scope: false,
+    link: function(scope, elem, attrs){
+        //fetch contract stuff
+        $http({
+          method: 'POST',
+          url: '/compile',
+          data: {"addr": scope.addrHash, "action": "find"}
+        }).success(function(data) {
+          console.log(data);
+          scope.contract = data;
+        });
+      }
+  }
 })

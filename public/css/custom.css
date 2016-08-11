@@ -1,11 +1,21 @@
 div.page-logo {overflow: visible;}
 img.logo-default {
-    max-height: 100px;
-    height: 70px;
+    max-height: 150px;
+    height: 100px;
 }
-ul.scrollable {
+.truncate-txhash, .truncate-addrhash{
+    white-space:nowrap; 
+    overflow:hidden;
+    text-overflow: ellipsis;
+    max-width:220px;
+}
+.truncate-addrhash {
+    max-width:200px;   
+}
+.scrollable {
     max-height: 400px;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 #table_txs td {
     font-size: 12px;
@@ -20,7 +30,6 @@ ul.scrollable {
     color: #7f90a4;
 }
 .eth-stat-title {
-    color: #7f90a4;
     font-size: 25px;
     text-align: center;
 }
@@ -30,6 +39,7 @@ ul.scrollable {
     font-weight: 800;
     text-align: center;
 }
+.fade {opacity: 0.6}
 .portlet {
     margin-top: 0;
     margin-bottom: 25px;
@@ -72,6 +82,10 @@ pre {
 pre.code-js, .verified{
     max-height: 200px; 
 }
+.code {
+    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+    font-size: 13px;
+}
 i.verified:before{
   content:"\f1ce"
 }
@@ -83,12 +97,6 @@ tr.ng-scope {
 }
 li.ng-scope {
     width: calc(100% - 16px);
-}
-.cont-col2.home-tx {
-    padding: 8px;
-}
-.cont {
-    width: calc(100% - 4px);
 }
 .table-scrollable {
     margin: 0 !important;
@@ -102,8 +110,8 @@ li.ng-scope {
     }
 }
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 4px;
+    height: 6px;
 }
 ::-webkit-scrollbar-button {
     height: 0px;
@@ -115,7 +123,7 @@ li.ng-scope {
     width: 0px;
 }
 ::-webkit-scrollbar-thumb {
-    background-color: #444d58;
+    background-color: rgba(68, 77, 88, 0.27);
     border-radius: 10px;
 }
 ::-webkit-scrollbar-track {

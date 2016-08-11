@@ -35,7 +35,7 @@
         <!-- END THEME STYLES -->
     <!-- END HEAD -->
     <!-- BEGIN BODY -->
-    <body ng-controller="MainController" class="page-header-fixed page-sidebar-fixed page-sidebar-closed-hide-logo page-on-load page-sidebar-closed page-quick-sidebar-open" ng-class="{'page-content-white': settings.layout.pageContentWhite,'page-container-bg-solid': settings.layout.pageBodySolid, 'page-sidebar-closed': settings.layout.pageSidebarClosed}">
+    <body ng-controller="MainController" class="page-header-fixed page-on-load" ng-class="{'page-content-white': settings.layout.pageContentWhite,'page-container-bg-solid': settings.layout.pageBodySolid}">
         <!-- BEGIN PAGE SPINNER -->
         <div ng-spinner-bar class="page-spinner-bar">
             <img src="/img/loading.gif">
@@ -55,7 +55,7 @@
                     <!-- BEGIN CONTAINER -->
                     <div class="page-container">
                         <!-- BEGIN PAGE HEAD -->
-                        <div data-ng-include="'tpl/page-head.html'" data-ng-controller="PageHeadController" class="page-head"> </div>
+                        <div ng-show="!isHome" data-ng-include="'tpl/page-head.html'" data-ng-controller="PageHeadController" class="page-head"> </div>
                         <!-- END PAGE HEAD -->
                         <!-- BEGIN PAGE CONTENT -->
                         <div class="page-content">
@@ -101,6 +101,7 @@
         <script src="/js/app.min.js" type="text/javascript"></script>
         <script src="/js/web3utils.js" type="text/javascript"></script>
         <script src="/js/main.js" type="text/javascript"></script>
+        <script src="/js/filters.js" type="text/javascript"></script>
 
         <script src="/js/directives.js" type="text/javascript"></script>
         <!-- END APP LEVEL ANGULARJS SCRIPTS -->

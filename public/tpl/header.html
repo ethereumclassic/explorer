@@ -9,12 +9,12 @@
     </div>
     <!-- END LOGO -->
             <!-- BEGIN RESPONSIVE MENU TOGGLER -->
-        <a href="javascript:;" class="menu-toggler btn btn-sm blue btn-outline">MENU</a>
+        <a href="javascript:;" class="menu-toggler btn btn-sm green-haze btn-outline">MENU</a>
         <!-- END RESPONSIVE MENU TOGGLER -->
         <!-- BEGIN TOP NAVIGATION MENU -->
         <div class="top-menu">
             <ul class="nav navbar-nav pull-right">
-                <li class="dropdown dropdown-user dropdown-dark">
+                <li class="dropdown">
                     <form name="form.searchForm" class="search-form">
                         <div class="input-group">
                             <input type="text" name="explorerSearch" class="form-control" placeholder="Search by Address / Txhash / BlockNum" ng-model="form.searchInput" ng-keyup="$event.keyCode == 13 ? searchQuery(form.searchInput) : null">
@@ -39,9 +39,7 @@
     <div class="container">
 
         <!-- BEGIN MEGA MENU -->
-        <!-- DOC: Apply "hor-menu-light" class after the "hor-menu" class below to have a horizontal menu with white background -->
-        <!-- DOC: Remove dropdown-menu-hover and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
-        <div class="hor-menu">
+        <div class="hor-menu hor-menu-light">
             <ul class="nav navbar-nav">
                 <li class="active">
                     <a href="/">Home</a>
