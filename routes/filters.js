@@ -1,4 +1,5 @@
-var etherUnits = require("etherUnits.js")
+'use strict';
+var etherUnits = require(__lib + "etherUnits.js")
 var BigNumber = require('bignumber.js');
 /*
   Filter an array of TX 
