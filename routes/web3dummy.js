@@ -4,7 +4,7 @@
     Stand-in for local testing of web3 calls
 */
 var BigNumber = require('bignumber.js');
-var etherUnits = require("etherUnits.js")
+var etherUnits = require(__lib + "etherUnits.js")
 
 exports.data = function(req, res){
   console.log(req.body)
