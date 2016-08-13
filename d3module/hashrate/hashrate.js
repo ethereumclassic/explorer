@@ -36,18 +36,32 @@ window.call_hashrate_chart = function(){
     function mySecondFunction(arg1, arg2, callback) {
         // arg1 now equals 'one' and arg2 now equals 'two'
 
-        var margin = {top: 30, right: 20, bottom: 35, left: 100},
-            width = 1000 - margin.left - margin.right,
+        var margin = {top: 30, right: 70, bottom: 35, left: 100},
+            // For Responsive web design, get window.innerWidth
+            width = window.innerWidth - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
 
         var x = d3.time.scale().range([0, width]);
         var y = d3.scale.linear().range([height, 0]);
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .tickFormat(d3.time.format("%x %H:%M"))
-            .ticks(5);
+        // For Responsive web design
+        //When window.innerWidth < 800 , Reduce the ticks to 2
+        if (window.innerWidth < 800){
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .tickFormat(d3.time.format("%x %H:%M"))
+                .ticks(2);
+        }
+        else{
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .tickFormat(d3.time.format("%x %H:%M"))
+                .ticks(5);
+        }
+
+
 
         var yAxis = d3.svg.axis()
             .scale(y)
@@ -55,6 +69,10 @@ window.call_hashrate_chart = function(){
             .tickFormat(d3.format("s"))
             .tickFormat(function(d){return d3.format("s")(d) +'H/s';})
             .ticks(5);
+
+
+
+
 
 
         var area = d3.svg.area()
@@ -143,18 +161,18 @@ window.call_hashrate_chart = function(){
                 (height+margin.bottom) + ")")
             .style("text-anchor", "middle")
             .text("Date");
-/*
+        /*
 
-        // Add the title
-        svg.append("text")
-            .attr("x", (width / 2))
-            .attr("y", 0 - (margin.top / 2))
-            .attr("text-anchor", "middle")
-            .style("font-size", "16px")
-            .style("text-decoration", "underline")
-            .text("ETC Hashrate");
+         // Add the title
+         svg.append("text")
+         .attr("x", (width / 2))
+         .attr("y", 0 - (margin.top / 2))
+         .attr("text-anchor", "middle")
+         .style("font-size", "16px")
+         .style("text-decoration", "underline")
+         .text("ETC Hashrate");
 
-            */
+         */
 
         callback(null, 'three');
     }
@@ -165,7 +183,7 @@ window.call_hashrate_chart = function(){
 
 
 
-    
+
 };
 
 
