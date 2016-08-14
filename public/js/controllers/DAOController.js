@@ -4,7 +4,7 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
         App.initAjax();
     });
 
-    $scope.dao = {"balance": 0, "extraBalance": 0};
+    $scope.dao = {"balance": 0, "extra_balance": 0};
 
     //fetch dao stuff
     $http({
@@ -16,5 +16,30 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
       $scope.dao = data;
     });
 
+    $scope.form = {};
+    $scope.errors = {};
+    $scope.showTokens = false;
+    $scope.getBalance = function(a) {
+        var addr = a.toLowerCase();
+
+        $scope.form.addrInput="";
+        $scope.errors = {};
+
+        $scope.form.tokens.$setPristine();
+        $scope.form.tokens.$setUntouched();
+        if (isAddress(addr)) {
+          $http({
+            method: 'POST',
+            url: '/daorelay',
+            data: {"action": "balanceOf", "addr": addr}
+          }).success(function(data) {
+            console.log(data)
+            $scope.showTokens = true;
+            $scope.dao.tokens = data.tokens;
+          });
+        } else 
+            $scope.errors.address = "Invalid Address";
+
+    }
 
 })
