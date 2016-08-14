@@ -178,7 +178,7 @@ var patchTimestamps = function(collection) {
       if(count == missingCount || count === 1000) {
         // Clean up queues
         console.log(count);
-        bulkOps.push(bulk);
+        // bulkOps.push(bulk);
         
         async.forEach(bulkOps, function(bulkOp, callback) {
           bulkTimeUpdate(bulkOp, callback);
@@ -194,6 +194,6 @@ var patchTimestamps = function(collection) {
 mongoose.connect( 'mongodb://localhost/blockDB' );
 mongoose.set('debug', true);
 
-// patchTimestamps(DAOCreatedToken.collection)
+patchTimestamps(DAOCreatedToken.collection)
 // populateCreatedTokens();
-populateTransferTokens();
+// populateTransferTokens();
