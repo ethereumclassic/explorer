@@ -5,6 +5,11 @@
 */
 
 var eth = require('./web3relay').eth;
+var db = require( '../tools/tokens/db-dao' );
+
+var mongoose = require( 'mongoose' );
+var DAOCreatedToken = mongoose.model('DAOCreatedToken');
+var DAOTransferToken = mongoose.model('DAOTransferToken');
 
 var BigNumber = require('bignumber.js');
 var etherUnits = require(__lib + "etherUnits.js")
@@ -19,7 +24,7 @@ module.exports = function(req, res){
 
   if (!("action" in req.body))
     res.status(400).send();
-  if (req.body.action=="info") {
+  else if (req.body.action=="info") {
     try {
       var actualBalance = DAO.actualBalance();
       actualBalance = etherUnits.toEther(actualBalance, 'wei');
@@ -33,6 +38,7 @@ module.exports = function(req, res){
         "total_supply": totalSupply
       }
       res.write(JSON.stringify(daoData));
+      res.end();
     } catch (e) {
       console.error(e);
     }
@@ -42,9 +48,26 @@ module.exports = function(req, res){
       var tokens = DAO.balanceOf(addr);
       tokens = etherUnits.toEther(tokens, 'wei')*100;
       res.write(JSON.stringify({"tokens": tokens}));
+      res.end();
     } catch (e) {
       console.error(e);
     }
+  } else if (req.body.action=="createdTokens") {
+    if (req.body.last_id)
+      var options = {'_id': {$gt: last_id}};
+    else
+      var options = {};
+    var ctFind = DAOCreatedToken.find(options).lean(true).sort('-blockNumber').limit(MAX_ENTRIES);
+    ctFind.exec(function (err, docs) {
+      if (!docs.length){
+        res.write(JSON.stringify([]));
+      } else {
+        res.write(JSON.stringify(docs));
+      }
+      res.end();
+    });
   }
-  res.end();
+  
 };  
+
+const MAX_ENTRIES = 100;
