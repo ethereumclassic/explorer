@@ -13,7 +13,6 @@ module.exports = function(app){
 
   var DAO = require('./dao');
 
-
   var compile = require('./compiler');
   var fiat = require('./fiat');
 
