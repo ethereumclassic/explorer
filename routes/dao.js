@@ -71,8 +71,27 @@ module.exports = function(req, res){
       }
       res.end();
     });
+  } else if (req.body.action=="transferTokens") {
+    if (req.body.last_id)
+      var options = {'_id': {$lt: req.body.last_id}};
+    else
+      var options = {};
+    var ctFind = DAOTransferToken.find(options).lean(true).sort('-blockNumber').limit(MAX_ENTRIES);
+    ctFind.exec(function (err, docs) {
+      if (!docs.length){
+        res.write(JSON.stringify([]));
+      } else {
+        var formatDocs = docs.map( function(doc) {
+          var d = doc;
+          d.amount = etherUnits.toEther(d.amount, 'wei')*100;
+          return d;
+        });
+        res.write(JSON.stringify(formatDocs));
+      }
+      res.end();
+    });
   }
   
 };  
 
-const MAX_ENTRIES = 100;
+const MAX_ENTRIES = 50;
