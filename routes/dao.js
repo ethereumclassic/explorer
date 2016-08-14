@@ -5,7 +5,7 @@
 */
 
 var eth = require('./web3relay').eth;
-var db = require( '../tools/tokens/db-dao' );
+require( '../db-dao' );
 
 var mongoose = require( 'mongoose' );
 var DAOCreatedToken = mongoose.model('DAOCreatedToken');

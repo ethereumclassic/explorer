@@ -7,7 +7,7 @@
 var Web3 = require("web3");
 var web3;
 
-require( './db-dao.js' );
+require( '../../db-dao.js' );
 var mongoose = require( 'mongoose' );
 var DAOCreatedToken = mongoose.model('DAOCreatedToken');
 var DAOTransferToken = mongoose.model('DAOTransferToken');
