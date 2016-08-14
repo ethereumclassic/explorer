@@ -118,7 +118,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
 
 var writeBlockToDB = function(config, blockData) {
     //var blockContents = JSON.stringify(blockData, null, 4);
-    new Block(blockData).save( function( err, block, count ){
+    return new Block(blockData).save( function( err, block, count ){
         if ( typeof err !== 'undefined' && err ) {
             if (err.code == 11000) {
                 console.log('Skip: Duplicate key ' + 
@@ -157,12 +157,52 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
     })
 }
 
+/*
+  Patch Missing Blocks
+*/
+var patchBlocks = function(config) {
+    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + 
+        config.gethPort.toString()));
+
+    // number of blocks should equal difference in block numbers
+    var firstBlock = 0;
+    var lastBlock = 20;
+    blockIter(web3, firstBlock, lastBlock, config);
+}
+
+var blockIter = function(web3, firstBlock, lastBlock, config) {
+    // if consecutive, deal with it
+    console.log(firstBlock)
+    console.log(lastBlock)
+    if (lastBlock < firstBlock)
+        return;
+    if (lastBlock - firstBlock === 1) {
+        [lastBlock, firstBlock].forEach(function(blockNumber) {
+            grabBlock(config, web3, blockNumber);
+        });
+    } else if (lastBlock === firstBlock) {
+        Block.find({number: firstBlock}, function (err, b) {
+            if (!b.length)
+                grabBlock(config, web3, firstBlock);
+        });
+    } else {
+
+        Block.count({number: {$gte: firstBlock, $lte: lastBlock}}, function(err, c) {
+          var expectedBlocks = lastBlock - firstBlock + 1;
+          if (expectedBlocks > c) {
+            console.log("Missing: " + JSON.stringify(expectedBlocks - c));  
+            var midBlock = firstBlock + parseInt((lastBlock - firstBlock)/2); 
+            blockIter(web3, firstBlock, midBlock, config);
+            blockIter(web3, midBlock + 1, lastBlock, config);
+          } else 
+            return;
+        })
+    }
+}
+
+
 /** On Startup **/
-// start geth with: geth --rpc --rpccorsdomain 'http://localhost:8000'
-// read input arguments
-// possible args: 
-//      output (output directory, this directory if not provided)
-//      gethPort (geth port on local host (optional, defult = 8545))
+// geth --rpc --rpcaddr "localhost" --rpcport "8545"  --rpcapi "eth,net,web3"
 
 var config = {};
 
@@ -200,5 +240,5 @@ if (!('blocks' in config) || !(Array.isArray(config.blocks))) {
 console.log('Using configuration:');
 console.log(config);
 
-grabBlocks(config);
-
+// grabBlocks(config);
+patchBlocks(config);
