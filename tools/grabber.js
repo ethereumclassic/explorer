@@ -172,8 +172,6 @@ var patchBlocks = function(config) {
 
 var blockIter = function(web3, firstBlock, lastBlock, config) {
     // if consecutive, deal with it
-    console.log(firstBlock)
-    console.log(lastBlock)
     if (lastBlock < firstBlock)
         return;
     if (lastBlock - firstBlock === 1) {

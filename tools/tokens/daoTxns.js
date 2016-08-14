@@ -151,14 +151,18 @@ var patchTimestamps = function(collection) {
 
     collection.find({timestamp: null}).forEach(function(doc) {
 
-      var block = web3.eth.getBlock(doc.blockNumber);
+      try {
+        var block = web3.eth.getBlock(doc.blockNumber);
+      } catch (e) {
+        console.error(e); return;
+      }
 
       bulk.find({ '_id': doc._id }).updateOne({
           '$set': { 'timestamp': block.timestamp }
       });
       count++;
-      if(count % 100 === 0) {
-        // Execute per 100 operations and re-init
+      if(count % 1000 === 0) {
+        // Execute per 1000 operations and re-init
         bulkOps.push(bulk);
         console.log(count);
         bulk = collection.initializeOrderedBulkOp();
