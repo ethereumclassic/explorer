@@ -166,7 +166,7 @@ var patchBlocks = function(config) {
 
     // number of blocks should equal difference in block numbers
     var firstBlock = 0;
-    var lastBlock = web3.eth.getBlock("latest").blockNumber;
+    var lastBlock = web3.eth.getBlock("latest").number;
     blockIter(web3, firstBlock, lastBlock, config);
 }
 
