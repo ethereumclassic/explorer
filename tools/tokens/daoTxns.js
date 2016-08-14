@@ -194,6 +194,6 @@ var patchTimestamps = function(collection) {
 mongoose.connect( 'mongodb://localhost/blockDB' );
 mongoose.set('debug', true);
 
-/patchTimestamps(DAOCreatedToken.collection)
+// patchTimestamps(DAOCreatedToken.collection)
 // populateCreatedTokens();
-// populateTransferTokens();
+populateTransferTokens();
