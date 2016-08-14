@@ -15,15 +15,6 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
       $scope.dao = data;
     });
 
-    // fetch created tokens
-    $http({
-      method: 'POST',
-      url: '/daorelay',
-      data: {"action": "createdTokens"}
-    }).success(function(data) {
-      $scope.created_tokens = data;
-    });
-
     $scope.form = {};
     $scope.errors = {};
     $scope.showTokens = false;
@@ -50,4 +41,30 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
 
     }
 
+})
+.directive('createdTokens', function($http) {
+  return {
+    restrict: 'E',
+    templateUrl: '/views/created-tokens.html',
+    scope: false,
+    link: function(scope, elem, attrs){
+      // fetch created tokens
+      scope.getCreatedTokens = function(last) {
+        var data = {"action": "createdTokens"};
+        if (last)
+          data._id = last;
+
+        $http({
+          method: 'POST',
+          url: '/daorelay',
+          data: data
+        }).success(function(data) {
+          scope.created_tokens = data;
+        });
+      }
+
+      scope.getCreatedTokens();
+    }
+
+  }
 })
