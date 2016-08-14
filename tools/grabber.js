@@ -178,7 +178,10 @@ var blockIter = function(web3, firstBlock, lastBlock, config) {
         return;
     if (lastBlock - firstBlock === 1) {
         [lastBlock, firstBlock].forEach(function(blockNumber) {
-            grabBlock(config, web3, blockNumber);
+            Block.find({number: blockNumber}, function (err, b) {
+                if (!b.length)
+                    grabBlock(config, web3, firstBlock);
+            });
         });
     } else if (lastBlock === firstBlock) {
         Block.find({number: firstBlock}, function (err, b) {
