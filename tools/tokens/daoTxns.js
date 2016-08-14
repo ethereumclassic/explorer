@@ -94,6 +94,8 @@ var populateTransferTokens = function () {
                 "to": log[l].args._to,
                 "from": log[l].args._from
             }
+            var block = web3.eth.getBlock(log[l].blockNumber);
+            newToken.timestamp = block.timestamp;
           } catch (e) {
             console.error(e);
             continue;
@@ -104,6 +106,7 @@ var populateTransferTokens = function () {
                   console.log('Skip: Duplicate tx ' + 
                   log[l].transactionHash + ': ' + 
                   err);
+                  return null;
               } else {
                  console.log('Error: Aborted due to error on ' + 
                       'block number ' + log[l].blockNumber.toString() + ': ' + 
@@ -186,6 +189,6 @@ var patchTimestamps = function(collection) {
 mongoose.connect( 'mongodb://localhost/blockDB' );
 mongoose.set('debug', true);
 
-patchTimestamps(DAOCreatedToken.collection)
+// patchTimestamps(DAOCreatedToken.collection)
 // populateCreatedTokens();
-// populateTransferTokens();
+populateTransferTokens();
