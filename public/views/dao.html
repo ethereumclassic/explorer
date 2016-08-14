@@ -1,0 +1,54 @@
+<!-- BEGIN PAGE CONTENT-->
+<div class="row">
+  <div class="col-md-12 portlet light">
+      <div class="portlet-body">
+        <div class="row">
+            <div class="col-md-6 center">
+              <div >
+                <span class="eth-stat-title">
+                  {{ dao.balance | number: 10 }} </span><br>
+                <span class="eth-stat-text">
+                  TheDAO Balance
+                  </span><br> 
+                  <div class="margin-top-20">
+                  {{ dao.extra_balance | number: 10 }} <span class="eth-stat-text">TheDAO Extra Balance
+                  </span>
+                  </div>
+                  <div class="margin-top-20">
+                  0 <span class="eth-stat-text">Total Tokens</span>
+                  </div>
+                  <div class="margin-top-20">
+                  0 <span class="eth-stat-text">Token Holders</span>
+                  </div>
+                  <div class="margin-top-20">
+                  {{ dao.count }} <span class="eth-stat-text">Transactions</span>
+                  </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 center">
+                <div class="portlet">
+                  <div class="portlet-body">
+
+                    <span class='btn blue-madison' ng-show="!isFollowing(dao.ash)" ng-click="follow(dao.ash)">WATCH <i class="fa fa-rss "></i></span>
+                    <span class='btn grey'  ng-show="isFollowing(dao.ash)" ng-click="unFollow(dao.ash)">WATCHING <i class="fa fa-check "></i></span>
+                    <div class="margin-top-20">
+                        {{ dao.follow_count }}0 
+                        <span class="eth-stat-text">WATCHING</span>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+      </div><!--end row-->
+    </div><!--end portlet-body-->
+  </div><!--end portlet-->
+
+  <!-- Begin: Transaction Datatable -->
+  <div class="portlet light portlet-datatable col-md-12">
+     <div class="portlet-body">
+
+      
+      </div>
+    </div><!-- End: portlet -->
+</div>
