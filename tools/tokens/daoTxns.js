@@ -52,7 +52,7 @@ var populateCreatedTokens = function () {
             var block = web3.eth.getBlock(log[l].blockHash);
             newToken.timestamp = block.timestamp;
           } catch (e) {
-            console.error(JSON.stringify(newToken));
+            console.error(e);
             continue;
           }
 
@@ -99,7 +99,7 @@ var populateTransferTokens = function () {
             var block = web3.eth.getBlock(log[l].blockHash);
             newToken.timestamp = block.timestamp;
           } catch (e) {
-            console.error(JSON.stringify(newToken));
+            console.error(e);
             continue;
           }
           new DAOTransferToken(newToken).save( function( err, token, count ){
