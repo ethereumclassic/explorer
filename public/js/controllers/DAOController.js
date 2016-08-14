@@ -16,6 +16,16 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
       $scope.dao = data;
     });
 
+    // fetch created tokens
+    $http({
+      method: 'POST',
+      url: '/daorelay',
+      data: {"action": "createdTokens"}
+    }).success(function(data) {
+      console.log(data)
+      $scope.created_tokens = data;
+    });
+
     $scope.form = {};
     $scope.errors = {};
     $scope.showTokens = false;
