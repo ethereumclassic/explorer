@@ -12,7 +12,6 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
       url: '/daorelay',
       data: {"action": "info"}
     }).success(function(data) {
-      console.log(data)
       $scope.dao = data;
     });
 
@@ -22,7 +21,6 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
       url: '/daorelay',
       data: {"action": "createdTokens"}
     }).success(function(data) {
-      console.log(data)
       $scope.created_tokens = data;
     });
 
