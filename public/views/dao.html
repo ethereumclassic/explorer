@@ -90,22 +90,22 @@
             <div class="tab-pane" id="tab_dao_2">
               Token Holders
               <div class="table-scrollable">
-                  <table class="table table-condensed table-hover">
+                  <table class="table table-condensed">
                       <thead>
                           <tr>
                               <th> TxHash </th>
                               <th> Block </th>
                               <th> To </th>
                               <th> Amount </th>
-                              <th></th>
+                              <th> </th>
                           </tr>
                       </thead>
                       <tbody>
                           <tr ng-repeat="t in created_tokens track by $index">
-                              <td> {{t.transactionHash}} </td>
-                              <td> {{t.blockNumber}} </td>
-                              <td> {{t.to}} </td>
-                              <td> {{t.amount}} </td>
+                              <td class="truncate-txhash" style="float:left"> <a href="/tx/{{t.transactionHash}}">{{t.transactionHash}}</a> </td>
+                              <td> <a href="/block/{{t.blockNumber}}">{{t.blockNumber}}</a> </td>
+                              <td class="truncate-addrhash" style="float:left"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
+                              <td style="float:right"> {{t.amount | number}} </td>
                               <td><span class="label label-sm label-success"> Created </span></td>
                           </tr>
                       </tbody>

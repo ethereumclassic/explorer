@@ -62,7 +62,12 @@ module.exports = function(req, res){
       if (!docs.length){
         res.write(JSON.stringify([]));
       } else {
-        res.write(JSON.stringify(docs));
+        var formatDocs = docs.map( function(doc) {
+          var d = doc;
+          d.amount = etherUnits.toEther(d.amount, 'wei')*100;
+          return d;
+        });
+        res.write(JSON.stringify(formatDocs));
       }
       res.end();
     });
