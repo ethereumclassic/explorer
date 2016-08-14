@@ -126,5 +126,5 @@ var populateTransferTokens = function () {
 mongoose.connect( 'mongodb://localhost/blockDB' );
 mongoose.set('debug', true);
 
-// populateCreatedTokens();
-populateTransferTokens();
+populateCreatedTokens();
+// populateTransferTokens();
