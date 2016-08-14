@@ -49,8 +49,6 @@ var populateCreatedTokens = function () {
                 "amount": log[l].args.amount,
                 "to": log[l].args.to
             }
-            var block = web3.eth.getBlock(log[l].blockHash);
-            newToken.timestamp = block.timestamp;
           } catch (e) {
             console.error(e);
             continue;
@@ -96,8 +94,6 @@ var populateTransferTokens = function () {
                 "to": log[l].args._to,
                 "from": log[l].args._from
             }
-            var block = web3.eth.getBlock(log[l].blockHash);
-            newToken.timestamp = block.timestamp;
           } catch (e) {
             console.error(e);
             continue;
@@ -125,8 +121,67 @@ var populateTransferTokens = function () {
   });
 }
 
+var bulkTimeUpdate = function(bulk, callback) {
+  console.log("Bulk execution started");
+  bulk.execute(function(err,result) {             
+    if (err) 
+      console.error(err);
+    else 
+      console.log(result.toJSON());
+    callback();
+  });
+}
+
+
+var async = require('async');
+
+
+var patchTimestamps = function(collection) {
+  mongoose.connection.on("open", function(err,conn) { 
+
+    var bulk = collection.initializeOrderedBulkOp();
+
+    var bulkOps = [];
+    var count = 0;
+    var missingCount;
+    collection.count({timestamp: null}, function(err, c) {
+      missingCount = c;
+      console.log("Missing: " + JSON.stringify(missingCount));
+    });
+
+    collection.find({timestamp: null}).forEach(function(doc) {
+
+      var block = web3.eth.getBlock(doc.blockNumber);
+
+      bulk.find({ '_id': doc._id }).updateOne({
+          '$set': { 'timestamp': block.timestamp }
+      });
+      count++;
+      if(count % 100 === 0) {
+        // Execute per 100 operations and re-init
+        bulkOps.push(bulk);
+        console.log(count);
+        bulk = collection.initializeOrderedBulkOp();
+      } 
+      if(count == missingCount) {
+        // Clean up queues
+        console.log(count);
+        bulkOps.push(bulk);
+        
+        async.forEach(bulkOps, function(bulkOp, callback) {
+          bulkTimeUpdate(bulkOp, callback);
+        }, function(err) { 
+          if (err) { console.log(err); return; }
+        });
+      }
+    });
+        
+  })
+}
+
 mongoose.connect( 'mongodb://localhost/blockDB' );
 mongoose.set('debug', true);
 
-populateCreatedTokens();
+patchTimestamps(DAOCreatedToken.collection)
+// populateCreatedTokens();
 // populateTransferTokens();
