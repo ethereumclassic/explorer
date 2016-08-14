@@ -33,12 +33,18 @@ module.exports = function(req, res){
         "total_supply": totalSupply
       }
       res.write(JSON.stringify(daoData));
-      res.end();
     } catch (e) {
       console.error(e);
     }
   } else if (req.body.action=="balanceOf") {
     var addr = req.body.addr.toLowerCase();
+    try {
+      var tokens = DAO.balanceOf(addr);
+      tokens = etherUnits.toEther(tokens, 'wei')*100;
+      res.write(JSON.stringify({"tokens": tokens}));
+    } catch (e) {
+      console.error(e);
+    }
   }
-
+  res.end();
 };  
