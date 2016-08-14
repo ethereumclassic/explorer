@@ -44,7 +44,8 @@ var getDuration = function(timestamp){
         {label:"seconds",   mod:60},
         {label:"mins",   mod:60},
         {label:"hours",     mod:24},
-        {label:"days",      mod:31}
+        {label:"days",      mod:365},
+        {label:"years",      mod:1000}
     ];
     // calculate the individual unit values
     units.forEach(function(u){
