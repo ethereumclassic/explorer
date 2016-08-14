@@ -6,7 +6,8 @@ var DAOCreatedToken = new Schema(
     "transactionHash": {type: String, index: {unique: true}},
     "blockNumber": {type: Number, index: {unique: false}},
     "amount": String,
-    "to": String
+    "to": String,
+    "timestamp": Number
 });
 
 var DAOTransferToken = new Schema(
@@ -15,13 +16,11 @@ var DAOTransferToken = new Schema(
     "blockNumber": {type: Number, index: {unique: false}},
     "amount": String,
     "to": String,
-    "from": String
+    "from": String,
+    "timestamp": Number
 });
 
 mongoose.model('DAOCreatedToken', DAOCreatedToken);
 mongoose.model('DAOTransferToken', DAOTransferToken);
 module.exports.DAOCreatedToken = mongoose.model('DAOCreatedToken');
 module.exports.DAOTransferToken = mongoose.model('DAOTransferToken');
-
-mongoose.connect( 'mongodb://localhost/blockDB' );
-mongoose.set('debug', true);

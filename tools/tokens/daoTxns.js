@@ -49,6 +49,7 @@ var populateCreatedTokens = function () {
                 "amount": log[l].args.amount,
                 "to": log[l].args.to
             }
+            newToken.timestamp = web3.eth.getBlock(log[l].blockNumber);
           } catch (e) {
             console.error(JSON.stringify(newToken));
             continue;
@@ -94,6 +95,7 @@ var populateTransferTokens = function () {
                 "to": log[l].args._to,
                 "from": log[l].args._from
             }
+            newToken.timestamp = web3.eth.getBlock(log[l].blockNumber);
           } catch (e) {
             console.error(JSON.stringify(newToken));
             continue;
@@ -111,8 +113,8 @@ var populateTransferTokens = function () {
                  process.exit(9);
               }
             } else 
-              console.log('DB successfully written for block number ' +
-                        log[l].blockNumber.toString() );            
+              console.log('DB successfully written for tx ' +
+                        log[l].transactionHash );            
             
           });        
         }
@@ -120,6 +122,9 @@ var populateTransferTokens = function () {
 
   });
 }
+
+mongoose.connect( 'mongodb://localhost/blockDB' );
+mongoose.set('debug', true);
 
 // populateCreatedTokens();
 populateTransferTokens();
