@@ -94,6 +94,11 @@ var populateTransferTokens = function () {
                 "to": log[l].args._to,
                 "from": log[l].args._from
             }
+          } catch (e) {
+            console.error(e);
+            continue;
+          }
+          try {
             var block = web3.eth.getBlock(log[l].blockNumber);
             newToken.timestamp = block.timestamp;
           } catch (e) {
@@ -152,7 +157,7 @@ var patchTimestamps = function(collection) {
       console.log("Missing: " + JSON.stringify(missingCount));
     });
 
-    collection.find({timestamp: null}).forEach(function(doc) {
+    collection.find({timestamp: null}).limit(1000).forEach(function(doc) {
 
       try {
         var block = web3.eth.getBlock(doc.blockNumber);
@@ -164,13 +169,13 @@ var patchTimestamps = function(collection) {
           '$set': { 'timestamp': block.timestamp }
       });
       count++;
-      if(count % 1000 === 0) {
+      if(count % 100 === 0) {
         // Execute per 1000 operations and re-init
         bulkOps.push(bulk);
         console.log(count);
         bulk = collection.initializeOrderedBulkOp();
       } 
-      if(count == missingCount) {
+      if(count == missingCount || count === 1000) {
         // Clean up queues
         console.log(count);
         bulkOps.push(bulk);
@@ -189,6 +194,6 @@ var patchTimestamps = function(collection) {
 mongoose.connect( 'mongodb://localhost/blockDB' );
 mongoose.set('debug', true);
 
-// patchTimestamps(DAOCreatedToken.collection)
+/patchTimestamps(DAOCreatedToken.collection)
 // populateCreatedTokens();
-populateTransferTokens();
+// populateTransferTokens();
