@@ -36,6 +36,11 @@
                         {{ dao.follow_count }}0 
                         <span class="eth-stat-text">WATCHING</span>
                     </div>
+                    <div class="margin-top-20">
+                       Contract Creator: 
+                       <a href="/addr/0x793ea9692ada1900fbd0b80fffec6e431fe8b391">0x793ea9692ada1900fbd0b80...</a> at txn 
+                       <a href="/tx/0xe9ebfecc2fa10100db51a4408d18193b3ac504584b51a4e55bdef1318f0a30f9">0xe9ebfecc2fa10100db51a44...</a>
+                    </div>
                 </div>
               </div>
             </div>
@@ -48,24 +53,69 @@
   <!-- Begin: Transaction Datatable -->
   <div class="portlet light col-md-12">
      <div class="portlet-body">
-        <h4>Get DAO-C Token Balance</h4>
-        <div class="row"><!-- get my balance -->
-          <form class="col-md-10 center" name="form.tokens">
-            <span class="help-block"><b>Enter Your Address </b></span>
-            <div class="input-group">
-                <input type="text" class="form-control" name="addrInput" placeholder="0xbb9bc244d798123fde783fcc1c72d3bb8c189413" ng-model="form.addrInput" ng-keyup="$event.keyCode == 13 ? getBalance(form.addrInput) : null">
-                <span class="input-group-btn">
-                    <button class="btn blue-madison" type="button" ng-click="getBalance(form.addrInput)">Go!</button>
-                </span>
-            </div>
-             <span class="help-block font-red-mint">{{errors.address}}</span>
-          </form>
-        </div><!--end row-->
-        <div class="row" ng-show="showTokens"><!-- balance results -->
-          <div class="col-md-10">
-            <h4>You have <span class="eth-stat-title font-blue-madison">0{{dao.tokens | number}}</span> DAO-C tokens.</h4>
-          </div>
-        </div>
+       
+       <div class="tabbable-line">
+          <ul class="nav nav-tabs ">
+              <li class="active">
+                  <a href="#tab_dao_1" data-toggle="tab" aria-expanded="true"> Get Balance </a>
+              </li>
+              <li class="" >
+                  <a href="#tab_dao_2" data-toggle="tab" aria-expanded="false"> Created Tokens </a>
+              </li>
+              <li class="">
+                  <a href="#tab_dao_3" data-toggle="tab" aria-expanded="false"> Internal Transactions </a>
+              </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab_dao_1">
+                <h4>Get DAO-C Token Balance</h4>
+                <div class="row"><!-- get my balance -->
+                  <form class="col-md-10 center" name="form.tokens">
+                    <span class="help-block"><b>Enter Your Address </b></span>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="addrInput" placeholder="0xbb9bc244d798123fde783fcc1c72d3bb8c189413" ng-model="form.addrInput" ng-keyup="$event.keyCode == 13 ? getBalance(form.addrInput) : null">
+                        <span class="input-group-btn">
+                            <button class="btn blue-madison" type="button" ng-click="getBalance(form.addrInput)">Go!</button>
+                        </span>
+                    </div>
+                     <span class="help-block font-red-mint">{{errors.address}}</span>
+                  </form>
+                </div><!--end row-->
+                <div class="row" ng-show="showTokens"><!-- balance results -->
+                  <div class="col-md-10">
+                    <h4>You have <span class="eth-stat-title font-blue-madison">0{{dao.tokens | number}}</span> DAO-C tokens.</h4>
+                  </div>
+                </div>
+            </div><!-- end get Token Balance Tab -->
+            <div class="tab-pane" id="tab_dao_2">
+              Token Holders
+              <div class="table-scrollable">
+                  <table class="table table-condensed table-hover">
+                      <thead>
+                          <tr>
+                              <th> TxHash </th>
+                              <th> Block </th>
+                              <th> To </th>
+                              <th> Amount </th>
+                              <th></th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr ng-repeat="t in created_tokens track by $index">
+                              <td> {{t.transactionHash}} </td>
+                              <td> {{t.blockNumber}} </td>
+                              <td> {{t.to}} </td>
+                              <td> {{t.amount}} </td>
+                              <td><span class="label label-sm label-success"> Created </span></td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+            </div><!-- end Created Tokens Tab -->
+            <div class="tab-pane" id="tab_dao_3">
+            
+            </div><!-- end Internal txs Tab -->
+        </div><!-- end tab content -->
       </div>
     </div><!-- End: portlet -->
 </div>
