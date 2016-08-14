@@ -54,7 +54,7 @@ module.exports = function(req, res){
     }
   } else if (req.body.action=="createdTokens") {
     if (req.body.last_id)
-      var options = {'_id': {$gt: last_id}};
+      var options = {'_id': {$lt: req.body.last_id}};
     else
       var options = {};
     var ctFind = DAOCreatedToken.find(options).lean(true).sort('-blockNumber').limit(MAX_ENTRIES);

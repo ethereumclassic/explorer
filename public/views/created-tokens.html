@@ -24,10 +24,10 @@
     </table>
     <ul class="pager">
         <li class="previous">
-            <a href="javascript:;"> ← Newer </a>
+            <a ng-click="getCreatedTokens(created_tokens[0]._id)"> ← Newer </a>
         </li>
         <li class="next">
-            <a href="javascript:;"> Older → </a>
+            <a ng-click="getCreatedTokens(created_tokens[created_tokens.length-1]._id)"> Older → </a>
         </li>
     </ul>
 </div>

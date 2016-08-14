@@ -50,9 +50,10 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
     link: function(scope, elem, attrs){
       // fetch created tokens
       scope.getCreatedTokens = function(last) {
+        console.log(last)
         var data = {"action": "createdTokens"};
         if (last)
-          data._id = last;
+          data.last_id = last;
 
         $http({
           method: 'POST',
