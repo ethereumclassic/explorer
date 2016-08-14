@@ -213,6 +213,24 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             }
         })
 
+        .state('dao', {
+            url: "/dao",
+            templateUrl: "views/dao.html",
+            data: {pageTitle: 'theDAO'},
+            controller: "DAOController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', 
+                        files: [
+                             '/js/controllers/DAOController.js'
+                        ]
+                    });
+                }]
+            }
+        })
+
         .state('err404', {
             url: "/err404/{thing}/{hash}",
             templateUrl: "views/err_404.html",

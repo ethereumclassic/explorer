@@ -2,6 +2,8 @@
 
 Staging server: [unforked.info](http://unforked.info)
 
+Production: [etherhub.io](http://etherhub.io)
+
 Follow the project progress at: [ETC Block Explorer Development](https://trello.com/b/W3ftl57z/etc-block-explorer-development) 
 
 ## Local installation
