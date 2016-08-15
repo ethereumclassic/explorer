@@ -157,35 +157,36 @@ var patchTimestamps = function(collection) {
       console.log("Missing: " + JSON.stringify(missingCount));
     });
 
-    collection.find({timestamp: null}).limit(500).forEach(function(doc) {
+    collection.find({timestamp: null}).forEach(function(doc) {
+      setTimeout(function() {
+        try {
+          var block = web3.eth.getBlock(doc.blockNumber);
+        } catch (e) {
+          console.error(e); return;
+        }
 
-      try {
-        var block = web3.eth.getBlock(doc.blockNumber);
-      } catch (e) {
-        console.error(e); return;
-      }
-
-      bulk.find({ '_id': doc._id }).updateOne({
-          '$set': { 'timestamp': block.timestamp }
-      });
-      count++;
-      if(count % 100 === 0) {
-        // Execute per 1000 operations and re-init
-        bulkOps.push(bulk);
-        console.log(count);
-        bulk = collection.initializeOrderedBulkOp();
-      } 
-      if(count == missingCount || count === 500) {
-        // Clean up queues
-        console.log(count);
-        // bulkOps.push(bulk);
-        
-        async.forEach(bulkOps, function(bulkOp, callback) {
-          bulkTimeUpdate(bulkOp, callback);
-        }, function(err) { 
-          if (err) { console.log(err); return; }
+        bulk.find({ '_id': doc._id }).updateOne({
+            '$set': { 'timestamp': block.timestamp }
         });
-      }
+        count++;
+        if(count % 100 === 0) {
+          // Execute per 1000 operations and re-init
+          bulkOps.push(bulk);
+          console.log(count);
+          bulk = collection.initializeOrderedBulkOp();
+        } 
+        if(count == missingCount) {
+          // Clean up queues
+          console.log(count);
+          bulkOps.push(bulk);
+          
+          async.forEach(bulkOps, function(bulkOp, callback) {
+            bulkTimeUpdate(bulkOp, callback);
+          }, function(err) { 
+            if (err) { console.log(err); return; }
+          });
+        }
+      }, 1000*count);
     });
         
   })
