@@ -26,11 +26,13 @@ module.exports = function(req, res) {
     
     // highest difficulty / avg blocktime
     hashFind.exec(function (err, docs) {
-      var x = docs.reduce( function(hashR, doc) { console.log(doc)
+      var x = docs.reduce( function(hashR, doc) { 
                               return { "blockTime": hashR.blockTime + doc.blockTime, 
                                        "difficulty": Math.max(hashR.difficulty, doc.difficulty) }
                                    }, {"blockTime": 0, "difficulty": 0}); 
-      console.log(x)
+      var hashrate = x.difficulty / (1000*x.blockTime / docs.length);
+      res.write(JSON.stringify({"hashrate": hashrate, "difficulty": x.difficulty}));
+      res.end();
     });
 
   }
