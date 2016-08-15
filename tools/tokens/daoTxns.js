@@ -136,12 +136,8 @@ var bulkTimeUpdate = function(bulk, callback) {
       console.error(err);
     else 
       console.log(result.toJSON());
-    callback();
   });
 }
-
-
-var async = require('async');
 
 
 var patchTimestamps = function(collection) {
@@ -151,6 +147,7 @@ var patchTimestamps = function(collection) {
 
     var bulkOps = [];
     var count = 0;
+    var q = 0;
     var missingCount = 5200;
     collection.count({timestamp: null}, function(err, c) {
       missingCount = c;
@@ -158,7 +155,7 @@ var patchTimestamps = function(collection) {
     });
 
     collection.find({timestamp: null}).forEach(function(doc) {
-      count++;
+      q++;
       setTimeout(function() {
         try {
           var block = web3.eth.getBlock(doc.blockNumber);
@@ -169,23 +166,17 @@ var patchTimestamps = function(collection) {
         bulk.find({ '_id': doc._id }).updateOne({
             '$set': { 'timestamp': block.timestamp }
         });
+        count++;
         if(count % 1000 === 0) {
           // Execute per 1000 operations and re-init
-          bulkOps.push(bulk);
+          bulkTimeUpdate(bulk);
           bulk = collection.initializeOrderedBulkOp();
         } 
         if(count == missingCount) {
           // Clean up queues
-          console.log(count);
-          bulkOps.push(bulk);
-          
-          async.forEach(bulkOps, function(bulkOp, callback) {
-            bulkTimeUpdate(bulkOp, callback);
-          }, function(err) { 
-            if (err) { console.log(err); return; }
-          });
+          bulkTimeUpdate(bulk);
         }
-      }, 1000*count);
+      }, 100*q);
     });
         
   })
