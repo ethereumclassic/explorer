@@ -157,7 +157,7 @@ var patchTimestamps = function(collection) {
       console.log("Missing: " + JSON.stringify(missingCount));
     });
 
-    collection.find({timestamp: null}).limit(1000).forEach(function(doc) {
+    collection.find({timestamp: null}).limit(500).forEach(function(doc) {
 
       try {
         var block = web3.eth.getBlock(doc.blockNumber);
@@ -175,7 +175,7 @@ var patchTimestamps = function(collection) {
         console.log(count);
         bulk = collection.initializeOrderedBulkOp();
       } 
-      if(count == missingCount || count === 1000) {
+      if(count == missingCount || count === 500) {
         // Clean up queues
         console.log(count);
         // bulkOps.push(bulk);
