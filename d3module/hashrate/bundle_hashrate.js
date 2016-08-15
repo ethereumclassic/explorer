@@ -20,7 +20,6 @@ window.call_hashrate_chart = function(){
     function myFirstFunction(callback) {
 
 
-
         request('http://drawpie.com/etc_hash_rate_api', function (error, response, body) {
             if (!error && response.statusCode == 200) {
 
@@ -37,9 +36,15 @@ window.call_hashrate_chart = function(){
     function mySecondFunction(arg1, arg2, callback) {
         // arg1 now equals 'one' and arg2 now equals 'two'
 
-        var margin = {top: 30, right: 70, bottom: 35, left: 100},
+        //console.log(window.screen.availWidth);
+        var width1 = parseInt(d3.select("#hashrate").style("width"));
+
+        var margin = {top: 0, right: 50, bottom: 50, left: 100},
+            //var margin = {top: 30, right: 0, bottom: 0, left: 0},
             // For Responsive web design, get window.innerWidth
-            width = window.innerWidth - margin.left - margin.right,
+            //width = window.innerWidth - margin.left - margin.right,
+            width = width1 - margin.left - margin.right,
+            //width = window.screen.availWidth - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
 
         var x = d3.time.scale().range([0, width]);
@@ -47,20 +52,15 @@ window.call_hashrate_chart = function(){
 
         // For Responsive web design
         //When window.innerWidth < 800 , Reduce the ticks to 2
-        if (window.innerWidth < 800){
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("bottom")
-                .tickFormat(d3.time.format("%x %H:%M"))
-                .ticks(2);
-        }
-        else{
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("bottom")
-                .tickFormat(d3.time.format("%x %H:%M"))
-                .ticks(5);
-        }
+
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            //.tickFormat(d3.time.format("%x %H:%M"))
+            .tickFormat(d3.time.format("%x"))
+            .ticks(5);
+
 
 
 
@@ -88,10 +88,14 @@ window.call_hashrate_chart = function(){
         var svg = d3.select("#hashrate")
         //.append("svg")
             .attr("width", width + margin.left + margin.right)
+
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
+
+
+
 
 // function for the x grid lines
         function make_x_axis() {
@@ -156,12 +160,14 @@ window.call_hashrate_chart = function(){
             .call(yAxis);
 
         // Add the text label for the X axis
-        svg.append("text")
-            .attr("transform",
-                "translate(" + (width/2) + " ," +
-                (height+margin.bottom) + ")")
-            .style("text-anchor", "middle")
-            .text("Date");
+        /*
+         svg.append("text")
+         .attr("transform",
+         "translate(" + (width/2) + " ," +
+         (height+margin.bottom) + ")")
+         .style("text-anchor", "middle")
+         .text("Date");
+         */
         /*
 
          // Add the title
@@ -184,13 +190,9 @@ window.call_hashrate_chart = function(){
 
 
 
-
 };
 
-
-
 //call_hashrate_chart();
-
 },{"moment":72,"request":86}],2:[function(require,module,exports){
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
