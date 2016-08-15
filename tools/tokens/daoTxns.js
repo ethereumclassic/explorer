@@ -136,7 +136,7 @@ var bulkTimeUpdate = function(bulk, callback) {
       console.error(err);
     else 
       console.log(result.toJSON());
-    callback();
+    //callback();
   });
 }
 
@@ -151,6 +151,7 @@ var patchTimestamps = function(collection) {
 
     var bulkOps = [];
     var count = 0;
+var q = 0;
     var missingCount = 5200;
     collection.count({timestamp: null}, function(err, c) {
       missingCount = c;
@@ -158,7 +159,7 @@ var patchTimestamps = function(collection) {
     });
 
     collection.find({timestamp: null}).forEach(function(doc) {
-      count++;
+      q++;
       setTimeout(function() {
         try {
           var block = web3.eth.getBlock(doc.blockNumber);
@@ -171,9 +172,12 @@ var patchTimestamps = function(collection) {
         });
         if(count % 1000 === 0) {
           // Execute per 1000 operations and re-init
-          bulkOps.push(bulk);
+console.log(count);          
+bulkTimeUpdate(bulk);
+// bulkOps.push(bulk);
           bulk = collection.initializeOrderedBulkOp();
         } 
+count++;
         if(count == missingCount) {
           // Clean up queues
           console.log(count);
@@ -185,7 +189,7 @@ var patchTimestamps = function(collection) {
             if (err) { console.log(err); return; }
           });
         }
-      }, 1000*count);
+      }, 100*q);
     });
         
   })
