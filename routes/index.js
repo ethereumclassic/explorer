@@ -15,6 +15,7 @@ module.exports = function(app){
 
   var compile = require('./compiler');
   var fiat = require('./fiat');
+  var stats = require('./stats');
 
   /* 
     Local DB: data request format
@@ -29,8 +30,11 @@ module.exports = function(app){
 
   app.post('/daorelay', DAO);
   app.post('/web3relay', web3relay.data);
-  app.post('/fiat', fiat);
   app.post('/compile', compile);
+
+  app.post('/fiat', fiat);
+  app.post('/stats', stats);
+  
 
 }
 
