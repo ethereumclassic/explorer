@@ -56,18 +56,18 @@
        
        <div class="tabbable-line">
           <ul class="nav nav-tabs ">
-              <li class="active">
+              <li ng-class="{active: activeTab == 'tab_dao_1' || !activeTab}">
                   <a href="#tab_dao_1" data-toggle="tab" aria-expanded="true"> Get Balance </a>
               </li>
-              <li class="" >
+              <li ng-class="{active: activeTab == 'tab_dao_2'}" >
                   <a href="#tab_dao_2" data-toggle="tab" aria-expanded="false"> Created Tokens </a>
               </li>
-              <li class="">
+              <li cng-class="{active: activeTab == 'tab_dao_3'}">
                   <a href="#tab_dao_3" data-toggle="tab" aria-expanded="false"> Internal Transactions </a>
               </li>
           </ul>
           <div class="tab-content">
-            <div class="tab-pane active" id="tab_dao_1">
+            <div class="tab-pane" ng-class="{active: activeTab == 'tab_dao_1' || !activeTab}" id="tab_dao_1">
                 <h4>Get DAO-C Token Balance</h4>
                 <div class="row"><!-- get my balance -->
                   <form class="col-md-10 center" name="form.tokens">
@@ -87,10 +87,10 @@
                   </div>
                 </div>
             </div><!-- end get Token Balance Tab -->
-            <div class="tab-pane" id="tab_dao_2">
+            <div class="tab-pane" id="tab_dao_2" ng-class="{active: activeTab == 'tab_dao_2'}">
               <created-tokens></created-tokens>
             </div><!-- end Created Tokens Tab -->
-            <div class="tab-pane" id="tab_dao_3">
+            <div class="tab-pane" id="tab_dao_3" ng-class="{active: activeTab == 'tab_dao_3'}">
               <transfer-tokens></transfer-tokens>
             </div><!-- end Internal txs Tab -->
         </div><!-- end tab content -->

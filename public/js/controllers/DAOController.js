@@ -1,8 +1,11 @@
-angular.module('BlocksApp').controller('DAOController', function($stateParams, $rootScope, $scope, $http, $timeout) {
+angular.module('BlocksApp').controller('DAOController', function($stateParams, $rootScope, $scope, $http, $location) {
     $scope.$on('$viewContentLoaded', function() {   
         // initialize core components
         App.initAjax();
     });
+    var activeTab = $location.url().split('#');
+    if (activeTab.length > 1)
+      $scope.activeTab = activeTab[1];
 
     $scope.dao = {"balance": 0, "extra_balance": 0};
 
