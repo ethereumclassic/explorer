@@ -151,13 +151,14 @@ var patchTimestamps = function(collection) {
 
     var bulkOps = [];
     var count = 0;
-    var missingCount;
+    var missingCount = 5200;
     collection.count({timestamp: null}, function(err, c) {
       missingCount = c;
       console.log("Missing: " + JSON.stringify(missingCount));
     });
 
     collection.find({timestamp: null}).forEach(function(doc) {
+      count++;
       setTimeout(function() {
         try {
           var block = web3.eth.getBlock(doc.blockNumber);
@@ -168,11 +169,9 @@ var patchTimestamps = function(collection) {
         bulk.find({ '_id': doc._id }).updateOne({
             '$set': { 'timestamp': block.timestamp }
         });
-        count++;
-        if(count % 100 === 0) {
+        if(count % 1000 === 0) {
           // Execute per 1000 operations and re-init
           bulkOps.push(bulk);
-          console.log(count);
           bulk = collection.initializeOrderedBulkOp();
         } 
         if(count == missingCount) {
