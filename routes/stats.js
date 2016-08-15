@@ -21,6 +21,17 @@ module.exports = function(req, res) {
         }
     });
   } else if (req.body.action=="hashrate") {
+    var hashFind = BlockStat.find({}, "difficulty blockTime")
+                            .lean(true).limit(64).sort('-number');
+    
+    // highest difficulty / avg blocktime
+    hashFind.exec(function (err, docs) {
+      var x = docs.reduce( function(hashR, doc) { console.log(doc)
+                              return { "blockTime": hashR.blockTime + doc.blockTime, 
+                                       "difficulty": Math.max(hashR.difficulty, doc.difficulty) }
+                                   }, {"blockTime": 0, "difficulty": 0}); 
+      console.log(x)
+    });
 
   }
 }
