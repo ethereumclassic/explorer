@@ -96,10 +96,7 @@ var checkBlockDBExistsThenWrite = function(web3, blockData, nextTime) {
 
 var minutes = 0;
 statInterval = minutes * 60 * 1000;
-updateStats();
-/*
+
 setInterval(function() {
-  console.log("I am doing my 5 minutes check");
   updateStats();
 }, statInterval);
-*/
