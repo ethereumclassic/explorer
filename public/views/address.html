@@ -49,19 +49,19 @@
      <div class="portlet-body">
         <div class="tabbable-line">
           <ul class="nav nav-tabs ">
-              <li class="active">
+              <li ng-class="{active: activeTab == 'tab_addr_1' || !activeTab}">
                   <a href="#tab_addr_1" data-toggle="tab" aria-expanded="true"> Transactions </a>
               </li>
               <!-- TODO: Internal TX
               <li class="" ng-show="addr.isContract">
                   <a href="#tab_addr_2" data-toggle="tab" aria-expanded="false"> Internal Transactions </a>
               </li>-->
-              <li class="" ng-show="addr.isContract">
+              <li class="" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_3'}">
                   <a href="#tab_addr_3" data-toggle="tab" aria-expanded="false"> Contract Source </a>
               </li>
           </ul>
           <div class="tab-content">
-            <div class="tab-pane active table-container" id="tab_addr_1"><!-- Datatable tab -->
+            <div class="tab-pane table-container" ng-class="{active: activeTab == 'tab_addr_1' || !activeTab}" id="tab_addr_1"><!-- Datatable tab -->
 
               <table class="table table-striped table-hover" id="table_txs" style="table-layout:fixed;width: 98% !important;">
                   <thead>
@@ -82,7 +82,7 @@
             <!-- TODO: Support internal transactions 
             <div class="tab-pane" id="tab_addr_2" ng-show="addr.isContract">
             </div>-->
-            <div class="tab-pane" id="tab_addr_3" ng-show="addr.isContract">
+            <div class="tab-pane" id="tab_addr_3" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_3'}">
               <contract-source></contract-source>
             </div>
           </div>

@@ -1,8 +1,11 @@
-angular.module('BlocksApp').controller('AddressController', function($stateParams, $rootScope, $scope, $http, $timeout) {
+angular.module('BlocksApp').controller('AddressController', function($stateParams, $rootScope, $scope, $http, $location) {
     $scope.$on('$viewContentLoaded', function() {   
         // initialize core components
         App.initAjax();
     });
+    var activeTab = $location.url().split('#');
+    if (activeTab.length > 1)
+      $scope.activeTab = activeTab[1];
 
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.hash;
     $scope.addrHash = $stateParams.hash;
