@@ -46,9 +46,7 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
     link: function(scope, elem, attrs){
       scope.stats = {};
 
-      // TODO (Elaine): use our own API
-      var ethURL = "http://cors.io/?u=https://api.minergate.com/1.0/eth/status";
-      var etcURL = "http://cors.io/?u=https://api.minergate.com/1.0/etc/status";
+      var etcEthURL = "/stats";
       var etcPriceURL = "https://coinmarketcap-nexuist.rhcloud.com/api/etc";
       var ethPriceURL = "https://coinmarketcap-nexuist.rhcloud.com/api/eth"
       scope.stats.ethDiff = 1;
@@ -57,21 +55,14 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
 
 
       
-      $http.get(ethURL)
+      $http.post(etcEthURL, {"action": "etceth"})
        .then(function(res){
-          scope.stats.ethHashrate = parseInt(res.data.instantHashrate);
-          scope.stats.etcEthHash = parseInt(100*scope.stats.etcHashrate/scope.stats.ethHashrate);
-
-          scope.stats.ethDiff = res.data.difficulty.toFixed(2);
-          scope.stats.etcEthDiff = parseInt(100*scope.stats.etcDiff/scope.stats.ethDiff);
-        });
-      $http.get(etcURL)
-       .then(function(res){
-          scope.stats.etcHashrate = parseInt(res.data.instantHashrate);
-          scope.stats.etcEthHash = parseInt(100*scope.stats.etcHashrate/scope.stats.ethHashrate);
-
-          scope.stats.etcDiff = res.data.difficulty.toFixed(2);
-          scope.stats.etcEthDiff = parseInt(100*scope.stats.etcDiff/scope.stats.ethDiff);
+          scope.stats.etcHashrate = res.data.etcHashrate;
+          scope.stats.ethHashrate = res.data.ethHashrate;
+          scope.stats.etcEthHash = res.data.etcEthHash;
+          scope.stats.ethDiff = res.data.ethDiff;
+          scope.stats.etcDiff = res.data.etcDiff;
+          scope.stats.etcEthDiff = res.data.etcEthDiff;
         });
       $http.get(etcPriceURL)
        .then(function(res){
