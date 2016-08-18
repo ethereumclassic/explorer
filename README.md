@@ -1,8 +1,8 @@
 # ETCExplorer 
 
-Staging server: [unforked.info](http://unforked.info)
+<b>Production: [etherhub.io](http://etherhub.io)</b>
 
-Production: [etherhub.io](http://etherhub.io)
+<b>Staging server: [unforked.info](http://unforked.info)</b>
 
 Follow the project progress at: [ETC Block Explorer Development](https://trello.com/b/W3ftl57z/etc-block-explorer-development) 
 
@@ -56,3 +56,11 @@ Basic settings:
 ### Run:
 
 `node ./tools/grabber.js`
+
+Leave this running in the background to continuously fetch new blocks.
+
+### Stats
+
+Tools for updating network stats are under development, but can be found in:
+
+`./tools/stats.js` 
