@@ -2,8 +2,6 @@
   Tool for calculating block stats
 */
 
-require( '../db-stats.js' );
-
 var Web3 = require('web3');
 
 var mongoose = require( 'mongoose' );
@@ -85,7 +83,7 @@ var checkBlockDBExistsThenWrite = function(web3, blockData, nextTime) {
         } else {
             console.log('Aborting because block number: ' + blockData.number.toString() + 
                 ' already exists in DB.');
-            process.exit(9);
+            return;
         }
 
     })
@@ -94,7 +92,7 @@ var checkBlockDBExistsThenWrite = function(web3, blockData, nextTime) {
 /** On Startup **/
 // geth --rpc --rpcaddr "localhost" --rpcport "8545"  --rpcapi "eth,net,web3"
 
-var minutes = 0;
+var minutes = 1;
 statInterval = minutes * 60 * 1000;
 
 setInterval(function() {
