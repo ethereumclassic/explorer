@@ -227,8 +227,8 @@ $.ajax({
     contentType: 'application/json',
     url: 'http://127.0.0.1:3000/stats',
     success: function(data) {
-        console.log('success');
-        console.log(JSON.stringify(data));
+        //console.log('success');
+        //console.log(JSON.stringify(data));
     }
 });
 
