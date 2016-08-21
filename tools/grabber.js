@@ -190,7 +190,9 @@ var blockIter = function(web3, firstBlock, lastBlock, config) {
 
         Block.count({number: {$gte: firstBlock, $lte: lastBlock}}, function(err, c) {
           var expectedBlocks = lastBlock - firstBlock + 1;
-          if (expectedBlocks > c) {
+          if (c === 0) {
+            grabBlock(config, web3, {'start': firstBlock, 'end': lastBlock});
+          } else if (expectedBlocks > c) {
             console.log("Missing: " + JSON.stringify(expectedBlocks - c));  
             var midBlock = firstBlock + parseInt((lastBlock - firstBlock)/2); 
             blockIter(web3, firstBlock, midBlock, config);
