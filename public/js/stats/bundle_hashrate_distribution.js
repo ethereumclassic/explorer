@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 // http://bl.ocks.org/juan-cb/1984c7f2b446fffeedde
 
-console.log('OK2');
+//console.log('OK2');
 var _ = require('lodash');
 
 var data = {};
@@ -28,7 +28,7 @@ $.ajax({
     }
 });
 
-window.call_hhashrate_distribution = function() {
+window.call_hashrate_distribution = function() {
 
 
     var svg = d3.select("#hashrate_distribution")
@@ -138,7 +138,7 @@ window.call_hhashrate_distribution = function() {
         slice.exit()
             .remove();
 
-            console.log(data.length);
+            //console.log(data.length);
 
         var legend = svg.selectAll('.legend')
             //.data(color.domain())

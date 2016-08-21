@@ -1,6 +1,6 @@
 // http://bl.ocks.org/juan-cb/1984c7f2b446fffeedde
 
-console.log('OK2');
+//console.log('OK2');
 var _ = require('lodash');
 
 var data = {};
@@ -27,7 +27,7 @@ $.ajax({
     }
 });
 
-window.call_hhashrate_distribution = function() {
+window.call_hashrate_distribution = function() {
 
 
     var svg = d3.select("#hashrate_distribution")
@@ -137,7 +137,7 @@ window.call_hhashrate_distribution = function() {
         slice.exit()
             .remove();
 
-            console.log(data.length);
+            //console.log(data.length);
 
         var legend = svg.selectAll('.legend')
             //.data(color.domain())
