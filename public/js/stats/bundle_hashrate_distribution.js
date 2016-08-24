@@ -13,7 +13,7 @@ $.ajax({
     type: 'POST',
     data: JSON.stringify(data),
     contentType: 'application/json',
-    url: 'http://127.0.0.1:3000/stats',
+    url: '/stats',
     success: function(data) {
         //console.log(data);
         var data = JSON.parse(data);
@@ -28,10 +28,10 @@ $.ajax({
     }
 });
 
-window.call_hashrate_distribution = function() {
+window.call_hashrate_chart = function() {
 
 
-    var svg = d3.select("#hashrate_distribution")
+    var svg = d3.select("#hashrate")
         .append("g");
 
 
@@ -44,7 +44,7 @@ window.call_hashrate_distribution = function() {
     svg.append("g")
         .attr("class", "lines");
 
-    var width1 = parseInt(d3.select("#hashrate_distribution").style("width"));
+    var width1 = parseInt(d3.select("#hashrate").style("width"));
 
     var width = width1,
         height = 1000,
