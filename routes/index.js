@@ -34,7 +34,6 @@ module.exports = function(app){
 
   app.post('/fiat', fiat);
   app.post('/stats', stats);
-  app.post('/stats1', stats);
   
 
 }

@@ -207,27 +207,7 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                              //"http://nvd3.org/assets/js/data/stream_layers.js",
                              "/plugins/async.min.js",
                              '/js/stats/bundle_hashrate.js',
-                        ]
-                    });
-                }]
-            }
-        })
-
-        .state('stats1', {
-            url: "/stats1/{chart}",
-            templateUrl: "views/stats/hashrate_distribution.html",
-            data: {pageTitle: 'Transaction'},
-            controller: "StatsController",
-            resolve: {
-                deps: ['$ocLazyLoad', function($ocLazyLoad) {
-                    return $ocLazyLoad.load({
-                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
-                        files: [
-                            '/js/controllers/StatsController.js',
-                            '/css/stats.css',
-                            "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.10/d3.js",
-                            "/plugins/async.min.js",
-                            '/js/stats/bundle_hashrate_distribution.js'
+                             '/js/stats/bundle_hashrate_distribution.js'
                         ]
                     });
                 }]
