@@ -195,7 +195,12 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             data: {pageTitle: 'Transaction'},
             controller: "StatsController",
             resolve: {
-                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                deps: ['$ocLazyLoad', '$stateParams', function($ocLazyLoad, $stateParams) {
+                    var bundle = '/js/stats/bundle_';
+                    if ($stateParams.chart == "etc_hashrate")
+                        bundle = bundle + "hashrate.js";
+                    else
+                        bundle = bundle + "hashrate_distribution.js";
                     return $ocLazyLoad.load({
                         insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
                         files: [
@@ -206,8 +211,7 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                              //"https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.js",
                              //"http://nvd3.org/assets/js/data/stream_layers.js",
                              "/plugins/async.min.js",
-                             '/js/stats/bundle_hashrate.js',
-                             '/js/stats/bundle_hashrate_distribution.js'
+                             bundle
                         ]
                     });
                 }]
