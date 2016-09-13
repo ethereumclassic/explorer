@@ -23,13 +23,13 @@ function grabInternalTxs(batchNum) {
       host: 'localhost',
       port: '8545',
       path: '/',
-      method: 'POST',
-      headers: { "Content-Type": "application/json" }
+      method: 'POST'
   };
 
   var post_req = http.request(post_options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
+          console.log(chunk);
           console.log('Response: ' + chunk.result);
           for (d in chunk.result) {
             writeTxToDB(chunk.result[d]);
