@@ -3,7 +3,6 @@ require( '../db-internal.js' );
 var express = require('express');
 var app = express();
 
-var querystring = require('querystring');
 var http = require('http');
 
 var mongoose = require( 'mongoose' );
@@ -12,28 +11,34 @@ var InternalTx     = mongoose.model( 'InternalTransaction' );
 const BATCH_SIZE = 10;
 
 function grabInternalTxs(batchNum) {
-  var post_data = querystring.stringify({
-    "jsonrpc":"2.0",
-    "method":"trace_filter",
-    "params":[{"fromBlock":batchNum, "toBlock": batchNum + BATCH_SIZE}],
-    "id":batchNum
-  });
+  var toBlock = batchNum + BATCH_SIZE;
+  var post_data = '{ \
+    "jsonrpc":"2.0", \
+    "method":"trace_filter", \
+    "params":[{"fromBlock":' + batchNum + ', \
+    "toBlock":' + toBlock + '}], \
+    "id":' + batchNum + '}';
+  console.log(post_data)
 
   var post_options = {
       host: 'localhost',
       port: '8545',
       path: '/',
-      method: 'POST'
+      method: 'POST',
+      headers: { "Content-Type": "application/json" }
   };
 
   var post_req = http.request(post_options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
-          console.log(chunk);
+        console.log(chunk)
           console.log('Response: ' + chunk.result);
           for (d in chunk.result) {
             writeTxToDB(chunk.result[d]);
           }
+      });
+      res.on('end', function() {
+        console.log("end");
       });
   });
 
