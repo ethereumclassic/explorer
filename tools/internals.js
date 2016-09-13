@@ -24,9 +24,7 @@ function grabInternalTxs(batchNum) {
       port: '8545',
       path: '/',
       method: 'POST',
-      headers: {
-          "Content-Type: application/json"
-      }
+      headers: { "Content-Type": "application/json" }
   };
 
   var post_req = http.request(post_options, function(res) {
