@@ -26,8 +26,9 @@ var InternalTransaction = new Schema(
     "traceAddress":[String],
     "subtraces":Number,
     "transactionPosition":Number,
-    "transactionHash":String, // parent transaction
-    "blockNumber":Number,
+    "transactionHash": {type: String, index: {unique: false}}, // parent transaction
+    "blockNumber":{type: String, index: {unique: false}},
+    "timestamp": Number,
     "blockHash":String
 });
 
