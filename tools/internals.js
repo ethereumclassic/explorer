@@ -19,11 +19,11 @@ function grabInternalTxs(batchNum) {
     "jsonrpc":"2.0", \
     "method":"trace_filter", \
     "params":[{"fromBlock":"' + fromBlock + '", \
-    "toBlock":"' + toBlock + '""}], \
+    "toBlock":"' + toBlock + '"}], \
     "id":' + batchNum + '}';
 
   var post_options = {
-      host: 'localhost',
+      host: '54.175.149.212',
       port: '8545',
       path: '/',
       method: 'POST',
