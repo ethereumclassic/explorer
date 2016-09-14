@@ -10,7 +10,7 @@ var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 var mongoose = require( 'mongoose' );
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 1000;
 
 function grabInternalTxs(batchNum) {
   var fromBlock = web3.toHex(batchNum);
@@ -47,7 +47,7 @@ function grabInternalTxs(batchNum) {
           }
       });
       res.on('end', function() {
-        console.log("end");
+        console.log(batchNum);
       });
   });
 
@@ -79,7 +79,7 @@ var writeTxToDB = function(txData) {
 var minutes = 0.1;
 statInterval = minutes * 60 * 1000;
 
-var count = 0;
+var count = 1;
 setInterval(function() {
     grabInternalTxs(count);
     count += BATCH_SIZE;
