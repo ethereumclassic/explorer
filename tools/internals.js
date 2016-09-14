@@ -60,6 +60,7 @@ function grabInternalTxs(batchNum, batchSize) {
               j.result.gasUsed = web3.toDecimal(j.result.gasUsed);
             j.subtraces = web3.toDecimal(j.subtraces);
             j.transactionPosition = web3.toDecimal(j.transactionPosition);
+            j.blockNumber = web3.toDecimal(j.blockNumber);
             writeTxToDB(j);
           }
       });
@@ -93,7 +94,7 @@ var writeTxToDB = function(txData) {
 var seconds = 1;
 statInterval = seconds * 1000;
 
-var count = 48370;
+var count = 46000;
 setInterval(function() {
     grabInternalTxs(count, BATCH_SIZE);
     count += BATCH_SIZE;
