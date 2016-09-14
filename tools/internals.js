@@ -34,7 +34,6 @@ function grabInternalTxs(batchNum, batchSize) {
       res.setEncoding('utf8');
       var data;
       res.on('data', function (chunk) {
-        console.log(chunk);
         if (chunk)
             data = chunk;
       });
@@ -52,6 +51,7 @@ function grabInternalTxs(batchNum, batchSize) {
             }
             return
         }
+          console.log(data);
           for (d in jdata.result) {
             var j = jdata.result[d];
             if (j.action.gas)
@@ -72,7 +72,7 @@ function grabInternalTxs(batchNum, batchSize) {
 }
 
 var writeTxToDB = function(txData) {
-    return InternalTx(txData, txData, {upsert: true}, function( err, tx ){
+    return InternalTx.findOneAndUpdate(txData, txData, {upsert: true}, function( err, tx ){
         if ( typeof err !== 'undefined' && err ) {
             if (err.code == 11000) {
                 console.log('Skip: Duplicate key ' + 
