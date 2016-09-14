@@ -39,7 +39,13 @@ function grabInternalTxs(batchNum) {
             data = chunk;
       });
       res.on('end', function() {
-        var jdata = JSON.parse(data);
+        try {
+            var jdata = JSON.parse(data);
+        } catch (e) {
+            console.error(e);
+            console.error(post_data);
+            return
+        }
           for (d in jdata.result) {
             var j = jdata.result[d];
             if (j.action.gas)
