@@ -12,9 +12,9 @@ var InternalTx     = mongoose.model( 'InternalTransaction' );
 
 const BATCH_SIZE = 10;
 
-function grabInternalTxs(batchNum) {
+function grabInternalTxs(batchNum, batchSize) {
   var fromBlock = web3.toHex(batchNum);
-  var toBlock = web3.toHex(batchNum + BATCH_SIZE - 1);
+  var toBlock = web3.toHex(batchNum + batchSize - 1);
   var post_data = '{ \
     "jsonrpc":"2.0", \
     "method":"trace_filter", \
@@ -43,7 +43,13 @@ function grabInternalTxs(batchNum) {
             var jdata = JSON.parse(data);
         } catch (e) {
             console.error(e);
-            console.error(post_data);
+            if (batchSize > 1) {
+                for (var b=0; b<batchSize; b++) {
+                    grabInternalTxs(batchNum+b, 1);
+                }
+            } else {
+                console.error(post_data);
+            }
             return
         }
           for (d in jdata.result) {
@@ -87,9 +93,9 @@ var writeTxToDB = function(txData) {
 var seconds = 1;
 statInterval = seconds * 1000;
 
-var count = 46100;
+var count = 48370;
 setInterval(function() {
-    grabInternalTxs(count);
+    grabInternalTxs(count, BATCH_SIZE);
     count += BATCH_SIZE;
     if (count > 2252020)
         process.exit(9);
