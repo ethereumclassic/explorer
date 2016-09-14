@@ -54,6 +54,18 @@ function grabInternalTxs(batchNum, batchSize) {
           console.log(data);
           for (d in jdata.result) {
             var j = jdata.result[d];
+            if (j.action.call)
+              j.action = j.action.call;
+            else if (j.action.create)
+              j.action = j.action.create;
+            else if (j.action.suicide)
+              j.action = j.action.suicide;
+            if (j.result.call)
+              j.result = j.result.call;
+            else if (j.result.create)
+              j.result = j.result.create;
+            else if (j.result.suicide)
+              j.result = j.result.suicide;
             if (j.action.gas)
               j.action.gas = web3.toDecimal(j.action.gas);
             if (j.result.gasUsed)
