@@ -35,7 +35,8 @@ function grabInternalTxs(batchNum) {
       var data;
       res.on('data', function (chunk) {
         console.log(chunk);
-        data += chunk;
+        if (chunk)
+            data = chunk;
       });
       res.on('end', function() {
         var jdata = JSON.parse(data);
@@ -58,7 +59,7 @@ function grabInternalTxs(batchNum) {
 }
 
 var writeTxToDB = function(txData) {
-    return new InternalTx.findOneAndUpdate(txData, txData, {upsert: true}, function( err, tx ){
+    return InternalTx(txData, txData, {upsert: true}, function( err, tx ){
         if ( typeof err !== 'undefined' && err ) {
             if (err.code == 11000) {
                 console.log('Skip: Duplicate key ' + 
@@ -77,7 +78,7 @@ var writeTxToDB = function(txData) {
 }
 
 
-var minutes = 0.1;
+var minutes = 0.5;
 statInterval = minutes * 60 * 1000;
 
 var count = 46000;
