@@ -10,7 +10,7 @@ var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 var mongoose = require( 'mongoose' );
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 
-const BATCH_SIZE = 1000;
+const BATCH_SIZE = 100;
 
 function grabInternalTxs(batchNum) {
   var fromBlock = web3.toHex(batchNum);
@@ -32,9 +32,13 @@ function grabInternalTxs(batchNum) {
 
   var post_req = http.request(post_options, function(res) {
       res.setEncoding('utf8');
-      res.on('data', function (data) {
+      var data;
+      res.on('data', function (chunk) {
+        console.log(chunk);
+        data += chunk;
+      });
+      res.on('end', function() {
         var jdata = JSON.parse(data);
-          console.log('Response: ' + jdata.result);
           for (d in jdata.result) {
             var j = jdata.result[d];
             if (j.action.gas)
@@ -45,9 +49,6 @@ function grabInternalTxs(batchNum) {
             j.transactionPosition = web3.toDecimal(j.transactionPosition);
             writeTxToDB(j);
           }
-      });
-      res.on('end', function() {
-        console.log(batchNum);
       });
   });
 
@@ -79,7 +80,7 @@ var writeTxToDB = function(txData) {
 var minutes = 0.1;
 statInterval = minutes * 60 * 1000;
 
-var count = 10000;
+var count = 46000;
 setInterval(function() {
     grabInternalTxs(count);
     count += BATCH_SIZE;
