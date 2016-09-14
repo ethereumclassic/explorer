@@ -4,14 +4,16 @@ var express = require('express');
 var app = express();
 
 var http = require('http');
+var Web3 = require('web3');
+var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 var mongoose = require( 'mongoose' );
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 
-const BATCH_SIZE = 10;
+const BATCH_SIZE = 100;
 
 function grabInternalTxs(batchNum) {
-  var toBlock = batchNum + BATCH_SIZE;
+  var toBlock = batchNum + BATCH_SIZE - 1;
   var post_data = '{ \
     "jsonrpc":"2.0", \
     "method":"trace_filter", \
@@ -30,11 +32,18 @@ function grabInternalTxs(batchNum) {
 
   var post_req = http.request(post_options, function(res) {
       res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        console.log(chunk)
-          console.log('Response: ' + chunk.result);
-          for (d in chunk.result) {
-            writeTxToDB(chunk.result[d]);
+      res.on('data', function (data) {
+        var jdata = JSON.parse(data);
+          console.log('Response: ' + jdata.result);
+          for (d in jdata.result) {
+            var j = jdata.result[d];
+            if (j.action.gas)
+              j.action.gas = web3.toDecimal(j.action.gas);
+            if (j.result.gasUsed)
+              j.result.gasUsed = web3.toDecimal(j.result.gasUsed);
+            j.subtraces = web3.toDecimal(j.subtraces);
+            j.transactionPosition = web3.toDecimal(j.transactionPosition);
+            writeTxToDB(j);
           }
       });
       res.on('end', function() {
@@ -48,7 +57,7 @@ function grabInternalTxs(batchNum) {
 }
 
 var writeTxToDB = function(txData) {
-    return new InternalTx(txData).save( function( err, tx, count ){
+    return new InternalTx.findOneAndUpdate(txData, txData, {upsert: true}, function( err, tx ){
         if ( typeof err !== 'undefined' && err ) {
             if (err.code == 11000) {
                 console.log('Skip: Duplicate key ' + 
@@ -66,4 +75,16 @@ var writeTxToDB = function(txData) {
       });
 }
 
-grabInternalTxs(10)
+
+var minutes = 0.1;
+statInterval = minutes * 60 * 1000;
+
+var count = 0;
+setInterval(function() {
+    grabInternalTxs(count);
+    count += BATCH_SIZE;
+    if (count > 2252020)
+        process.exit(9);
+}, statInterval);
+
+
