@@ -13,14 +13,14 @@ var InternalTx     = mongoose.model( 'InternalTransaction' );
 const BATCH_SIZE = 100;
 
 function grabInternalTxs(batchNum) {
-  var toBlock = batchNum + BATCH_SIZE - 1;
+  var fromBlock = web3.toHex(batchNum);
+  var toBlock = web3.toHex(batchNum + BATCH_SIZE - 1);
   var post_data = '{ \
     "jsonrpc":"2.0", \
     "method":"trace_filter", \
-    "params":[{"fromBlock":' + batchNum + ', \
-    "toBlock":' + toBlock + '}], \
+    "params":[{"fromBlock":"' + batchNum + '", \
+    "toBlock":"' + toBlock + '""}], \
     "id":' + batchNum + '}';
-  console.log(post_data)
 
   var post_options = {
       host: 'localhost',

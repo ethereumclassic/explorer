@@ -14,7 +14,7 @@ var InternalTransaction = new Schema(
       "init": String, // for create
       "address": String, // for suicide
       "refundAddress": String,
-      "balance": Number
+      "balance": String
     },
     "result": {
       "gasUsed":Number,
