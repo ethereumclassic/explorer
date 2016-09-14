@@ -18,7 +18,7 @@ function grabInternalTxs(batchNum) {
   var post_data = '{ \
     "jsonrpc":"2.0", \
     "method":"trace_filter", \
-    "params":[{"fromBlock":"' + batchNum + '", \
+    "params":[{"fromBlock":"' + fromBlock + '", \
     "toBlock":"' + toBlock + '""}], \
     "id":' + batchNum + '}';
 
@@ -79,7 +79,7 @@ var writeTxToDB = function(txData) {
 var minutes = 0.1;
 statInterval = minutes * 60 * 1000;
 
-var count = 1;
+var count = 10000;
 setInterval(function() {
     grabInternalTxs(count);
     count += BATCH_SIZE;
