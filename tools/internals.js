@@ -102,16 +102,27 @@ var writeTxToDB = function(txData) {
       });
 }
 
+var getLatestBlocks = function(latest, start) {
+  var count = start;
 
-var seconds = 1;
-statInterval = seconds * 1000;
-
-var count = 46000;
-setInterval(function() {
+  setInterval(function() {
     grabInternalTxs(count, BATCH_SIZE);
     count += BATCH_SIZE;
-    if (count > 2252020)
-        process.exit(9);
+    if (count > latest)
+      return;
+  }, 1000);  
+}
+
+
+var minutes = 5;
+statInterval = minutes * 60 * 1000;
+
+var last = 2252020;
+setInterval(function() {
+  // get latest 
+  var latest = web3.eth.blockNumber;
+  getLatestBlocks(latest, last);
+  last = latest;
 }, statInterval);
 
 
