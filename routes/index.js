@@ -45,8 +45,8 @@ var getAddr = function(req, res){
   // TODO: validate addr and tx
   var addr = req.body.addr.toLowerCase();
 
-  var addrFind = Block.find( { $or: [{"transactions.to": addr}, {"transactions.from": addr}] },
-                            "transactions timestamp").lean(true).sort('-number').limit(MAX_ENTRIES);
+  var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
+                          .lean(true).sort('-blockNumber').limit(MAX_ENTRIES);
   addrFind.exec(function (err, docs) {
     if (!docs.length){
       res.write(JSON.stringify([]));
@@ -54,7 +54,7 @@ var getAddr = function(req, res){
     } else {
       // filter transactions
       var txDocs = filters.filterTX(docs, addr);
-      res.write(JSON.stringify(filters.datatableTX(txDocs)));
+      res.write(JSON.stringify(txDocs));
       res.end();
     }
   });
