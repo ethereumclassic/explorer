@@ -114,10 +114,13 @@ var getLatestBlocks = function(latest, start) {
 }
 
 
+mongoose.connect( 'mongodb://localhost/blockDB' );
+mongoose.set('debug', true);
+
 var minutes = 5;
 statInterval = minutes * 60 * 1000;
 
-var last = 2252020;
+var last = 2255038;
 setInterval(function() {
   // get latest 
   var latest = web3.eth.blockNumber;

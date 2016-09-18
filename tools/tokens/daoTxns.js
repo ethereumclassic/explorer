@@ -8,10 +8,11 @@ var Web3 = require("web3");
 var web3;
 
 require( '../../db-dao.js' );
+require( '../../db-internal.js' );
 var mongoose = require( 'mongoose' );
 var DAOCreatedToken = mongoose.model('DAOCreatedToken');
 var DAOTransferToken = mongoose.model('DAOTransferToken');
-
+var InternalTx     = mongoose.model( 'InternalTransaction' );
 
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
@@ -185,6 +186,6 @@ var patchTimestamps = function(collection) {
 mongoose.connect( 'mongodb://localhost/blockDB' );
 mongoose.set('debug', true);
 
-patchTimestamps(DAOCreatedToken.collection)
+patchTimestamps(InternalTransaction.collection)
 // populateCreatedTokens();
 // populateTransferTokens();

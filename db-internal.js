@@ -34,6 +34,3 @@ var InternalTransaction = new Schema(
 
 mongoose.model('InternalTransaction', InternalTransaction);
 module.exports.InternalTransaction = mongoose.model('InternalTransaction');
-
-mongoose.connect( 'mongodb://localhost/blockDB' );
-mongoose.set('debug', true);
