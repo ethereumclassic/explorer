@@ -159,14 +159,21 @@ var patchTimestamps = function(collection) {
       q++;
       setTimeout(function() {
         try {
-          var block = web3.eth.getBlock(doc.blockNumber);
+          // var block = web3.eth.getBlock(doc.blockNumber);
+          var blockFind = InternalTx.findOne( { "number" : doc.blockNumber }, "timestamp").lean(true);
+          blockFind.exec(function (err, block) {
+            if (err)
+              console.error(err); 
+            else if (block){
+              bulk.find({ '_id': doc._id }).updateOne({
+                  '$set': { 'timestamp': block.timestamp }
+              });
+            };
+          });
         } catch (e) {
           console.error(e); return;
         }
 
-        bulk.find({ '_id': doc._id }).updateOne({
-            '$set': { 'timestamp': block.timestamp }
-        });
         count++;
         if(count % 1000 === 0) {
           // Execute per 1000 operations and re-init
