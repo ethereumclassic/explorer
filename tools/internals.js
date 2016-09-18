@@ -106,10 +106,10 @@ var getLatestBlocks = function(latest, start) {
   var count = start;
 
   setInterval(function() {
-    grabInternalTxs(count, BATCH_SIZE);
-    count += BATCH_SIZE;
-    if (count > latest)
-      return;
+      grabInternalTxs(count, BATCH_SIZE);
+      count += BATCH_SIZE;
+      if (count > latest)
+        return;
   }, 1000);  
 }
 
@@ -119,22 +119,19 @@ mongoose.set('debug', true);
 
 var minutes = 5;
 statInterval = minutes * 60 * 1000;
-/*
-var last = 2258044;
 setInterval(function() {
   // get latest 
-  var latest = web3.eth.blockNumber;
-  console.log(latest)
-  getLatestBlocks(latest, last);
-  last = latest;
+  try {
+      InternalTx.findOne({}, "blockNumber").lean(true).sort("-blockNumber")
+          .exec(function(err, doc) {
+            var last = doc.blockNumber;
+            var latest = web3.eth.blockNumber;
+            getLatestBlocks(latest, last);
+          });
+  } catch (e) {
+    console.error(e);
+    // wait and try again
+  }
 }, statInterval);
-*/
-mongoose.connection.on("open", function(err,conn) { 
-  InternalTx.findOne({}, "blockNumber").lean(true).sort("-blockNumber")
-        .exec(function(err, doc) {
-          var last = doc.blockNumber;
-          var latest = web3.eth.blockNumber;
-          getLatestBlocks(latest, last);
-        });
-});
+
 
