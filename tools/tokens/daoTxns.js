@@ -8,13 +8,11 @@ var Web3 = require("web3");
 var web3;
 
 require( '../../db-dao.js' );
-require( '../../db.js' );
 require( '../../db-internal.js' );
 var mongoose = require( 'mongoose' );
 var DAOCreatedToken = mongoose.model('DAOCreatedToken');
 var DAOTransferToken = mongoose.model('DAOTransferToken');
 var InternalTx     = mongoose.model( 'InternalTransaction' );
-var Block     = mongoose.model( 'Block' );
 
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
@@ -170,7 +168,7 @@ var patchTimestamps = function(collection) {
             '$set': { 'timestamp': block.timestamp }
         });
         count++;
-        if(count % 1000 === 0) {
+        if(count % 100 === 0) {
           // Execute per 1000 operations and re-init
           bulkTimeUpdate(bulk);
           bulk = collection.initializeOrderedBulkOp();
@@ -186,9 +184,8 @@ var patchTimestamps = function(collection) {
 }
 
 
-// mongoose.connect( 'mongodb://localhost/blockDB' );
-// mongoose.set('debug', true);
-5894858
+mongoose.connect( 'mongodb://localhost/blockDB' );
+mongoose.set('debug', true);
 
 patchTimestamps(InternalTx.collection)
 // populateCreatedTokens();
