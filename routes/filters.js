@@ -80,5 +80,6 @@ module.exports = {
   filterBlock: filterBlock,
   filterBlocks: filterBlocks,
   filterTX: filterTX,
-  datatableTX: datatableTX
+  datatableTX: datatableTX,
+  internalTX: internalTX
 }
