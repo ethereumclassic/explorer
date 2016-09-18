@@ -5,17 +5,12 @@ var BigNumber = require('bignumber.js');
   Filter an array of TX 
 */
 function filterTX(txs, value) {
-  var blockTX = txs.map(function(block) {
-    var cleanTX = block.transactions.filter(function(obj) {
-      return (obj.to==value || obj.from==value);   
-    });
-    return cleanTX.map(function(tx) { 
-      var ttx = tx;
-      ttx.timestamp = block.timestamp; 
-      return ttx;
-    });
-  });
-  return [].concat.apply([], blockTX);
+  console.log(txs)
+  return txs.map(function(tx){
+    console.log(tx)
+    return [tx.transactionHash, tx.blockNumber, tx.action.from, tx.action.to, 
+            etherUnits.toEther(new BigNumber(tx.action.value), 'wei'), tx.action.gas, tx.timestamp]
+  })
 }
 
 function filterBlock(block, field, value) {
