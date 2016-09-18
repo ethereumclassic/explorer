@@ -1,8 +1,8 @@
 var mongoose = require( 'mongoose' );
+require( '../db-internal.js' );
 var Block     = mongoose.model( 'Block' );
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 var filters = require('./filters')
-require( '../db-internal.js' );
 
 //var Memcached = require('memcached');
 //var memcached = new Memcached("localhost:11211");
