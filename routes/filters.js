@@ -22,17 +22,15 @@ function filterBlock(block, field, value) {
 }
 
 /* extract transactions from blocks */
-function extractTX(blocks) {
+function extractTX(txs) {
     
-  var blockTX = blocks.map(function(block) {
-    return block.transactions.map(function(tx) { 
-      var ttx = tx;
-      ttx.value = etherUnits.toEther(new BigNumber(tx.value), 'wei');
-      ttx.timestamp = block.timestamp; 
-      return ttx;
-    });
+  return txs.map(function(tx) { 
+    var ttx = tx.action;
+    ttx.value = etherUnits.toEther(new BigNumber(tx.action.value), 'wei');
+    ttx.timestamp = tx.timestamp; 
+    ttx.transactionHash = tx.transactionHash;
+    return ttx;
   });
-  return [].concat.apply([], blockTX);
 }
 
 /* make blocks human readable */

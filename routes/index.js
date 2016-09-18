@@ -187,7 +187,7 @@ var sendBlocks = function(lim, res) {
 var sendTxs = function(lim, res) {
   InternalTx.find({}).lean(true).sort('-blockNumber').limit(lim)
         .exec(function (err, txs) {
-          res.write(JSON.stringify({"txs": txs}));
+          res.write(JSON.stringify({"txs": filters.extractTX(txs)}));
           res.end();
         });
 }
