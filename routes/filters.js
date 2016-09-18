@@ -59,6 +59,14 @@ function datatableTX(txs) {
   })
 }
 
+function internalTX(txs) {
+  return txs.map(function(tx){
+    return [tx.transactionHash, tx.blockNumber, tx.action.from, tx.action.to, 
+            etherUnits.toEther(new BigNumber(tx.action.value), 'wei'), tx.action.gas, tx.timestamp]
+  })
+}
+
+
 var hex2ascii = function (hexIn) {
     var hex = hexIn.toString();
     var str = '';
