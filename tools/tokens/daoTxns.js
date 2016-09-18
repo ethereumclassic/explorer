@@ -186,6 +186,6 @@ var patchTimestamps = function(collection) {
 mongoose.connect( 'mongodb://localhost/blockDB' );
 mongoose.set('debug', true);
 
-patchTimestamps(InternalTransaction.collection)
+patchTimestamps(InternalTx.collection)
 // populateCreatedTokens();
 // populateTransferTokens();
