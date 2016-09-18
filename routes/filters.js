@@ -5,9 +5,7 @@ var BigNumber = require('bignumber.js');
   Filter an array of TX 
 */
 function filterTX(txs, value) {
-  console.log(txs)
   return txs.map(function(tx){
-    console.log(tx)
     return [tx.transactionHash, tx.blockNumber, tx.action.from, tx.action.to, 
             etherUnits.toEther(new BigNumber(tx.action.value), 'wei'), tx.action.gas, tx.timestamp]
   })

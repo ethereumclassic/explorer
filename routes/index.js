@@ -143,7 +143,7 @@ var getData = function(req, res){
     else
       var lim = parseInt(limit);
     
-    getLatest(lim, res, DATA_ACTIONS[action]);
+    DATA_ACTIONS[action](lim, res);
 
   } else {
   
@@ -175,15 +175,21 @@ var getLatest = function(lim, res, callback) {
 }
 
 /* get blocks from db */
-var sendBlocks = function(data, res) {
-  res.write(JSON.stringify({"blocks": filters.filterBlocks(data)}));
-  res.end();
+var sendBlocks = function(lim, res) {
+  var blockFind = Block.find({}, "number transactions timestamp miner extraData")
+                      .lean(true).sort('-number').limit(lim);
+  blockFind.exec(function (err, docs) {
+    res.write(JSON.stringify({"blocks": filters.filterBlocks(docs)}));
+    res.end();
+  });
 }
 
-var sendTxs = function(data, res) {
-  var txs = filters.extractTX(data);
-  res.write(JSON.stringify({"txs": txs}));
-  res.end();
+var sendTxs = function(lim, res) {
+  InternalTx.find({}).lean(true).sort('-blockNumber').limit(lim)
+        .exec(function (err, txs) {
+          res.write(JSON.stringify({"txs": txs}));
+          res.end();
+        });
 }
 
 const MAX_ENTRIES = 10;
