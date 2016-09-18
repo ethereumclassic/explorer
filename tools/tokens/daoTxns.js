@@ -146,54 +146,39 @@ var bulkTimeUpdate = function(bulk, callback) {
 var patchTimestamps = function(collection) {
   mongoose.connection.on("open", function(err,conn) { 
 
-    var bulk = collection.initializeOrderedBulkOp();
-
-    var bulkOps = [];
     var count = 0;
-    var q = 0;
     var missingCount = 5200;
     collection.count({timestamp: null}, function(err, c) {
       missingCount = c;
       console.log("Missing: " + JSON.stringify(missingCount));
     });
 
-    collection.find({timestamp: null}).forEach(function(doc) {
-      q++;
-      setTimeout(function() {
-        try {
-          // var block = web3.eth.getBlock(doc.blockNumber);
-          var blockFind = Block.findOne( { "number" : doc.blockNumber }, "timestamp").lean(true);
-          blockFind.exec(function (err, block) {
-            if (err)
-              console.error(err); 
-            else if (block){
-              bulk.find({ '_id': doc._id }).updateOne({
-                  '$set': { 'timestamp': block.timestamp }
-              });
-            };
-          });
-        } catch (e) {
-          console.error(e); return;
-        }
+    collection.aggregate([
+                        { $match: {timestamp: null}}, 
+                        {$group: {_id: "blockNumber"}} 
+                        ], function (err, result) {
+                          result.forEach(function(txs) {
+                            var blockFind = Block.findOne( { "number" : txs._id.blockNumber }, "timestamp").lean(true);
+                            blockFind.exec(function (err, block) {
+                              if (err)
+                                console.error(err); 
+                              else if (block){
+                                collection.update({ "timestamp": null, "blockNumber": block.number }, 
+                                                  {"timestamp": block.timestamp}, {multi: true}, 
+                                                  function(err, num) {
+                                                    console.log("updated " + num);
+                                                  });
 
-        count++;
-        if(count % 1000 === 0) {
-          // Execute per 1000 operations and re-init
-          bulkTimeUpdate(bulk);
-          bulk = collection.initializeOrderedBulkOp();
-        } 
-        if(count == missingCount) {
-          // Clean up queues
-          bulkTimeUpdate(bulk);
-        }
-      }, 100*q);
-    });
-        
+                                }
+                              });
+                          });
+                        });
   })
 }
 
-mongoose.connect( 'mongodb://localhost/blockDB' );
-mongoose.set('debug', true);
+// mongoose.connect( 'mongodb://localhost/blockDB' );
+// mongoose.set('debug', true);
+5894858
 
 patchTimestamps(InternalTx.collection)
 // populateCreatedTokens();
