@@ -197,19 +197,27 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             resolve: {
                 deps: ['$ocLazyLoad', '$stateParams', function($ocLazyLoad, $stateParams) {
                     var bundle = '/js/stats/bundle_';
-                    if ($stateParams.chart == "etc_hashrate")
-                        bundle = bundle + "hashrate.js";
-                    else
-                        bundle = bundle + "hashrate_distribution.js";
+
+                    switch ($stateParams.chart) {
+                        case "etc_hashrate":
+                            bundle = bundle + "hashrate.js";
+                            break;
+                        case "miner_hashrate":
+                            bundle = bundle + "hashrate_distribution.js";
+                            break;
+
+                        case "The_bomb_chart":
+                            bundle = bundle + "The_bomb_chart_with_ECIP_1010.js";
+                            break;
+
+                    }
+
                     return $ocLazyLoad.load({
                         insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
                         files: [
                              '/js/controllers/StatsController.js',
                              '/css/stats.css',
                              "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.10/d3.js",
-                             //"https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.css",
-                             //"https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.js",
-                             //"http://nvd3.org/assets/js/data/stream_layers.js",
                              "/plugins/async.min.js",
                              bundle
                         ]
