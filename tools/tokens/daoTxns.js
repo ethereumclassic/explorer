@@ -163,29 +163,23 @@ var patchTimestamps = function(collection) {
         try {
           // var block = web3.eth.getBlock(doc.blockNumber);
           var blockFind = Block.findOne( { "number" : doc.blockNumber }, "timestamp").lean(true);
-          var block = blockFind.exec(function (err, b) {
+          blockFind.exec(function (err, block) {
             if (err)
               console.error(err); 
-            else if (b)
-              return b;              
+            else if (block) {
+                collection.update({ "timestamp": null, "blockNumber": block.number }, 
+                                  {"timestamp": block.timestamp}, {multi: true}, 
+                                  function(err, num) {
+                                    console.log("updated " + num);
+                                  });
+                }
+            }
           });
         } catch (e) {
           console.error(e); return;
         }
 
-        bulk.find({ '_id': doc._id }).updateOne({
-            '$set': { 'timestamp': block.timestamp }
-        });
-        count++;
-        if(count % 1000 === 0) {
-          // Execute per 1000 operations and re-init
-          bulkTimeUpdate(bulk);
-          bulk = collection.initializeOrderedBulkOp();
-        } 
-        if(count == missingCount) {
-          // Clean up queues
-          bulkTimeUpdate(bulk);
-        }
+        
       }, 100*q);
     });
         
