@@ -124,6 +124,7 @@ var last = 2258044;
 setInterval(function() {
   // get latest 
   var latest = web3.eth.blockNumber;
+  console.log(latest)
   getLatestBlocks(latest, last);
   last = latest;
 }, statInterval);

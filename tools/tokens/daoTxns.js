@@ -148,7 +148,6 @@ var patchTimestamps = function(collection) {
 
     var bulkOps = [];
     var count = 0;
-    var q = 0;
     var missingCount = 5200;
     collection.count({timestamp: null}, function(err, c) {
       missingCount = c;
@@ -156,7 +155,6 @@ var patchTimestamps = function(collection) {
     });
 
     collection.find({timestamp: null}).forEach(function(doc) {
-      q++;
       setTimeout(function() {
         try {
           var block = web3.eth.getBlock(doc.blockNumber);
@@ -177,7 +175,7 @@ var patchTimestamps = function(collection) {
           // Clean up queues
           bulkTimeUpdate(bulk);
         }
-      }, 100*q);
+      }, 1000);
     });
         
   })
