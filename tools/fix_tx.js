@@ -8,12 +8,11 @@ var async = require('async');
 var Block     = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
-var getTx = function(collection) {
+var getTx = function() {
   mongoose.connection.on("open", function(err,conn) { 
 
     Block.find({}, "transactions timestamp").lean(true).exec(function(err, docs) {
-        for (b in docs) {
-            var doc = docs[b];
+        async.forEach(docs, function(doc, cb) {
             var bulkOps = [];
           if (doc.transactions.length > 0) {
             for (d in doc.transactions) {
@@ -37,12 +36,13 @@ var getTx = function(collection) {
                     
                 }
                 bulkOps = [];
+                cb();
               });
         
           }
-    }
+    }, function() { return; });
       });  
   })
 }
 
-getTx(Block.collection)
+getTx()
