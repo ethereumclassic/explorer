@@ -161,25 +161,24 @@ var patchTimestamps = function(collection) {
       q++;
       setTimeout(function() {
         try {
-          // var block = web3.eth.getBlock(doc.blockNumber);
-          var blockFind = Block.findOne( { "number" : doc.blockNumber }, "timestamp").lean(true);
-          blockFind.exec(function (err, block) {
-            if (err)
-              console.error(err); 
-            else if (block) {
-                collection.update({ "timestamp": null, "blockNumber": doc.blockNumber }, 
-                                  {"timestamp": block.timestamp}, {multi: true}, 
-                                  function(err, num) {
-                                    console.log("updated " + num);
-                                  });
-                }
-            
-          });
+          var block = web3.eth.getBlock(doc.blockNumber);
         } catch (e) {
           console.error(e); return;
         }
 
-        
+        bulk.find({ '_id': doc._id }).updateOne({
+            '$set': { 'timestamp': block.timestamp }
+        });
+        count++;
+        if(count % 1000 === 0) {
+          // Execute per 1000 operations and re-init
+          bulkTimeUpdate(bulk);
+          bulk = collection.initializeOrderedBulkOp();
+        } 
+        if(count == missingCount) {
+          // Clean up queues
+          bulkTimeUpdate(bulk);
+        }
       }, 100*q);
     });
         
