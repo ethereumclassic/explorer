@@ -28,7 +28,7 @@ function extractTX(txs) {
     var ttx = tx.action;
     ttx.value = etherUnits.toEther(new BigNumber(tx.action.value), 'wei');
     ttx.timestamp = tx.timestamp; 
-    ttx.transactionHash = tx.transactionHash;
+    ttx.hash = tx.transactionHash;
     return ttx;
   });
 }
