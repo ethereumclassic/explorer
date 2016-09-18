@@ -52,10 +52,9 @@
               <li ng-class="{active: activeTab == 'tab_addr_1' || !activeTab}">
                   <a href="#tab_addr_1" data-toggle="tab" aria-expanded="true"> Transactions </a>
               </li>
-              <!-- TODO: Internal TX
-              <li class="" ng-show="addr.isContract">
+              <li  ng-class="{active: activeTab == 'tab_addr_2'}" ng-show="addr.isContract">
                   <a href="#tab_addr_2" data-toggle="tab" aria-expanded="false"> Internal Transactions </a>
-              </li>-->
+              </li>
               <li class="" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_3'}">
                   <a href="#tab_addr_3" data-toggle="tab" aria-expanded="false"> Contract Source </a>
               </li>
