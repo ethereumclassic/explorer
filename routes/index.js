@@ -2,6 +2,7 @@ var mongoose = require( 'mongoose' );
 var Block     = mongoose.model( 'Block' );
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 var filters = require('./filters')
+require( '../db-internal.js' );
 
 //var Memcached = require('memcached');
 //var memcached = new Memcached("localhost:11211");
