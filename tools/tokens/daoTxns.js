@@ -153,26 +153,25 @@ var patchTimestamps = function(collection) {
       console.log("Missing: " + JSON.stringify(missingCount));
     });
 
-    collection.aggregate([
-                        { $match: {timestamp: null}}, 
-                        {$group: {_id: "blockNumber"}} 
-                        ], function (err, result) {
-                          result.forEach(function(txs) {
-                            var blockFind = Block.findOne( { "number" : txs._id.blockNumber }, "timestamp").lean(true);
-                            blockFind.exec(function (err, block) {
-                              if (err)
-                                console.error(err); 
-                              else if (block){
-                                collection.update({ "timestamp": null, "blockNumber": block.number }, 
-                                                  {"timestamp": block.timestamp}, {multi: true}, 
-                                                  function(err, num) {
-                                                    console.log("updated " + num);
-                                                  });
+    collection.find( {"timestamp": null}, "blockNumber").lean(true) 
+               .exec(function (err, result) {
+                      console.log(result);
+                      result.forEach(function(txs) {
+                        var blockFind = Block.findOne( { "number" : txs.blockNumber }, "timestamp").lean(true);
+                        blockFind.exec(function (err, block) {
+                          if (err)
+                            console.error(err); 
+                          else if (block){
+                            collection.update({ "timestamp": null, "blockNumber": block.number }, 
+                                              {"timestamp": block.timestamp}, {multi: true}, 
+                                              function(err, num) {
+                                                console.log("updated " + num);
+                                              });
 
-                                }
-                              });
-                          });
+                            }
                         });
+                      });
+                    });
   })
 }
 
