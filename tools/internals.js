@@ -129,11 +129,12 @@ setInterval(function() {
   last = latest;
 }, statInterval);
 */
-InternalTx.findOne({}, "blockNumber").lean(true).sort("-blockNumber")
+mongoose.connection.on("open", function(err,conn) { 
+  InternalTx.findOne({}, "blockNumber").lean(true).sort("-blockNumber")
         .exec(function(err, doc) {
           var last = doc.blockNumber;
           var latest = web3.eth.blockNumber;
           getLatestBlocks(latest, last);
         });
-
+});
 
