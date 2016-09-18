@@ -1,5 +1,7 @@
 var mongoose = require( 'mongoose' );
+require( '../db-internal.js' );
 var Block     = mongoose.model( 'Block' );
+var InternalTx     = mongoose.model( 'InternalTransaction' );
 var filters = require('./filters')
 
 //var Memcached = require('memcached');
@@ -24,6 +26,7 @@ module.exports = function(app){
     { "block": "1234" }
   */
   app.post('/addr', getAddr);
+  app.post('/internal', getInternalTx);
   app.post('/tx', getTx);
   app.post('/block', getBlock);
   app.post('/data', getData);
@@ -42,13 +45,6 @@ var getAddr = function(req, res){
   // TODO: validate addr and tx
   var addr = req.body.addr.toLowerCase();
 
-  // txin = true: inbound tx
-  if (req.body.txin) 
-    var txQuery = "to";
-  else
-    var txQuery = "from";
-
-  var findQuery = "transactions." + txQuery;
   var addrFind = Block.find( { $or: [{"transactions.to": addr}, {"transactions.from": addr}] },
                             "transactions timestamp").lean(true).sort('-number').limit(MAX_ENTRIES);
   addrFind.exec(function (err, docs) {
@@ -108,6 +104,29 @@ var getTx = function(req, res){
   });
 
 };
+
+var getInternalTx = function(req, res){
+
+  var addr = req.body.addr.toLowerCase();
+
+  var txFind = InternalTx.find( { "action.callType" : "call", 
+                  $or: [{"action.from": addr}, {"action.to": addr}] }, "action transactionHash blockNumber timestamp")
+                  .lean(true).sort('-blockNumber').limit(MAX_ENTRIES);
+
+  txFind.exec(function (err, docs) {
+    if (!docs.length){
+      res.write(JSON.stringify([]));
+      res.end();
+    } else {
+      // filter transactions
+      res.write(JSON.stringify(filters.internalTX(docs)));
+      res.end();
+    }
+  });
+
+};
+
+
 
 /*
   Fetch data from DB

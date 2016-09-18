@@ -8,10 +8,11 @@ var Web3 = require("web3");
 var web3;
 
 require( '../../db-dao.js' );
+require( '../../db-internal.js' );
 var mongoose = require( 'mongoose' );
 var DAOCreatedToken = mongoose.model('DAOCreatedToken');
 var DAOTransferToken = mongoose.model('DAOTransferToken');
-
+var InternalTx     = mongoose.model( 'InternalTransaction' );
 
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
@@ -147,7 +148,6 @@ var patchTimestamps = function(collection) {
 
     var bulkOps = [];
     var count = 0;
-    var q = 0;
     var missingCount = 5200;
     collection.count({timestamp: null}, function(err, c) {
       missingCount = c;
@@ -155,7 +155,6 @@ var patchTimestamps = function(collection) {
     });
 
     collection.find({timestamp: null}).forEach(function(doc) {
-      q++;
       setTimeout(function() {
         try {
           var block = web3.eth.getBlock(doc.blockNumber);
@@ -167,7 +166,7 @@ var patchTimestamps = function(collection) {
             '$set': { 'timestamp': block.timestamp }
         });
         count++;
-        if(count % 1000 === 0) {
+        if(count % 100 === 0) {
           // Execute per 1000 operations and re-init
           bulkTimeUpdate(bulk);
           bulk = collection.initializeOrderedBulkOp();
@@ -176,15 +175,16 @@ var patchTimestamps = function(collection) {
           // Clean up queues
           bulkTimeUpdate(bulk);
         }
-      }, 100*q);
+      }, 1000);
     });
         
   })
 }
 
+
 mongoose.connect( 'mongodb://localhost/blockDB' );
 mongoose.set('debug', true);
 
-patchTimestamps(DAOCreatedToken.collection)
+patchTimestamps(InternalTx.collection)
 // populateCreatedTokens();
 // populateTransferTokens();

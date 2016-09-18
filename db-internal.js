@@ -14,7 +14,7 @@ var InternalTransaction = new Schema(
       "init": String, // for create
       "address": String, // for suicide
       "refundAddress": String,
-      "balance": Number
+      "balance": String
     },
     "result": {
       "gasUsed":Number,
@@ -26,13 +26,11 @@ var InternalTransaction = new Schema(
     "traceAddress":[String],
     "subtraces":Number,
     "transactionPosition":Number,
-    "transactionHash":String, // parent transaction
-    "blockNumber":Number,
+    "transactionHash": {type: String, index: {unique: false}}, // parent transaction
+    "blockNumber":{type: Number, index: {unique: false}},
+    "timestamp": Number,
     "blockHash":String
 });
 
 mongoose.model('InternalTransaction', InternalTransaction);
 module.exports.InternalTransaction = mongoose.model('InternalTransaction');
-
-mongoose.connect( 'mongodb://localhost/blockDB' );
-mongoose.set('debug', true);
