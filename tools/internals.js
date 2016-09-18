@@ -119,8 +119,21 @@ mongoose.set('debug', true);
 
 var minutes = 5;
 statInterval = minutes * 60 * 1000;
+/*
+var last = 2258044;
+setInterval(function() {
+  // get latest 
+  var latest = web3.eth.blockNumber;
+  console.log(latest)
+  getLatestBlocks(latest, last);
+  last = latest;
+}, statInterval);
+*/
+InternalTx.findOne({}, "blockNumber").lean(true).order("-blockNumber")
+        .exec(function(err, doc) {
+          var last = doc.blockNumber;
+          var latest = web3.eth.blockNumber;
+          getLatestBlocks(latest, last);
+        });
 
-var last = 2261063;
-var latest = web3.eth.blockNumber;
-console.log(latest)
-getLatestBlocks(latest, last);
+
