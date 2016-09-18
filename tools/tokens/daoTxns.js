@@ -167,13 +167,13 @@ var patchTimestamps = function(collection) {
             if (err)
               console.error(err); 
             else if (block) {
-                collection.update({ "timestamp": null, "blockNumber": block.number }, 
+                collection.update({ "timestamp": null, "blockNumber": doc.blockNumber }, 
                                   {"timestamp": block.timestamp}, {multi: true}, 
                                   function(err, num) {
                                     console.log("updated " + num);
                                   });
                 }
-            }
+            
           });
         } catch (e) {
           console.error(e); return;
