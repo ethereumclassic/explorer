@@ -120,7 +120,7 @@ mongoose.set('debug', true);
 var minutes = 5;
 statInterval = minutes * 60 * 1000;
 
-var last = 2255038;
+var last = 2258044;
 setInterval(function() {
   // get latest 
   var latest = web3.eth.blockNumber;
