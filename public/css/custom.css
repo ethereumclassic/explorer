@@ -17,7 +17,7 @@ img.logo-default {
     overflow-y: scroll;
     overflow-x: hidden;
 }
-#table_txs td {
+#table_txs td, #table_internal_txs td {
     font-size: 12px;
     white-space:nowrap; 
     overflow:hidden;
