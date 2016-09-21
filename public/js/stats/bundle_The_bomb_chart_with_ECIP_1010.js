@@ -10,6 +10,7 @@ window.call_hashrate_chart = function(){
 
     async.waterfall([
         myFirstFunction,
+        get_ave_block_time,
         mySecondFunction,
         myLastFunction
     ], function (err, result) {
@@ -27,7 +28,7 @@ window.call_hashrate_chart = function(){
 
                 var hashrate = JSON.parse(body);
                 //console.log(hashrate);
-                callback(null, hashrate, 'two');
+                callback(null, hashrate);
             }
         });
 
@@ -35,31 +36,110 @@ window.call_hashrate_chart = function(){
 
         //callback(null, 'one', 'two');
     }
+    function get_ave_block_time(arg1, callback) {
+
+
+        request('http://drawpie.com/etc_avg_block_time', function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+
+                var ave_block_time = JSON.parse(body);
+                //console.log(hashrate);
+                callback(null, arg1, ave_block_time);
+            }
+        });
+
+
+
+        //callback(null, 'one', 'two');
+    }
+
     function mySecondFunction(arg1, arg2, callback) {
         // arg1 now equals 'one' and arg2 now equals 'two'
 
         //console.log(112);
-        //console.log(arg1);
-        var day = moment("2016-08-10");
-        var day_with_ECIP_1010 = moment("2016-08-10");
+        //console.log(arg2.base_diff);
+        //console.log(arg2.etc_avg_block_time[0].array);
+        var ave_block_time_array = arg2.etc_avg_block_time[0].array;
+        ave_block_time_array.reverse();
+        var ave_block_time_array_sliced = _.slice(ave_block_time_array,0,15);
+        //console.log(ave_block_time_array_sliced);
+
+        var ave_block_time_array_sliced_lodashed = _.meanBy(ave_block_time_array_sliced, function(d) { return d.avg_block_time; });
+        //console.log("ave_block_time_array_sliced_lodashed");
+        //console.log(ave_block_time_array_sliced_lodashed);
+
+        var start_count_block = 2250000; // 1473790866
+        var day = moment.unix(1473790866);
+        var day_with_ECIP_1010 = moment.unix(1473790866);
+
+        // var day = moment("2016-08-10");
+        //var day_with_ECIP_1010 = moment("2016-08-10");
 
         var bomb_array =[];
         var bomb_array_with_ECIP_1010 =[];
 
+        var base_diff = arg2.base_diff;
 
-        for(i=2000000;i<4500000;i = i +50000){
+
+
+        for(i=start_count_block;i<4500000;i = i +50000){
             //console.log(i);
             //Math.pow(2, (block_number/100000)-2);
             //console.log(Math.pow(2, (i/100000)-2));
 
             //bomb_array.push({Date :day.unix(), Value : Math.pow(2, (i/100000000000)-2) +  10677580591563});
-            bomb_array.push({Date :day.unix(), Value : Math.pow(2, (i/100000)-2)+8000000000000});
 
-            day.add(14*50000, 's');
+            switch (true) {
+                case (i<3000000):
+
+
+                    //console.log(i);
+                    //Math.pow(2, (block_number/100000)-2);
+                    //console.log(Math.pow(2, (i/100000)-2));
+
+                    //bomb_array.push({Date :day.unix(), Value : Math.pow(2, (i/100000000000)-2) +  10677580591563});
+                    bomb_array.push({
+                        Date :day.unix(),
+                        Value : Math.pow(2, (i/100000)-2)+base_diff,
+                        number : i
+                    });
+
+                    break;
+
+                case (i>=3000000):
+
+                    if (i == 3000000){
+                        //console.log("Block 3000000 time ");
+                        //console.log(day.format());
+                    }
+                    //console.log(i);
+                    //Math.pow(2, (block_number/100000)-2);
+                    //console.log(Math.pow(2, 28));
+
+                    //bomb_array.push({Date :day.unix(), Value : Math.pow(2, (i/100000000000)-2) +  10677580591563});
+                    bomb_array.push({
+                        Date :day.unix(),
+                        Value : Math.pow(2, (i/100000)-2)+base_diff+100000000000,
+                        number : i
+                    });
+
+                    break;
+
+            }
+
+            /*
+             bomb_array.push({
+             Date :day.unix(),
+             Value : Math.pow(2, (i/100000)-2)+base_diff,
+             number : i
+             });
+             */
+
+            day.add(ave_block_time_array_sliced_lodashed*50000, 's');
             //console.log(day.format())
         }
 
-        for(i=2000000;i<6500000;i = i +50000){
+        for(i=start_count_block;i<6500000;i = i +50000){
 
 
             //console.log(1123);
@@ -73,7 +153,11 @@ window.call_hashrate_chart = function(){
                     //console.log(Math.pow(2, (i/100000)-2));
 
                     //bomb_array.push({Date :day.unix(), Value : Math.pow(2, (i/100000000000)-2) +  10677580591563});
-                    bomb_array_with_ECIP_1010.push({Date :day_with_ECIP_1010.unix(), Value : Math.pow(2, (i/100000)-2)+8000000000000});
+                    bomb_array_with_ECIP_1010.push({
+                        Date :day_with_ECIP_1010.unix(),
+                        Value : Math.pow(2, (i/100000)-2)+base_diff,
+                        number : i
+                    });
 
                     break;
 
@@ -85,7 +169,11 @@ window.call_hashrate_chart = function(){
                     //console.log(Math.pow(2, 28));
 
                     //bomb_array.push({Date :day.unix(), Value : Math.pow(2, (i/100000000000)-2) +  10677580591563});
-                    bomb_array_with_ECIP_1010.push({Date :day_with_ECIP_1010.unix(), Value : Math.pow(2, 28)+8000000000000});
+                    bomb_array_with_ECIP_1010.push({
+                        Date :day_with_ECIP_1010.unix(),
+                        Value : Math.pow(2, 28)+base_diff-100000000000,
+                        number : i
+                    });
 
                     break;
 
@@ -97,7 +185,11 @@ window.call_hashrate_chart = function(){
                     //console.log(Math.pow(2, (i/100000)-2-20));
 
                     //bomb_array.push({Date :day.unix(), Value : Math.pow(2, (i/100000000000)-2) +  10677580591563});
-                    bomb_array_with_ECIP_1010.push({Date :day_with_ECIP_1010.unix(), Value : Math.pow(2, (i/100000)-2-20)+8000000000000});
+                    bomb_array_with_ECIP_1010.push({
+                        Date :day_with_ECIP_1010.unix(),
+                        Value : Math.pow(2, (i/100000)-2-20)+base_diff-100000000000,
+                        number : i
+                    });
 
                     break;
 
@@ -105,7 +197,7 @@ window.call_hashrate_chart = function(){
 
 
 
-            day_with_ECIP_1010.add(14*50000, 's');
+            day_with_ECIP_1010.add(ave_block_time_array_sliced_lodashed*50000, 's');
             //console.log(day.format())
         }
 
@@ -156,11 +248,17 @@ window.call_hashrate_chart = function(){
             .x(function(d) { return x(d.timestamp*1000); })
             .y(function(d) { return y(d.difficulty); });
 
-        /*
-         var valueline_bomb = d3.svg.line()
-         .x(function(d) { return x(d.Date*1000); })
-         .y(function(d) { return y(d.Value); });
-         */
+
+        var valueline_bomb = d3.svg.line()
+            .x(function(d) { return x(d.Date*1000); })
+            .y(function(d) { return y(d.Value); });
+
+        var valueline_bomb_with_ECIP_1010 = d3.svg.line()
+            .x(function(d) { return x(d.Date*1000); })
+            .y(function(d) { return y(d.Value); });
+
+
+
 
         var svg = d3.select("#hashrate")
         //.append("svg")
@@ -228,12 +326,31 @@ window.call_hashrate_chart = function(){
         svg.append("path")
             .attr("d", valueline(data));
 
+        svg.append("path")
+            .attr("d", valueline_bomb(bomb_array));
+
+        svg.append("path")
+            .attr("d", valueline_bomb_with_ECIP_1010(bomb_array_with_ECIP_1010));
+
+
+
+
         svg.selectAll("circle")
             .data(bomb_array)
             .enter()
             .append("circle")
             .attr("cx", function (d) { return x(new Date(d.Date*1000)) })
-            .attr("cy", function (d) { return y(d.Value)-10; })
+            .attr("cy", function (d) {
+
+                if(d.number < 3000000){
+                    return y(d.Value);
+                }
+                else{
+                    return y(d.Value);
+                }
+                //return y(d.Value)-10;
+
+            })
             .attr("r", function (d) { return 3; })
             .style("fill", function(d) {
                 /*
@@ -253,18 +370,26 @@ window.call_hashrate_chart = function(){
             .enter()
             .append("circle")
             .attr("cx", function (d) { return x(new Date(d.Date*1000)) })
-            .attr("cy", function (d) { return y(d.Value); })
+            .attr("cy", function (d) {
+
+                if(d.number < 3000000){
+                    return y(d.Value);
+                }
+                else{
+                    return y(d.Value);
+                }
+                //return y(d.Value)-10;
+
+            })
             .attr("r", function (d) { return 3; })
             .style("fill", function(d) {
-                /*
-                 if(d.Value < 8250000000000){
-                 return "green";
-                 }
-                 else{
-                 return "red";
-                 }
-                 */
-                return "green";
+
+                if(d.number < 3000000){
+                    return "red";
+                }
+                else{
+                    return "green";
+                }
 
             });
 
@@ -289,10 +414,10 @@ window.call_hashrate_chart = function(){
             .attr("width", 10)
             .attr("height", 10);
 
-        console.log(_.last(arg1.etc_hashrate).difficulty);
-        console.log(d3.format(".3s")(_.last(arg1.etc_hashrate).difficulty));
+        //console.log(_.last(arg1.etc_hashrate).difficulty);
+        //console.log(d3.format(".3s")(_.last(arg1.etc_hashrate).difficulty));
         //d3.format("s")(d) +'H/s'
-        console.log(_.last(arg1.etc_hashrate).unixtime);
+        //console.log(_.last(arg1.etc_hashrate).unixtime);
 
 
         svg.append("text")
@@ -335,15 +460,156 @@ window.call_hashrate_chart = function(){
             .attr("font-size", "20px");
 
         //add mark
-        /*
+
+        //console.log(bomb_array_with_ECIP_1010);
+
+
+        var block_3000000_time = _.find(bomb_array_with_ECIP_1010, function(d) { return d.number == 3000000; });
+
+        //console.log(block_3000000_time);
+        //console.log(block_3000000_time.Date);
+
         svg.append("line")
-            .attr("x1", x(new Date(_.last(arg1.etc_hashrate).unixtime*1000)))
+            .attr("x1", x(new Date(_.last(arg1.etc_hashrate).unixtime*1000))+10)
             .attr("y1", 0+270)
-            .attr("x2", x(new Date(_.last(arg1.etc_hashrate).unixtime*1000)))
+            .attr("x2", x(new Date(_.last(arg1.etc_hashrate).unixtime*1000))+10)
             .attr("y2", 10+270)
-            .attr("stroke-width", 2)
+            .attr("stroke-width", 1)
             .attr("stroke", "black");
-            */
+
+        svg.append("line")
+            .attr("x1", x(new Date(block_3000000_time.Date*1000)))
+            .attr("y1", 0+270)
+            .attr("x2", x(new Date(block_3000000_time.Date*1000)))
+            .attr("y2", 10+270)
+            .attr("stroke-width", 1)
+            //.style("stroke-dasharray", ("3, 3"))
+            .attr("stroke", "black");
+
+        svg.append("line")
+            .attr("x1", x(new Date(block_3000000_time.Date*1000)))
+            .attr("y1", 0+270-80)
+            .attr("x2", x(new Date(block_3000000_time.Date*1000)))
+            .attr("y2", 10+270)
+            .attr("stroke-width", 1)
+            .style("stroke-dasharray", ("3, 3"))
+            .attr("stroke", "black");
+
+        svg.append("text")
+            .attr("x", x(new Date(block_3000000_time.Date*1000)))
+            //.attr("x", x(new Date(_.last(arg1.etc_hashrate).unixtime*1000))+10)
+            .attr("y", 0+260-80-10-15)
+            .text("ECIP-1010 Deploy, Block 3000000")
+            .attr("text-anchor", "middle")
+            .attr("dy", "10px")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px");
+
+        svg.append("text")
+            .attr("x", x(new Date(block_3000000_time.Date*1000)))
+            //.attr("x", x(new Date(_.last(arg1.etc_hashrate).unixtime*1000))+10)
+            .attr("y", 0+260-80-10)
+            .text(new Date(block_3000000_time.Date*1000)+" (expected)")
+           .attr("text-anchor", "middle")
+            .attr("dy", "10px")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px");
+
+
+
+        svg.append("line")
+            .attr("x1", x(new Date(_.last(arg1.etc_hashrate).unixtime*1000))+10)
+            .attr("y1", 5+270)
+            .attr("x2", x(new Date(block_3000000_time.Date*1000)))
+            .attr("y2", 5+270)
+            .attr("stroke-width", 1)
+            .attr("stroke", "black");
+
+        var duration = block_3000000_time.Date - _.last(arg1.etc_hashrate).unixtime;
+        //console.log(duration);
+        //console.log(moment.duration(duration, 'seconds').humanize());
+
+
+
+        svg.append("text")
+            .attr("x", x(new Date(( duration/2 + _.last(arg1.etc_hashrate).unixtime ) *1000))+0)
+            //.attr("x", x(new Date(_.last(arg1.etc_hashrate).unixtime*1000))+10)
+            .attr("y", 0+260)
+            .text(moment.duration(duration, 'seconds').humanize())
+            .attr("text-anchor", "middle")
+            .attr("dy", "10px")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px");
+
+
+        var block_4000000_time = _.find(bomb_array_with_ECIP_1010, function(d) { return d.number == 4000000; });
+
+        var duration_30_40 = block_4000000_time.Date - block_3000000_time.Date;
+        //console.log(duration_30_40);
+        //console.log(moment.duration(duration_30_40, 'seconds').humanize());
+
+        svg.append("line")
+            .attr("x1", x(new Date(block_3000000_time.Date*1000)))
+            .attr("y1", 5+270)
+            .attr("x2", x(new Date(block_4000000_time.Date*1000)))
+            .attr("y2", 5+270)
+            .attr("stroke-width", 1)
+            .attr("stroke", "black");
+
+        //((block_4000000_time.Date-block_3000000_time.Date)/2+block_3000000_time.Date)
+
+        svg.append("text")
+            .attr("x", x(new Date(((block_4000000_time.Date-block_3000000_time.Date)/2+block_3000000_time.Date)*1000)))
+            .attr("y", 0+260)
+            .text(moment.duration(duration_30_40, 'seconds').humanize())
+            .attr("text-anchor", "middle")
+            .attr("dy", "10px")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px");
+
+        svg.append("line")
+            .attr("x1", x(new Date(block_4000000_time.Date*1000)))
+            .attr("y1", 0+270)
+            .attr("x2", x(new Date(block_4000000_time.Date*1000)))
+            .attr("y2", 10+270)
+            .attr("stroke-width", 1)
+            .attr("stroke", "black");
+
+
+        var block_6000000_time = _.find(bomb_array_with_ECIP_1010, function(d) { return d.number == 6000000; });
+
+        var duration_40_60 = block_6000000_time.Date - block_4000000_time.Date;
+        //console.log(duration_40_60);
+        //console.log(moment.duration(duration_40_60, 'seconds').humanize());
+
+        svg.append("line")
+            .attr("x1", x(new Date(block_4000000_time.Date*1000)))
+            .attr("y1", 5+270)
+            .attr("x2", x(new Date(block_6000000_time.Date*1000)))
+            .attr("y2", 5+270)
+            .attr("stroke-width", 1)
+            .attr("stroke", "black");
+
+        svg.append("line")
+            .attr("x1", x(new Date(block_6000000_time.Date*1000)))
+            .attr("y1", 0+270)
+            .attr("x2", x(new Date(block_6000000_time.Date*1000)))
+            .attr("y2", 10+270)
+            .attr("stroke-width", 1)
+            .attr("stroke", "black");
+
+       // ((block_6000000_time.Date-block_4000000_time.Date)/2+block_4000000_time.Date);
+
+        svg.append("text")
+            //.attr("x", x(new Date((block_4000000_time.Date*1000))))
+            .attr("x", x(new Date(( ((block_6000000_time.Date-block_4000000_time.Date)/2+block_4000000_time.Date)*1000))))
+            .attr("y", 0+260)
+            .text(moment.duration(duration_40_60, 'seconds').humanize())
+            .attr("text-anchor", "middle")
+            .attr("dy", "10px")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px");
+
 
 
 
