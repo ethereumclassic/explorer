@@ -7,9 +7,11 @@
 var Web3 = require("web3");
 var web3;
 
+require( '../../db.js' );
 require( '../../db-dao.js' );
 require( '../../db-internal.js' );
 var mongoose = require( 'mongoose' );
+var Block = mongoose.model('Block');
 var DAOCreatedToken = mongoose.model('DAOCreatedToken');
 var DAOTransferToken = mongoose.model('DAOTransferToken');
 var InternalTx     = mongoose.model( 'InternalTransaction' );
@@ -181,10 +183,32 @@ var patchTimestamps = function(collection) {
   })
 }
 
+var patchBlocks = function() {
+  mongoose.connection.on("open", function(err,conn) { 
 
-mongoose.connect( 'mongodb://localhost/blockDB' );
-mongoose.set('debug', true);
+    Block.find({}, "number timestamp").lean(true).exec(function(err, docs) {
+        async.forEach(docs, function(doc, cb) {
+            var bulkOps = [];
+          InternalTransaction.update({ 'timestamp': null, 'blockNumber': doc.number }, 
+                                { $set: { 'timestamp': doc.timestamp }}, {multi: true, upsert: false},
+                            function(err, stuff) {
+                              if (err) console.error(err);
+                              console.log(stuff);
+                            });
+            
 
-patchTimestamps(InternalTx.collection)
+    }, function() { return; });
+      });  
+        
+  })  
+}
+
+InternalTx.collection.count({timestamp: null}, function(err, c) {
+  missingCount = c;
+  console.log("Missing: " + JSON.stringify(missingCount));
+});
+
+patchBlocks();
+// patchTimestamps(InternalTx.collection)
 // populateCreatedTokens();
 // populateTransferTokens();
