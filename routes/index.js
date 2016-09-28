@@ -46,7 +46,7 @@ var getAddr = function(req, res){
   var addr = req.body.addr.toLowerCase();
 
   var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
-                          .lean(true).sort('-blockNumber').limit(MAX_ENTRIES);
+                          .lean(true).sort('-blockNumber');
   addrFind.exec(function (err, docs) {
     if (!docs.length){
       res.write(JSON.stringify([]));
@@ -111,7 +111,7 @@ var getInternalTx = function(req, res){
 
   var txFind = InternalTx.find( { "action.callType" : "call", 
                   $or: [{"action.from": addr}, {"action.to": addr}] }, "action transactionHash blockNumber timestamp")
-                  .lean(true).sort('-blockNumber').limit(MAX_ENTRIES);
+                  .lean(true).sort('-blockNumber');
 
   txFind.exec(function (err, docs) {
     if (!docs.length){
