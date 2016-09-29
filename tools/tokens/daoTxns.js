@@ -188,7 +188,7 @@ const BATCH = 1000;
 
 var patchBlocks = function(max, min) {
 
-  return Block.find({"number": {$gt: max, $lt: min}}, "number timestamp").lean(true).exec(function(err, docs) {
+  return Block.find({"number": {$gt: min, $lt: max}}, "number timestamp").lean(true).exec(function(err, docs) {
     async.forEach(docs, function(doc, cb) {
       var q = { 'timestamp': null, 'blockNumber': doc.number };
       InternalTx.collection.findAndModify(q, [],
