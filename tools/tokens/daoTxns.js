@@ -189,10 +189,13 @@ var patchBlocks = function() {
   Block.find({}, "number timestamp").lean(true).exec(function(err, docs) {
     async.forEach(docs, function(doc, cb) {
       var q = { 'timestamp': null, 'blockNumber': doc.number };
-      InternalTx.collection.update(q, 
+      InternalTx.collection.findAndModify(q, [],
                             { $set: { 'timestamp': doc.timestamp }}, 
-                            {multi: true, upsert: false});
-      cb();
+                            {multi: true, upsert: false}, function(err, tx) {
+                              if(err) console.error(err);
+                              console.log(tx)
+                              cb();
+                            });
     }, function() { return; });
   });  
         
