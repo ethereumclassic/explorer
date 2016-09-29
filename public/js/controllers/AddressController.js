@@ -42,9 +42,9 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       ajax: {
         url: '/addr',
         type: 'POST',
-        data: { "$or": [{"action.to": $scope.addrHash}, {"action.from": $scope.addrHash}],
-                "action.callType": "call" },
+        data: { "addr": $scope.addrHash },
         dataSrc: function(json) {
+          console.log(json)
           $("#table_wait").remove();
           return json;
         }
@@ -64,20 +64,6 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
         "infoFiltered": "(filtered from _MAX_ total txs)"
       },
       "columnDefs": [ 
-        { "name": "transactionHash", "targets": 0},
-        { "name": "blockNumber", "targets": 1},
-        { "name": "action.from", "targets": 2},
-        { "name": "action.to", "targets": 3},
-        { "name": "action.value", "targets": 4},
-        { "name": "action.gas", "targets": 5},
-        { "name": "timestamp", "targets": 6},
-        { "data": "transactionHash", "targets": 0},
-        { "data": "blockNumber", "targets": 1},
-        { "data": "action.from", "targets": 2},
-        { "data": "action.to", "targets": 3},
-        { "data": "action.value", "targets": 4},
-        { "data": "action.gas", "targets": 5},
-        { "data": "timestamp", "targets": 6},
         { "targets": [ 5 ], "visible": false, "searchable": false },
         {"type": "date", "targets": 6},
         {"orderable": false, "targets": [0,2,3]},

@@ -4,8 +4,6 @@ var Block     = mongoose.model( 'Block' );
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 var filters = require('./filters')
 
-var datatablesQuery = require('datatables-query');
-
 //var Memcached = require('memcached');
 //var memcached = new Memcached("localhost:11211");
 
@@ -43,13 +41,26 @@ module.exports = function(app){
 var getAddr = function(req, res){
   // TODO: validate addr and tx
   console.log(req.body)
+  var addr = req.body.addr.toLowerCase();
 
-  var addrFind = datatablesQuery(InternalTx);
-  
-  addrFind.run(req.body).then(function (data) {
-    res.json(data);
-  }, function (err) {
-    res.status(500).json(err);
+  var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
+                          .lean(true).sort('-blockNumber');
+  addrFind.exec(function (err, docs) {
+    var data = {
+        draw: parseInt(req.body.draw),
+        recordsTotal: docs.length,
+        recordsFiltered: docs.length
+      }
+
+    if (!docs.length){
+      res.write(JSON.stringify(data));
+      res.end();
+    } else {
+      // filter transactions
+      data.data = filters.filterTX(docs, addr);
+      res.write(data);
+      res.end();
+    }
   });
 
 };
