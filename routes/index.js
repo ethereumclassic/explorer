@@ -112,6 +112,8 @@ var getInternalTx = function(req, res){
   var limit = parseInt(req.body.length);
   var start = parseInt(req.body.start);
 
+  var count = req.body.count;
+
   var data = { draw: parseInt(req.body.draw) };
 
 
@@ -121,6 +123,12 @@ var getInternalTx = function(req, res){
 
   async.parallel([
     function(cb) {
+      if (count) {
+        data.recordsFiltered = parseInt(count); 
+        data.recordsTotal = parseInt(count);
+        cb();
+        return;
+      }
       InternalTx.find( { "action.callType" : "call", 
                   $or: [{"action.from": addr}, {"action.to": addr}] })
                 .count(function(err, count) {

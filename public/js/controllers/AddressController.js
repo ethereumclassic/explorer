@@ -91,7 +91,11 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
         ajax: {
           url: '/internal',
           type: 'POST',
-          data: { "addr": $scope.addrHash }
+          data: { "addr": $scope.addrHash, "count": $scope.internalCount },
+          dataSrc: function (json) {
+            $scope.internalCount = json.recordsTotal;
+            return json.data;
+          }
          },
           "lengthMenu": [
                       [10, 20, 50, 100, 150, -1],
