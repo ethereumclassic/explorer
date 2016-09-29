@@ -40,36 +40,26 @@ module.exports = function(app){
 
 var getAddr = function(req, res){
   // TODO: validate addr and tx
-  console.log(req.body)
   var addr = req.body.addr.toLowerCase();
+  var count = parseInt(req.body.count);
+
   var limit = parseInt(req.body.length);
   var start = parseInt(req.body.start);
 
-  var data = { draw: parseInt(req.body.draw) };
+  var data = { draw: parseInt(req.body.draw), recordsFiltered: count, recordsTotal: count };
 
   var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
-  async.parallel([
-      function(cb) {
-        addrFind.count(function(err, count) {
-          data.recordsTotal = parseInt(count);
-          cb();
-        })                                
-      }, 
-      function(cb) {
-        addrFind.lean(true).sort('-blockNumber').skip(start).limit(limit)
-                .exec("find", function (err, docs) {
-                  data.recordsFiltered = parseInt(docs.length);
-                  if (docs.length)
-                    data.data = filters.filterTX(docs, addr);      
-                  else 
-                    data.data = [];
-                  cb();
-                });
-      }
-    ], function(err, results) {
-      res.write(JSON.stringify(data));
-      res.end();
-  })
+
+  addrFind.lean(true).sort('-blockNumber').skip(start).limit(limit)
+          .exec("find", function (err, docs) {
+            if (docs.length)
+              data.data = filters.filterTX(docs, addr);      
+            else 
+              data.data = [];
+            res.write(JSON.stringify(data));
+            res.end();
+          });
+
 };
  
 
@@ -119,21 +109,53 @@ var getTx = function(req, res){
 var getInternalTx = function(req, res){
 
   var addr = req.body.addr.toLowerCase();
+  var limit = parseInt(req.body.length);
+  var start = parseInt(req.body.start);
+
+  var data = { draw: parseInt(req.body.draw) };
+
 
   var txFind = InternalTx.find( { "action.callType" : "call", 
                   $or: [{"action.from": addr}, {"action.to": addr}] }, "action transactionHash blockNumber timestamp")
-                  .lean(true).sort('-blockNumber');
+                  .lean(true).sort('-blockNumber').skip(start).limit(limit)
 
-  txFind.exec(function (err, docs) {
-    if (!docs.length){
-      res.write(JSON.stringify([]));
-      res.end();
-    } else {
-      // filter transactions
-      res.write(JSON.stringify(filters.internalTX(docs)));
-      res.end();
+  async.parallel([
+    function(cb) {
+      InternalTx.find( { "action.callType" : "call", 
+                  $or: [{"action.from": addr}, {"action.to": addr}] })
+                .count(function(err, count) {
+                    data.recordsFiltered = count; 
+                    data.recordsTotal = count;
+                    cb()
+                  });
+    }, function(cb) {
+      txFind.exec("find", function (err, docs) {
+        if (docs.length)
+          data.data = filters.internalTX(docs);      
+        else 
+          data.data = [];
+        cb();
+      });
     }
-  });
+
+    ], function(results, err) {
+      res.write(JSON.stringify(data));
+      res.end();
+    })
+
+
+
+  var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
+
+  addrFind.lean(true).sort('-blockNumber').skip(start).limit(limit)
+          .exec("find", function (err, docs) {
+            if (docs.length)
+              data.data = filters.filterTX(docs, addr);      
+            else 
+              data.data = [];
+            res.write(JSON.stringify(data));
+            res.end();
+          });
 
 };
 
