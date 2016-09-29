@@ -185,19 +185,17 @@ var patchTimestamps = function(collection) {
 }
 
 var patchBlocks = function() {
-  mongoose.connection.on("open", function(err,conn) { 
 
-    Block.find({}, "number timestamp").lean(true).exec(function(err, docs) {
-        async.forEach(docs, function(doc, cb) {
-          var q = { 'timestamp': null, 'blockNumber': doc.number };
-          InternalTx.collection.update(q, 
-                                { $set: { 'timestamp': doc.timestamp }}, 
-                                {multi: true, upsert: false});
-
+  Block.find({}, "number timestamp").lean(true).exec(function(err, docs) {
+    async.forEach(docs, function(doc, cb) {
+      var q = { 'timestamp': null, 'blockNumber': doc.number };
+      InternalTx.collection.update(q, 
+                            { $set: { 'timestamp': doc.timestamp }}, 
+                            {multi: true, upsert: false});
+      cb();
     }, function() { return; });
-      });  
+  });  
         
-  })  
 }
 
 InternalTx.collection.count({timestamp: null}, function(err, c) {
