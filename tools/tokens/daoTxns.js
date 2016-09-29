@@ -191,8 +191,7 @@ var patchBlocks = function(max, min) {
   Block.find({"number": {$gt: min, $lt: max}}, "number timestamp").lean(true).exec(function(err, docs) {
     async.forEach(docs, function(doc, cb) {
       var q = { 'timestamp': null, 'blockNumber': doc.number };
-      InternalTx.collection.findAndModify(q, [],
-                            { $set: { 'timestamp': doc.timestamp }}, 
+      InternalTx.collection.update(q, { $set: { 'timestamp': doc.timestamp }}, 
                             {multi: true, upsert: false}, function(err, tx) {
                               if(err) console.error(err);
                               console.log(tx)
@@ -208,7 +207,7 @@ InternalTx.collection.count({timestamp: null}, function(err, c) {
   console.log("Missing: " + JSON.stringify(missingCount));
 });
 
-var min = 0;
+var min;
 
 var max = web3.eth.blockNumber;
 
@@ -216,8 +215,9 @@ setInterval(function() {
   InternalTx.findOne({"timestamp": null}, "blockNumber")
           .lean(true).sort('blockNumber')
           .exec(function(err, doc) {
+            console.log(doc)
             if (doc)
-              min = doc.blockNumber;
+              min = doc.blockNumber - 1;
             else
               min = max;
 
@@ -227,7 +227,7 @@ setInterval(function() {
 
             patchBlocks(next, min);
           });
-}, 10000);
+}, 20000);
 
 
 // patchTimestamps(InternalTx.collection)
