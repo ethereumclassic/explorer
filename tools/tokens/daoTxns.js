@@ -6,6 +6,7 @@
 
 var Web3 = require("web3");
 var web3;
+var async = require('async');
 
 require( '../../db.js' );
 require( '../../db-dao.js' );
@@ -188,15 +189,10 @@ var patchBlocks = function() {
 
     Block.find({}, "number timestamp").lean(true).exec(function(err, docs) {
         async.forEach(docs, function(doc, cb) {
-            var bulkOps = [];
-          InternalTransaction.update({ 'timestamp': null, 'blockNumber': doc.number }, 
-                                { $set: { 'timestamp': doc.timestamp }}, {multi: true, upsert: false},
-                            function(err, stuff) {
-                              if (err) console.error(err);
-                              console.log(stuff);
-                            });
-            
-
+          var q = { 'timestamp': null, 'blockNumber': doc.number };
+          InternalTx.collection.update(q, 
+                                { $set: { 'timestamp': doc.timestamp }}, 
+                                {multi: true, upsert: false});
     }, function() { return; });
       });  
         
