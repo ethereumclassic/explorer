@@ -38,16 +38,12 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     //fetch transactions
 
     $("#table_txs").DataTable({
+      processing: true,
       serverSide: true,
       ajax: {
         url: '/addr',
         type: 'POST',
-        data: { "addr": $scope.addrHash },
-        dataSrc: function(json) {
-          console.log(json)
-          $("#table_wait").remove();
-          return json;
-        }
+        data: { "addr": $scope.addrHash }
       },
       "lengthMenu": [
                   [10, 20, 50, 100, 150, -1],

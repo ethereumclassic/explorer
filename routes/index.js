@@ -42,9 +42,11 @@ var getAddr = function(req, res){
   // TODO: validate addr and tx
   console.log(req.body)
   var addr = req.body.addr.toLowerCase();
+  var limit = parseInt(req.body.length);
+  var start = parseInt(req.body.start);
 
   var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
-                          .lean(true).sort('-blockNumber');
+                          .lean(true).sort('-blockNumber').skip(start).limit(limit);
   addrFind.exec(function (err, docs) {
     var data = {
         draw: parseInt(req.body.draw),
@@ -52,15 +54,11 @@ var getAddr = function(req, res){
         recordsFiltered: docs.length
       }
 
-    if (!docs.length){
-      res.write(JSON.stringify(data));
-      res.end();
-    } else {
-      // filter transactions
+    if (docs.length)
       data.data = filters.filterTX(docs, addr);
-      res.write(data);
-      res.end();
-    }
+    res.write(JSON.stringify(data));
+    res.end();
+
   });
 
 };
