@@ -193,6 +193,7 @@ var patchBlocks = function() {
           InternalTx.collection.update(q, 
                                 { $set: { 'timestamp': doc.timestamp }}, 
                                 {multi: true, upsert: false});
+
     }, function() { return; });
       });  
         
