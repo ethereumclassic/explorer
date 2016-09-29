@@ -138,24 +138,11 @@ var getInternalTx = function(req, res){
       });
     }
 
-    ], function(results, err) {
+    ], function(err, results) {
+      if (err) console.error(err);
       res.write(JSON.stringify(data));
       res.end();
     })
-
-
-
-  var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
-
-  addrFind.lean(true).sort('-blockNumber').skip(start).limit(limit)
-          .exec("find", function (err, docs) {
-            if (docs.length)
-              data.data = filters.filterTX(docs, addr);      
-            else 
-              data.data = [];
-            res.write(JSON.stringify(data));
-            res.end();
-          });
 
 };
 
