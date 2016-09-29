@@ -4,14 +4,13 @@ var Block     = mongoose.model( 'Block' );
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 var filters = require('./filters')
 
+var datatablesQuery = require('datatables-query');
+
 //var Memcached = require('memcached');
 //var memcached = new Memcached("localhost:11211");
 
 module.exports = function(app){
-  if (app.get('env') === 'development') 
-    var web3relay = require('./web3dummy');
-  else
-    var web3relay = require('./web3relay');
+  var web3relay = require('./web3relay');
 
   var DAO = require('./dao');
 
@@ -43,20 +42,14 @@ module.exports = function(app){
 
 var getAddr = function(req, res){
   // TODO: validate addr and tx
-  var addr = req.body.addr.toLowerCase();
+  console.log(req.body)
 
-  var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
-                          .lean(true).sort('-blockNumber');
-  addrFind.exec(function (err, docs) {
-    if (!docs.length){
-      res.write(JSON.stringify([]));
-      res.end();
-    } else {
-      // filter transactions
-      var txDocs = filters.filterTX(docs, addr);
-      res.write(JSON.stringify(txDocs));
-      res.end();
-    }
+  var addrFind = datatablesQuery(InternalTx);
+  
+  addrFind.run(req.body).then(function (data) {
+    res.json(data);
+  }, function (err) {
+    res.status(500).json(err);
   });
 
 };
