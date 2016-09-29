@@ -4,8 +4,8 @@ var Block     = mongoose.model( 'Block' );
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 var filters = require('./filters')
 
-//var Memcached = require('memcached');
-//var memcached = new Memcached("localhost:11211");
+
+var async = require('async');
 
 module.exports = function(app){
   var web3relay = require('./web3relay');
@@ -45,22 +45,31 @@ var getAddr = function(req, res){
   var limit = parseInt(req.body.length);
   var start = parseInt(req.body.start);
 
+  var data = { draw: parseInt(req.body.draw) };
+
   var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
-                          .lean(true).sort('-blockNumber').skip(start).limit(limit);
-  addrFind.exec(function (err, docs) {
-    var data = {
-        draw: parseInt(req.body.draw),
-        recordsTotal: docs.length,
-        recordsFiltered: docs.length
+  async.parallel([
+      function(cb) {
+        addrFind.count(function(err, count) {
+          data.recordsTotal = parseInt(count);
+          cb();
+        })                                
+      }, 
+      function(cb) {
+        addrFind.lean(true).sort('-blockNumber').skip(start).limit(limit)
+                .exec("find", function (err, docs) {
+                  data.recordsFiltered = parseInt(docs.length);
+                  if (docs.length)
+                    data.data = filters.filterTX(docs, addr);      
+                  else 
+                    data.data = [];
+                  cb();
+                });
       }
-
-    if (docs.length)
-      data.data = filters.filterTX(docs, addr);
-    res.write(JSON.stringify(data));
-    res.end();
-
-  });
-
+    ], function(err, results) {
+      res.write(JSON.stringify(data));
+      res.end();
+  })
 };
  
 
