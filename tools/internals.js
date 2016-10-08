@@ -62,7 +62,7 @@ function grabInternalTxs(batchNum, batchSize) {
               j.action = j.action.suicide;
 
             if (j.action.callType)
-              j.action.callType = Object.keys(j.action.callType[0])
+              j.action.callType = Object.keys(j.action.callType)[0]
             if (j.result.call)
               j.result = j.result.call;
             else if (j.result.create)
