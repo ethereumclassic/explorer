@@ -23,7 +23,7 @@ function grabInternalTxs(batchNum, batchSize) {
     "id":' + batchNum + '}';
 
   var post_options = {
-      host: '54.175.149.212',
+      host: 'localhost',
       port: '8545',
       path: '/',
       method: 'POST',
@@ -60,6 +60,9 @@ function grabInternalTxs(batchNum, batchSize) {
               j.action = j.action.create;
             else if (j.action.suicide)
               j.action = j.action.suicide;
+
+            if (j.action.callType)
+              j.action.callType = Object.keys(j.action.callType[0])
             if (j.result.call)
               j.result = j.result.call;
             else if (j.result.create)
