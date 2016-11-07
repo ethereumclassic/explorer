@@ -7,10 +7,27 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.addr;
 
     //fetch compiler options
-    $http.get('COMPILERS.json')
-       .then(function(res){
-          $scope.compilerVersions = res.data;                
-        });
+    $scope.compilerVersions = [];
+
+    $.getJSON('https://ethereum.github.io/solc-bin/bin/list.json').done(function (data) {
+      function buildVersion (build) {
+        if (build.prerelease && build.prerelease.length > 0) {
+          return build.version + '-' + build.prerelease
+        } else {
+          return build.version
+        }
+      }
+
+      // populate version dropdown with all available compiler versions (descending order)
+      $.each(data.builds.slice().reverse(), function (i, build) {
+        $scope.compilerVersions.push({'name': buildVersion(build), 'value': 'v' + build.longVersion})
+      })
+
+    }).fail(function (xhr, text, err) {
+      // loading failed for some reason, fall back to local compiler
+      $scope.compilerVersions.push({'name': 'latest local version', 'value': 'latest'})
+
+    })
 
     $scope.form = {};
     $scope.contract = {"address": $stateParams.addr} 

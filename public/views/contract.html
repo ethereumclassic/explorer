@@ -46,7 +46,7 @@
                 <span class="help-block"><b>Compiler </b></span>
                 <div class="input-group">
                   <select name="compilerVersion" class="form-control" ng-model="contract.version">
-                    <option ng-repeat="cv in compilerVersions" value="{{cv}}">{{cv}}</option>
+                    <option ng-repeat="cv in compilerVersions" value="{{cv.value}}">{{cv.name}}</option>
                   </select>
                 </div>
                 <span class="help-block font-red-mint">{{errors.version}}</span>

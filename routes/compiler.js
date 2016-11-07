@@ -44,17 +44,25 @@ var compileSolc = function(req, res) {
     "sourceCode": input
   }
 
+  console.log(version)
+
   try {
     // latest version doesn't need to be loaded remotely
-    if (version.substr(version.length - 8) == "(latest)") {
+    if (version == "latest") {
         var output = solc.compile(input, optimise);
         testValidCode(output, data, bytecode, res);
     } else {
 
-      // TODO (Elaine): install versions locally
-      solc.loadRemoteVersion(version, function(err, solcV) {          
-        var output = solcV.compile(input, optimise); 
-        testValidCode(output, data, bytecode, res);
+      solc.loadRemoteVersion(version, function(err, solcV) {  
+        if (err) {
+          console.error(err);
+          res.write(JSON.stringify({"valid": false}));
+          res.end();
+        }
+        else {
+          var output = solcV.compile(input, optimise); 
+          testValidCode(output, data, bytecode, res);
+        }
       });
     }
     return;
