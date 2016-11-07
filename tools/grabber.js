@@ -165,7 +165,7 @@ var patchBlocks = function(config) {
         config.gethPort.toString()));
 
     // number of blocks should equal difference in block numbers
-    var firstBlock = 0;
+    var firstBlock = 1000000;
     var lastBlock = web3.eth.blockNumber;
     blockIter(web3, firstBlock, lastBlock, config);
 }
@@ -243,5 +243,5 @@ if (!('blocks' in config) || !(Array.isArray(config.blocks))) {
 console.log('Using configuration:');
 console.log(config);
 
-grabBlocks(config);
-// patchBlocks(config);
+// grabBlocks(config);
+patchBlocks(config);
