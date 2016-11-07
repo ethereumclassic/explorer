@@ -138,7 +138,7 @@ var getInternalTx = function(req, res){
                   });
     }, function(cb) {
       txFind.exec("find", function (err, docs) {
-        if (docs.length)
+        if (docs)
           data.data = filters.internalTX(docs);      
         else 
           data.data = [];
