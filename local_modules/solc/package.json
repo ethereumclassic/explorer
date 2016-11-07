@@ -1,0 +1,50 @@
+{
+  "name": "solc",
+  "version": "0.4.4",
+  "description": "Solidity compiler",
+  "main": "index.js",
+  "bin": {
+    "solcjs": "solcjs"
+  },
+  "scripts": {
+    "lint": "semistandard",
+    "prepublish": "./downloadCurrentVersion.js",
+    "test": "tape ./test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elaineo/solc-js.git"
+  },
+  "keywords": [
+    "ethereum",
+    "solidity",
+    "compiler"
+  ],
+  "files": [
+    "index.js",
+    "solcjs",
+    "soljson.js",
+    "wrapper.js"
+  ],
+  "author": "chriseth",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elaineo/solc-js/issues"
+  },
+  "homepage": "https://github.com/elaineo/solc-js#readme",
+  "dependencies": {
+    "memorystream": "^0.3.1",
+    "require-from-string": "^1.1.0",
+    "yargs": "^4.7.1"
+  },
+  "devDependencies": {
+    "semistandard": "^8.0.0",
+    "tape": "^4.5.1",
+    "tape-spawn": "^1.4.2"
+  },
+  "semistandard": {
+    "ignore": [
+      "soljson.js"
+    ]
+  }
+}
