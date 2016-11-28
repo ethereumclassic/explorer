@@ -165,7 +165,7 @@ var patchBlocks = function(config) {
         config.gethPort.toString()));
 
     // number of blocks should equal difference in block numbers
-    var firstBlock = 1000000;
+    var firstBlock = 0;
     var lastBlock = web3.eth.blockNumber;
     blockIter(web3, firstBlock, lastBlock, config);
 }

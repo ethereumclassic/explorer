@@ -76,6 +76,8 @@ function grabInternalTxs(batchNum, batchSize) {
             j.subtraces = web3.toDecimal(j.subtraces);
             j.transactionPosition = web3.toDecimal(j.transactionPosition);
             j.blockNumber = web3.toDecimal(j.blockNumber);
+            var block = web3.eth.getBlock(j.blockNumber);
+            j.timestamp = block.timestamp;
             writeTxToDB(j);
           }
       });
