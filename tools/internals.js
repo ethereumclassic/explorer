@@ -89,7 +89,8 @@ function grabInternalTxs(batchNum, batchSize) {
 }
 
 var writeTxToDB = function(txData) {
-    return InternalTx.findOneAndUpdate(txData, txData, {upsert: true}, function( err, tx ){
+  try { 
+    InternalTx.findOneAndUpdate(txData, txData, {upsert: true}, function( err, tx ){
         if ( typeof err !== 'undefined' && err ) {
             if (err.code == 11000) {
                 console.log('Skip: Duplicate key ' + 
@@ -98,13 +99,16 @@ var writeTxToDB = function(txData) {
             } else {
                console.log('Error: Aborted due to error: ' + 
                     err);
-               process.exit(9);
            }
         } else {
             console.log('DB successfully written for block number ' +
                 txData.blockNumber.toString() );
         }
       });
+  } catch (e) {
+    console.error(e); 
+  }
+  return;
 }
 
 var getLatestBlocks = function(latest, start) {
