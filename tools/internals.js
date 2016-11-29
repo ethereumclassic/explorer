@@ -51,7 +51,7 @@ function grabInternalTxs(batchNum, batchSize) {
             }
             return
         }
-          console.log(data);
+          // console.log(data);
           for (d in jdata.result) {
             var j = jdata.result[d];
             if (j.action.call)
