@@ -115,10 +115,15 @@ var getLatestBlocks = function(latest, start) {
   var count = start;
 
   setInterval(function() {
+    try {
       grabInternalTxs(count, BATCH_SIZE);
       count += BATCH_SIZE;
       if (count > latest)
         return;
+    } catch (e) {
+      console.error(e);
+      // wait and try again
+    }
   }, 1000);  
 }
 
