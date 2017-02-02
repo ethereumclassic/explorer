@@ -18,7 +18,6 @@ angular.module('BlocksApp').controller('BlockController', function($stateParams,
         $location.path("/err404/block/" + $scope.blockNum);
       else {
         $scope.block = data;
-        $scope.block.transactions = data.transactions.length;
         $scope.block.datetime = new Date(data.timestamp*1000); 
       }
     });

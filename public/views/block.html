@@ -23,4 +23,21 @@
     <!--TODO: calculate block reward -->
 
   </div>
+    <!-- Begin: Transaction Datatable -->
+  <div class="portlet light portlet-datatable col-md-12">
+     <div class="portlet-body">
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th> Transactions </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="t in transactions">
+                <td> <a href="/tx/{{t}}">{{t}}</a> </td>
+            </tr>
+        </tbody>
+    </table>
+      </div>
+    </div><!-- End: portlet -->
 </div>

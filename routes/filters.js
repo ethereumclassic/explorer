@@ -35,6 +35,11 @@ function extractTX(txs) {
 
 /* make blocks human readable */
 function filterBlocks(blocks) {
+  if (blocks.constructor !== Array) {
+    var b = blocks;
+    b.extraData = hex2ascii(blocks.extraData);
+    return b;
+  }
   return blocks.map(function(block) {
     var b = block;
     b.extraData = hex2ascii(block.extraData);

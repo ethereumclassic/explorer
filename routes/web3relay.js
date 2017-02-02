@@ -12,6 +12,7 @@ var etherUnits = require(__lib + "etherUnits.js")
 
 var extractTX = require('./filters').extractTX;
 var getLatestBlocks = require('./index').getLatestBlocks;
+var filterBlocks = require('./filters').filterBlocks;
 
 
 if (typeof web3 !== "undefined") {
@@ -114,7 +115,7 @@ exports.data = function(req, res){
         console.error("BlockWeb3 error :" + err)
         res.write(JSON.stringify({"error": true}));
       } else {
-        res.write(JSON.stringify(block));
+        res.write(JSON.stringify(filterBlocks(block));
       }
       res.end();
     });
