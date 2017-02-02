@@ -115,7 +115,7 @@ exports.data = function(req, res){
         console.error("BlockWeb3 error :" + err)
         res.write(JSON.stringify({"error": true}));
       } else {
-        res.write(JSON.stringify(filterBlocks(block));
+        res.write(JSON.stringify(filterBlocks(block)));
       }
       res.end();
     });
