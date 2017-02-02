@@ -98,7 +98,23 @@ exports.data = function(req, res){
       } else {
         var ttx = tx;
         ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
+        //get timestamp from block
+        var block = web3.eth.getBlock(tx.blockNumber);
+        ttx.timestamp = block.timestamp;
         res.write(JSON.stringify(ttx));
+      }
+      res.end();
+    });
+
+  } else if ("block" in req.body) {
+    var blockNum = parseInt(req.body.block);
+
+    web3.eth.getBlock(blockNum, function(err, block) {
+      if(err || !block) {
+        console.error("BlockWeb3 error :" + err)
+        res.write(JSON.stringify({"error": true}));
+      } else {
+        res.write(JSON.stringify(block));
       }
       res.end();
     });

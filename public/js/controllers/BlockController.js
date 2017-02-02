@@ -11,7 +11,7 @@ angular.module('BlocksApp').controller('BlockController', function($stateParams,
     //fetch transactions
     $http({
       method: 'POST',
-      url: '/block',
+      url: '/web3relay',
       data: {"block": $scope.blockNum}
     }).success(function(data) {
       if (data.error)

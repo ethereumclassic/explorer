@@ -19,6 +19,4 @@ angular.module('BlocksApp').controller('TxController', function($stateParams, $r
         $scope.tx.datetime = new Date(data.timestamp*1000); 
     });
 
-
-
 })
