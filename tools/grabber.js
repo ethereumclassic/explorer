@@ -243,5 +243,5 @@ if (!('blocks' in config) || !(Array.isArray(config.blocks))) {
 console.log('Using configuration:');
 console.log(config);
 
-// grabBlocks(config);
-patchBlocks(config);
+grabBlocks(config);
+// patchBlocks(config);
