@@ -120,6 +120,34 @@ exports.data = function(req, res){
       res.end();
     });
 
+  } else if ("trace" in req.body) {
+    // TODO: trace for addrs as well
+    var txHash = req.body.trace.toLowerCase();
+
+    web3.trace.transaction(txHash, function(err, tx) {
+      if(err || !tx) {
+        console.error("TraceWeb3 error :" + err)
+        res.write(JSON.stringify({"error": true}));
+      } else {
+        for (x in tx) {
+          var ttx = [];
+          var t = tx[x];
+          if (t.action.gas)
+            t.gas = web3.toDecimal(t.action.gas);
+          if (t.result.gasUsed)
+            t.gasUsed = web3.toDecimal(t.result.gasUsed);
+          if (t.result.address)
+            t.to = t.result.address;
+          if (t.action.to)
+            t.to = t.action.to;
+          t.from = t.action.from;
+          t.value = etherUnits.toEther( new BigNumber(t.action.value), "wei");
+          ttx.push(t);
+        }
+        res.write(JSON.stringify(ttx));
+      }
+      res.end();
+    });
   } else {
   
     console.error("Invalid Request: " + action)
