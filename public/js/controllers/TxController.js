@@ -17,7 +17,7 @@ angular.module('BlocksApp').controller('TxController', function($stateParams, $r
       $scope.tx = data;
       if (data.timestamp)
         $scope.tx.datetime = new Date(data.timestamp*1000); 
-      if (data.input != "0x") // Get internal txs
+      if (data.isTrace) // Get internal txs
         fetchInternalTxs();
     });
 

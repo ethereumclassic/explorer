@@ -23,13 +23,14 @@
           <tr ><td width="25%">Input Data</td><td><pre class="code">{{tx.input}}</pre></td></tr>
         </table>
 
-        <table class="table table-condensed">
+        <table class="table table-condensed" ng-show="tx.isTrace">
           <thead>
               <tr>
                   <th> From </th>
                   <th> To </th>
-                  <th style="text-align:right"> Amount </th>
+                  <th> Amount </th>
                   <th style="text-align:right"> Gas </th>
+                  <th style="text-align:right"> GasUsed </th>
                   <th></th>
               </tr>
           </thead>
@@ -39,6 +40,7 @@
                   <td class="truncate-addrhash"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
                   <td style="text-align:right"> {{t.value}} </td>
                   <td style="text-align:right"> {{t.gas}} </td>
+                  <td style="text-align:right"> {{t.gasUsed}} </td>
                   <td style="text-align:center"><span class="label label-sm label-info"> {{t.type}}</span></td>
               </tr>
           </tbody>

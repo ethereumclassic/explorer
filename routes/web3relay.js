@@ -102,6 +102,7 @@ exports.data = function(req, res){
         //get timestamp from block
         var block = web3.eth.getBlock(tx.blockNumber);
         ttx.timestamp = block.timestamp;
+        ttx.isTrace = (ttx.input != "0x");
         res.write(JSON.stringify(ttx));
       }
       res.end();
