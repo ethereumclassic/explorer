@@ -130,8 +130,8 @@ exports.data = function(req, res){
         console.error("TraceWeb3 error :" + err)
         res.write(JSON.stringify({"error": true}));
       } else {
+        var ttx = [];
         for (x in tx) {
-          var ttx = [];
           var t = tx[x];
           if (t.action.gas)
             t.gas = web3.toDecimal(t.action.gas);
