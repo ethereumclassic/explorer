@@ -17,6 +17,17 @@ angular.module('BlocksApp').controller('TxController', function($stateParams, $r
       $scope.tx = data;
       if (data.timestamp)
         $scope.tx.datetime = new Date(data.timestamp*1000); 
+      if (data.input != "0x") // Get internal txs
+        fetchInternalTxs();
     });
 
+    var fetchInternalTxs = function() {
+      $http({
+        method: 'POST',
+        url: '/web3relay',
+        data: {"trace": $scope.hash}
+      }).success(function(data) {
+        $scope.internal_transactions = data;
+      });      
+    }
 })
