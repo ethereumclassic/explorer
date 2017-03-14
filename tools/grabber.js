@@ -80,7 +80,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 else {
                     writeBlockToDB(config, blockData);
                 }
-                if !('skipTransactions' in config && config.skipTransactions === true)
+                if (!('skipTransactions' in config && config.skipTransactions === true))
                     writeTransactionsToDB(config, blockData);
                 if('listenOnly' in config && config.listenOnly === true) 
                     return;
@@ -183,7 +183,7 @@ var writeTransactionsToDB = function(config, blockData) {
                }
             } else if(!('quiet' in config && config.quiet === true)) {
                 console.log('DB successfully written for block ' +
-                    tx.length.toString() );
+                    blockData.transactions.length.toString() );
                 
             }
         });
