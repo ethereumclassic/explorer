@@ -9,6 +9,7 @@ var Web3 = require('web3');
 
 var mongoose = require( 'mongoose' );
 var Block     = mongoose.model( 'Block' );
+var Transaction     = mongoose.model( 'Transaction' );
 
 var grabBlocks = function(config) {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + 
@@ -79,6 +80,8 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 else {
                     writeBlockToDB(config, blockData);
                 }
+                if !('skipTransactions' in config && config.skipTransactions === true)
+                    writeTransactionsToDB(config, blockData);
                 if('listenOnly' in config && config.listenOnly === true) 
                     return;
 
@@ -117,7 +120,6 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
 
 
 var writeBlockToDB = function(config, blockData) {
-    //var blockContents = JSON.stringify(blockData, null, 4);
     return new Block(blockData).save( function( err, block, count ){
         if ( typeof err !== 'undefined' && err ) {
             if (err.code == 11000) {
@@ -155,6 +157,37 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
         }
 
     })
+}
+
+/**
+    Break transactions out of blocks and write to DB
+**/
+
+var writeTransactionsToDB = function(config, blockData) {
+    var bulkOps = [];
+    if (blockData.transactions.length > 0) {
+        for (d in blockData.transactions) {
+            var txData = blockData.transactions[d];
+            txData.timestamp = blockData.timestamp;
+            bulkOps.push(txData);
+        }
+        Transaction.collection.insert(bulkOps, function( err, tx ){
+            if ( typeof err !== 'undefined' && err ) {
+                if (err.code == 11000) {
+                    console.log('Skip: Duplicate key ' + 
+                    err);
+                } else {
+                   console.log('Error: Aborted due to error: ' + 
+                        err);
+                   process.exit(9);
+               }
+            } else if(!('quiet' in config && config.quiet === true)) {
+                console.log('DB successfully written for block ' +
+                    tx.length.toString() );
+                
+            }
+        });
+    }
 }
 
 /*
