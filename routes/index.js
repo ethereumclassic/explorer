@@ -1,7 +1,10 @@
 var mongoose = require( 'mongoose' );
-require( '../db-internal.js' );
+require('../db-internal.js'); //remove
+
+
 var Block     = mongoose.model( 'Block' );
-var InternalTx     = mongoose.model( 'InternalTransaction' );
+var InternalTx = mongoose.model( 'InternalTransaction' ); //remove
+var Transaction = mongoose.model( 'Transaction' );
 var filters = require('./filters')
 
 
@@ -23,7 +26,7 @@ module.exports = function(app){
     { "block": "1234" }
   */
   app.post('/addr', getAddr);
-  app.post('/internal', getInternalTx);
+  app.post('/internal', getInternalTx);   //to be removed
   app.post('/tx', getTx);
   app.post('/block', getBlock);
   app.post('/data', getData);
@@ -48,7 +51,7 @@ var getAddr = function(req, res){
 
   var data = { draw: parseInt(req.body.draw), recordsFiltered: count, recordsTotal: count };
 
-  var addrFind = InternalTx.find( { $or: [{"action.to": addr}, {"action.from": addr}] })  
+  var addrFind = Transaction.find( { $or: [{"to": addr}, {"from": addr}] })  
 
   addrFind.lean(true).sort('-blockNumber').skip(start).limit(limit)
           .exec("find", function (err, docs) {
@@ -213,9 +216,9 @@ var sendBlocks = function(lim, res) {
 }
 
 var sendTxs = function(lim, res) {
-  InternalTx.find({}).lean(true).sort('-blockNumber').limit(lim)
+  Transaction.find({}).lean(true).sort('-blockNumber').limit(lim)
         .exec(function (err, txs) {
-          res.write(JSON.stringify({"txs": filters.extractTX(txs)}));
+          res.write(JSON.stringify({"txs": txs}));
           res.end();
         });
 }

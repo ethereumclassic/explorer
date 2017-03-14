@@ -6,8 +6,8 @@ var BigNumber = require('bignumber.js');
 */
 function filterTX(txs, value) {
   return txs.map(function(tx){
-    return [tx.transactionHash, tx.blockNumber, tx.action.from, tx.action.to, 
-            etherUnits.toEther(new BigNumber(tx.action.value), 'wei'), tx.action.gas, tx.timestamp]
+    return [tx.transactionHash, tx.blockNumber, tx.from, tx.to, 
+            etherUnits.toEther(new BigNumber(tx.value), 'wei'), tx.gas, tx.timestamp]
   })
 }
 
@@ -19,18 +19,6 @@ function filterBlock(block, field, value) {
   if (typeof tx !== "undefined")
     tx.timestamp = block.timestamp; 
   return tx;
-}
-
-/* extract transactions from blocks */
-function extractTX(txs) {
-    
-  return txs.map(function(tx) { 
-    var ttx = tx.action;
-    ttx.value = etherUnits.toEther(new BigNumber(tx.action.value), 'wei');
-    ttx.timestamp = tx.timestamp; 
-    ttx.hash = tx.transactionHash;
-    return ttx;
-  });
 }
 
 /* make blocks human readable */
@@ -72,7 +60,6 @@ var hex2ascii = function (hexIn) {
 }
 
 module.exports = {
-  extractTX: extractTX,
   filterBlock: filterBlock,
   filterBlocks: filterBlocks,
   filterTX: filterTX,
