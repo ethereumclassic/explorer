@@ -85,9 +85,10 @@ exports.data = function(req, res){
           <th width="15%"> To </th>
           <th width="10%"> ETC </th>
           <th width="0%"> gas </th>
-          <th width="12%"> Age - Nahhh </th>*/
+          <th width="12%"> Age - Nahhh </th>
+          LABEL*/
     }) 
-  } else if ("addr" in req.body) {
+  } else if (!("trace" in req.body) && ("addr" in req.body)) {
     var addr = req.body.addr.toLowerCase();
     var options = req.body.options;
 
@@ -127,7 +128,7 @@ exports.data = function(req, res){
     res.end();
 
 
-  } else if ("tx" in req.body) {
+  } else if (!("trace" in req.body) && ("tx" in req.body)) {
     var txHash = req.body.tx.toLowerCase();
 
     web3.eth.getTransaction(txHash, function(err, tx) {
