@@ -62,8 +62,6 @@ exports.data = function(req, res){
               t.to = t.result.address;
             t.value = etherUnits.toEther( new BigNumber(t.action.value), "wei");            
           }
-          if (t.error)
-            t.type = t.error;
           ttx.push(t);
         }
         res.write(JSON.stringify(ttx));
@@ -140,10 +138,11 @@ exports.data = function(req, res){
         var ttx = tx;
         ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
         //get timestamp from block
-        var block = web3.eth.getBlock(tx.blockNumber);
-        ttx.timestamp = block.timestamp;
-        ttx.isTrace = (ttx.input != "0x");
-        res.write(JSON.stringify(ttx));
+        var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
+          ttx.timestamp = block.timestamp;
+          ttx.isTrace = (ttx.input != "0x");
+          res.write(JSON.stringify(ttx));
+        });
       }
       res.end();
     });

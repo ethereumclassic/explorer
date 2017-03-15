@@ -3,6 +3,7 @@ img.logo-default {
     max-height: 150px;
     height: 100px;
 }
+.create{background-color:#36c6d3}
 .truncate-txhash, .truncate-addrhash{
     white-space:nowrap; 
     overflow:hidden;
