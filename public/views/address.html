@@ -98,7 +98,7 @@
                         <td class="truncate-addrhash"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
                         <td style="text-align:right"> {{t.value}} </td>
                         <td style="text-align:right"> {{t.gas}} </td>
-                        <td style="text-align:center"><span class="label label-sm label-info {{t.type}}"> {{t.type}}</span><span class="label label-sm label-danger"> {{t.error}}</span></td>
+                        <td style="text-align:center"><span class="label label-sm label-info {{t.type}}"> {{t.type}}</span><span class="label label-sm label-danger" ng-show="t.error"> {{t.error}}</span></td>
                     </tr>
                 </tbody>
               </table>
