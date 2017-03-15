@@ -10,7 +10,6 @@ var web3;
 var BigNumber = require('bignumber.js');
 var etherUnits = require(__lib + "etherUnits.js")
 
-var extractTX = require('./filters').extractTX;
 var getLatestBlocks = require('./index').getLatestBlocks;
 var filterBlocks = require('./filters').filterBlocks;
 
@@ -29,22 +28,6 @@ else
 
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
-
-/*
-exports.clientSocket = function(io) {
-
-  newBlocks.watch(function (error, log) {
-    console.log('### JSON emitted to block client: ' + JSON.stringify(log));
-    io.emit('block', log);
-  });
-
-  newTxs.watch(function (error, log) {
-    console.log('### JSON emitted to transaction client: ' + JSON.stringify(log));
-    io.emit('tx', log);
-  });
-
-}
-*/
 
 exports.data = function(req, res){
   console.log(req.body)
@@ -121,9 +104,8 @@ exports.data = function(req, res){
       res.end();
     });
 
-  } else if ("trace" in req.body) {
-    // TODO: trace for addrs as well
-    var txHash = req.body.trace.toLowerCase();
+  } else if (("trace" in req.body) && ("tx" in req.body)) {
+    var txHash = req.body.traceTx.toLowerCase();
 
     web3.trace.transaction(txHash, function(err, tx) {
       if(err || !tx) {
@@ -133,24 +115,53 @@ exports.data = function(req, res){
         var ttx = [];
         for (x in tx) {
           var t = tx[x];
-          if (t.action.gas)
-            t.gas = web3.toDecimal(t.action.gas);
-          if (t.result.gasUsed)
-            t.gasUsed = web3.toDecimal(t.result.gasUsed);
-          if (t.result.address)
-            t.to = t.result.address;
-          if (t.action.to)
-            t.to = t.action.to;
-          t.from = t.action.from;
-          t.value = etherUnits.toEther( new BigNumber(t.action.value), "wei");
+          if (t.type == "suicide") {
+            if (t.action.address)
+              t.from = t.action.address;
+            if (t.action.balance)
+              t.value = etherUnits.toEther( new BigNumber(t.action.balance), "wei");
+            if (t.action.refundAddress)
+              t.to = t.action.refundAddress;
+          } else {
+            if (t.action.to)
+              t.to = t.action.to;
+            t.from = t.action.from; 
+            if (t.action.gas)
+              t.gas = web3.toDecimal(t.action.gas);
+            if ((t.result) && (t.result.gasUsed))
+              t.gasUsed = web3.toDecimal(t.result.gasUsed);
+            if ((t.result) && (t.result.address))
+              t.to = t.result.address;
+            t.value = etherUnits.toEther( new BigNumber(t.action.value), "wei");            
+          }
+          if (t.error)
+            t.type = t.error;
           ttx.push(t);
         }
         res.write(JSON.stringify(ttx));
       }
       res.end();
     });
-  } else {
-  
+  } (("trace" in req.body) && ("addr" in req.body)) {
+    var traceAddr = req.body.traceAddress.toLowerCase();
+    // need to filter both to and from
+    // from block to end block, paging
+    var filter = {"fromBlock":"0x1d4c00", "toAddress":[traceAddr], "fromAddress":[traceAddr]};
+    web3.trace.filter(filter, function(err, tx) {
+      if(err || !tx) {
+        console.error("TraceWeb3 error :" + err)
+        res.write(JSON.stringify({"error": true}));
+      }
+      /* stuff i want
+           TxHash </th>
+          <th width="8%"> Block# </th>
+          <th width="15%"> From </th>
+          <th width="15%"> To </th>
+          <th width="10%"> ETC </th>
+          <th width="0%"> gas </th>
+          <th width="12%"> Age - Nahhh </th>*/
+    }) 
+  }else {
     console.error("Invalid Request: " + action)
     res.status(400).send();
   }
