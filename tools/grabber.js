@@ -1,7 +1,5 @@
 require( '../db.js' );
-
-var express = require('express');
-var app = express();
+var etherUnits = require(__lib + "etherUnits.js")
 
 var fs = require('fs');
 
@@ -169,6 +167,7 @@ var writeTransactionsToDB = function(config, blockData) {
         for (d in blockData.transactions) {
             var txData = blockData.transactions[d];
             txData.timestamp = blockData.timestamp;
+            txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
             bulkOps.push(txData);
         }
         Transaction.collection.insert(bulkOps, function( err, tx ){

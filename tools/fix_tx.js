@@ -1,5 +1,7 @@
 /*
   Tool for breaking out transactions
+
+  DEPRECATED: DO NOT USE
 */
 
 var mongoose = require( 'mongoose' );
