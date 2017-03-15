@@ -26,9 +26,9 @@ function filterTrace(txs, value) {
         t.to = t.action.to;
       t.from = t.action.from; 
       if (t.action.gas)
-        t.gas = web3.toDecimal(t.action.gas);
+        t.gas = new BigNumber(t.action.gas).toNumber();
       if ((t.result) && (t.result.gasUsed))
-        t.gasUsed = web3.toDecimal(t.result.gasUsed);
+        t.gasUsed = new BigNumber(t.result.gasUsed).toNumber();
       if ((t.result) && (t.result.address))
         t.to = t.result.address;
       t.value = etherUnits.toEther( new BigNumber(t.action.value), "wei");            
