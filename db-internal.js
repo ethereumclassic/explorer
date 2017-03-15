@@ -1,3 +1,6 @@
+/******
+  DEPRECATED -- DO NOT USE
+*******/
 var mongoose = require( 'mongoose' );
 var Schema   = mongoose.Schema;
 

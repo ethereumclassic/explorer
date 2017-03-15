@@ -1,7 +1,8 @@
-require( '../db-internal.js' );
+/****
+  DEPRECATED -- DO NOT USE
+***/
 
-var express = require('express');
-var app = express();
+require( '../db-internal.js' );
 
 var http = require('http');
 var Web3 = require('web3');

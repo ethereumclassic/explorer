@@ -83,6 +83,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       });
     }
 
+    /*
     var fetchInternalTxs = function() {
       $("#table_internal_txs").DataTable({    
         processing: true,
@@ -133,6 +134,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
             ]
         });
     }
+    */
 })
 .directive('contractSource', function($http) {
   return {

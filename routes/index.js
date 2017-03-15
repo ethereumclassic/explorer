@@ -1,9 +1,6 @@
 var mongoose = require( 'mongoose' );
-require('../db-internal.js'); //remove
-
 
 var Block     = mongoose.model( 'Block' );
-var InternalTx = mongoose.model( 'InternalTransaction' ); //remove
 var Transaction = mongoose.model( 'Transaction' );
 var filters = require('./filters')
 
@@ -26,7 +23,6 @@ module.exports = function(app){
     { "block": "1234" }
   */
   app.post('/addr', getAddr);
-  app.post('/internal', getInternalTx);   //to be removed
   app.post('/tx', getTx);
   app.post('/block', getBlock);
   app.post('/data', getData);
@@ -108,55 +104,6 @@ var getTx = function(req, res){
   });
 
 };
-
-var getInternalTx = function(req, res){
-
-  var addr = req.body.addr.toLowerCase();
-  var limit = parseInt(req.body.length);
-  var start = parseInt(req.body.start);
-
-  var count = req.body.count;
-
-  var data = { draw: parseInt(req.body.draw) };
-
-
-  var txFind = InternalTx.find( { "action.callType" : "call", 
-                  $or: [{"action.from": addr}, {"action.to": addr}] }, "action transactionHash blockNumber timestamp")
-                  .lean(true).sort('-blockNumber').skip(start).limit(limit)
-
-  async.parallel([
-    function(cb) {
-      if (count) {
-        data.recordsFiltered = parseInt(count); 
-        data.recordsTotal = parseInt(count);
-        cb();
-        return;
-      }
-      InternalTx.find( { "action.callType" : "call", 
-                  $or: [{"action.from": addr}, {"action.to": addr}] })
-                .count(function(err, count) {
-                    data.recordsFiltered = count; 
-                    data.recordsTotal = count;
-                    cb()
-                  });
-    }, function(cb) {
-      txFind.exec("find", function (err, docs) {
-        if (docs)
-          data.data = filters.internalTX(docs);      
-        else 
-          data.data = [];
-        cb();
-      });
-    }
-
-    ], function(err, results) {
-      if (err) console.error(err);
-      res.write(JSON.stringify(data));
-      res.end();
-    })
-
-};
-
 
 
 /*
