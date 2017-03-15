@@ -33,7 +33,7 @@ exports.data = function(req, res){
   console.log(req.body)
 
   if (("trace" in req.body) && ("tx" in req.body)) {
-    var txHash = req.body.traceTx.toLowerCase();
+    var txHash = req.body.tx.toLowerCase();
 
     web3.trace.transaction(txHash, function(err, tx) {
       if(err || !tx) {
@@ -71,10 +71,10 @@ exports.data = function(req, res){
       res.end();
     });
   } else if (("trace" in req.body) && ("addr" in req.body)) {
-    var traceAddr = req.body.traceAddress.toLowerCase();
+    var addr = req.body.addr.toLowerCase();
     // need to filter both to and from
     // from block to end block, paging
-    var filter = {"fromBlock":"0x1d4c00", "toAddress":[traceAddr], "fromAddress":[traceAddr]};
+    var filter = {"fromBlock":"0x1d4c00", "toAddress":[addr], "fromAddress":[addr]};
     web3.trace.filter(filter, function(err, tx) {
       if(err || !tx) {
         console.error("TraceWeb3 error :" + err)

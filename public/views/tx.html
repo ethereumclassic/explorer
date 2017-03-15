@@ -14,8 +14,10 @@
           </tr>
           <tr ><td width="25%">from</td>
                 <td><a href="/addr/{{tx.from}}">{{tx.from}}</a></td></tr>
-          <tr ><td width="25%">to</td>
+          <tr ng-show="tx.to"><td width="25%">to</td>
                 <td><a href="/addr/{{tx.to}}">{{tx.to}}</a></td></tr>
+          <tr ng-show="tx.creates"><td width="25%">creates</td>
+                <td><a href="/addr/{{tx.creates}}">{{tx.creates}}</a></td></tr>                
           <tr ><td width="25%">value</td><td>{{tx.value}} ETC</td></tr>
           <tr ><td width="25%">gas Provided</td><td>{{tx.gas}}</td></tr>
           <tr ><td width="25%">gasPrice</td><td>{{tx.gasPrice}}</td></tr>
