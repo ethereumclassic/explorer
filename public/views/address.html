@@ -78,19 +78,29 @@
               </table>
             </div><!-- End: Datatable tab -->
             <div class="tab-pane" id="tab_addr_2" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_2'}">
-            <table class="table table-striped table-hover" id="table_internal_txs" style="table-layout:fixed;width: 98% !important;">
-                  <thead>
-                      <tr role="row" class="heading">
-                          <th width="15%"> TxHash </th>
-                          <th width="8%"> Block </th>
-                          <th width="15%"> From </th>
-                          <th width="15%"> To </th>
-                          <th width="10%"> ETC </th>
-                          <th width="0%"> gas </th>
-                          <th width="12%"> Age </th>
-                      </tr>
-                  </thead>
-                  <tbody></tbody>
+              <table class="table table-condensed" ng-show="addr.isContract">
+                <thead>
+                    <tr>
+                        <th width="15%"> TxHash </th>
+                        <th width="8%"> Block </th>
+                        <th width="15%"> From </th>
+                        <th width="15%"> To </th>
+                        <th width="10%"> ETC </th>
+                        <th width="0%"> gas </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="t in internal_transactions track by $index">
+                        <td class="truncate-txhash"> <a href="/tx/{{t.transactionHash}}">{{t.transactionHash}}</a> </td>
+                        <td style="text-align:right"><a href="/block/{{t.blockNumber}}">{{t.blockNumber}}</a>
+                        <td class="truncate-addrhash"> <a href="/addr/{{t.from}}">{{t.from}}</a> </td>
+                        <td class="truncate-addrhash"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
+                        <td style="text-align:right"> {{t.value}} </td>
+                        <td style="text-align:right"> {{t.gas}} </td>
+                        <td style="text-align:center"><span class="label label-sm label-info {{t.type}}"> {{t.type}}</span><span class="label label-sm label-danger"> {{t.error}}</span></td>
+                    </tr>
+                </tbody>
               </table>
             </div>
             <div class="tab-pane" id="tab_addr_3" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_3'}">

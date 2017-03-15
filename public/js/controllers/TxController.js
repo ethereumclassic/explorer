@@ -25,7 +25,7 @@ angular.module('BlocksApp').controller('TxController', function($stateParams, $r
       $http({
         method: 'POST',
         url: '/web3relay',
-        data: {"trace": true, "tx": $scope.hash}
+        data: {"tx_trace": $scope.hash}
       }).success(function(data) {
         $scope.internal_transactions = data;
       });      

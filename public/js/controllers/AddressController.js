@@ -31,7 +31,6 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       url: '/fiat',
       data: {"addr": $scope.addrHash}
     }).success(function(data) {
-      console.log(data)
       $scope.addr.ethfiat = data.balance;
     });
 
@@ -83,58 +82,16 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       });
     }
 
-    /*
     var fetchInternalTxs = function() {
-      $("#table_internal_txs").DataTable({    
-        processing: true,
-        serverSide: true,
-        paging: true,
-        ajax: {
-          url: '/internal',
-          type: 'POST',
-          data: { "addr": $scope.addrHash, "count": $scope.internalCount },
-          dataSrc: function (json) {
-            $scope.internalCount = json.recordsTotal;
-            return json.data;
-          }
-         },
-          "lengthMenu": [
-                      [10, 20, 50, 100, 150, -1],
-                      [10, 20, 50, 100, 150, "All"] // change per page values here
-                  ],
-          "pageLength": 20, 
-          "order": [
-              [6, "desc"]
-          ],
-          "language": {
-            "lengthMenu": "_MENU_ transactions",
-            "zeroRecords": "No transactions found",
-            "infoEmpty": ":(",
-            "infoFiltered": "(filtered from _MAX_ total txs)"
-          },
-          "columnDefs": [ 
-            { "targets": [ 5 ], "visible": false, "searchable": false },
-            {"type": "date", "targets": 6},
-            {"orderable": false, "targets": [0,2,3]},
-            { "render": function(data, type, row) {
-                          if (data != $scope.addrHash)
-                            return '<a href="/addr/'+data+'">'+data+'</a>'
-                          else
-                            return data
-                        }, "targets": [2,3]},
-            { "render": function(data, type, row) {
-                          return '<a href="/block/'+data+'">'+data+'</a>'
-                        }, "targets": [1]},
-            { "render": function(data, type, row) {
-                          return '<a href="/tx/'+data+'">'+data+'</a>'
-                        }, "targets": [0]},
-            { "render": function(data, type, row) {
-                          return getDuration(data).toString();
-                        }, "targets": [6]},
-            ]
-        });
+      $http({
+        method: 'POST',
+        url: '/web3relay',
+        data: {"addr_trace": $scope.addrHash}
+      }).success(function(data) {
+        $scope.internal_transactions = data;
+      });      
     }
-    */
+    
 })
 .directive('contractSource', function($http) {
   return {

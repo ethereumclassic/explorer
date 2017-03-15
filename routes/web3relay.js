@@ -12,6 +12,7 @@ var etherUnits = require(__lib + "etherUnits.js")
 
 var getLatestBlocks = require('./index').getLatestBlocks;
 var filterBlocks = require('./filters').filterBlocks;
+var filterTrace = require('./filters').filterTrace;
 
 
 if (typeof web3 !== "undefined") {
@@ -32,63 +33,54 @@ var newTxs = web3.eth.filter("pending");
 exports.data = function(req, res){
   console.log(req.body)
 
-  if (("trace" in req.body) && ("tx" in req.body)) {
+  if ("tx" in req.body) {
     var txHash = req.body.tx.toLowerCase();
+
+    web3.eth.getTransaction(txHash, function(err, tx) {
+      if(err || !tx) {
+        console.error("TxWeb3 error :" + err)
+        res.write(JSON.stringify({"error": true}));
+        res.end();
+      } else {
+        var ttx = tx;
+        ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
+        //get timestamp from block
+        var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
+          ttx.timestamp = block.timestamp;
+          ttx.isTrace = (ttx.input != "0x");
+          res.write(JSON.stringify(ttx));
+          res.end();
+        });
+      }
+    });
+
+  } else if ("tx_trace" in req.body) {
+    var txHash = req.body.tx_trace.toLowerCase();
 
     web3.trace.transaction(txHash, function(err, tx) {
       if(err || !tx) {
         console.error("TraceWeb3 error :" + err)
         res.write(JSON.stringify({"error": true}));
       } else {
-        var ttx = [];
-        for (x in tx) {
-          var t = tx[x];
-          if (t.type == "suicide") {
-            if (t.action.address)
-              t.from = t.action.address;
-            if (t.action.balance)
-              t.value = etherUnits.toEther( new BigNumber(t.action.balance), "wei");
-            if (t.action.refundAddress)
-              t.to = t.action.refundAddress;
-          } else {
-            if (t.action.to)
-              t.to = t.action.to;
-            t.from = t.action.from; 
-            if (t.action.gas)
-              t.gas = web3.toDecimal(t.action.gas);
-            if ((t.result) && (t.result.gasUsed))
-              t.gasUsed = web3.toDecimal(t.result.gasUsed);
-            if ((t.result) && (t.result.address))
-              t.to = t.result.address;
-            t.value = etherUnits.toEther( new BigNumber(t.action.value), "wei");            
-          }
-          ttx.push(t);
-        }
-        res.write(JSON.stringify(ttx));
+        res.write(JSON.stringify(filterTrace(tx)));
       }
       res.end();
     });
-  } else if (("trace" in req.body) && ("addr" in req.body)) {
-    var addr = req.body.addr.toLowerCase();
+  } else if ("addr_trace" in req.body) {
+    var addr = req.body.addr_trace.toLowerCase();
     // need to filter both to and from
-    // from block to end block, paging
-    var filter = {"fromBlock":"0x1d4c00", "toAddress":[addr], "fromAddress":[addr]};
+    // from block to end block, paging "toAddress":[addr], 
+    var filter = {"fromBlock":"0x1d4c00", "fromAddress":[addr]};
     web3.trace.filter(filter, function(err, tx) {
       if(err || !tx) {
         console.error("TraceWeb3 error :" + err)
         res.write(JSON.stringify({"error": true}));
+      } else {
+        res.write(JSON.stringify(filterTrace(tx)));
       }
-      /* stuff i want
-           TxHash </th>
-          <th width="8%"> Block# </th>
-          <th width="15%"> From </th>
-          <th width="15%"> To </th>
-          <th width="10%"> ETC </th>
-          <th width="0%"> gas </th>
-          <th width="12%"> Age - Nahhh </th>
-          LABEL*/
+      res.end();
     }) 
-  } else if (!("trace" in req.body) && ("addr" in req.body)) {
+  } else if ("addr" in req.body) {
     var addr = req.body.addr.toLowerCase();
     var options = req.body.options;
 
@@ -127,26 +119,6 @@ exports.data = function(req, res){
     res.write(JSON.stringify(addrData));
     res.end();
 
-
-  } else if (!("trace" in req.body) && ("tx" in req.body)) {
-    var txHash = req.body.tx.toLowerCase();
-
-    web3.eth.getTransaction(txHash, function(err, tx) {
-      if(err || !tx) {
-        console.error("TxWeb3 error :" + err)
-        res.write(JSON.stringify({"error": true}));
-      } else {
-        var ttx = tx;
-        ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
-        //get timestamp from block
-        var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
-          ttx.timestamp = block.timestamp;
-          ttx.isTrace = (ttx.input != "0x");
-          res.write(JSON.stringify(ttx));
-        });
-      }
-      res.end();
-    });
 
   } else if ("block" in req.body) {
     var blockNum = parseInt(req.body.block);
