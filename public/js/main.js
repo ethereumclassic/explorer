@@ -226,6 +226,24 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             }
         })
 
+        .state('token', {
+            url: "/token/{hash}",
+            templateUrl: "views/token.html",
+            data: {pageTitle: 'Tokens'},
+            controller: "TokenController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', 
+                        files: [
+                             '/js/controllers/TokenController.js'
+                        ]
+                    });
+                }]
+            }
+        })
+
         .state('dao', {
             url: "/dao",
             templateUrl: "views/dao.html",
