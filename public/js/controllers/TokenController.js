@@ -13,7 +13,7 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
     //fetch dao stuff
     $http({
       method: 'POST',
-      url: '/daorelay',
+      url: '/tokenrelay',
       data: {"action": "info"}
     }).success(function(data) {
       $scope.token = data;
@@ -33,7 +33,7 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
         if (isAddress(addr)) {
           $http({
             method: 'POST',
-            url: '/daorelay',
+            url: '/tokenrelay',
             data: {"action": "balanceOf", "addr": addr}
           }).success(function(data) {
             console.log(data)
@@ -45,56 +45,4 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
 
     }
 
-})
-.directive('createdTokens', function($http) {
-  return {
-    restrict: 'E',
-    templateUrl: '/views/created-tokens.html',
-    scope: false,
-    link: function(scope, elem, attrs){
-      // fetch created tokens
-      scope.getCreatedTokens = function(last) {
-        var data = {"action": "createdTokens"};
-        if (last)
-          data.last_id = last;
-
-        $http({
-          method: 'POST',
-          url: '/daorelay',
-          data: data
-        }).success(function(data) {
-          scope.created_tokens = data;
-        });
-      }
-
-      scope.getCreatedTokens();
-    }
-
-  }
-})
-.directive('transferTokens', function($http) {
-  return {
-    restrict: 'E',
-    templateUrl: '/views/transfer-tokens.html',
-    scope: false,
-    link: function(scope, elem, attrs){
-      // fetch created tokens
-      scope.getTransferTokens = function(last) {
-        var data = {"action": "transferTokens"};
-        if (last)
-          data.last_id = last;
-
-        $http({
-          method: 'POST',
-          url: '/daorelay',
-          data: data
-        }).success(function(data) {
-          scope.transfer_tokens = data;
-        });
-      }
-
-      scope.getTransferTokens();
-    }
-
-  }
 })
