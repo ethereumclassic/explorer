@@ -29,7 +29,7 @@ module.exports = function(req, res){
       actualBalance = etherUnits.toEther(actualBalance, 'wei');
       var totalSupply = Token.totalSupply();
       totalSupply = etherUnits.toEther(totalSupply, 'wei')*100;
-      var count = web3.eth.getTransactionCount(contractAddress);
+      var count = eth.getTransactionCount(contractAddress);
       var tokenData = {
         "balance": actualBalance,
         "total_supply": totalSupply,
