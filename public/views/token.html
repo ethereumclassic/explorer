@@ -6,7 +6,7 @@
             <div class="col-md-6 center">
               <div >
                 <span class="eth-stat-title">
-                  {{ token.balance | number: 10 }} </span><br>
+                  {{ token.balance | number: 10 }} ETC</span><br>
                 <span class="eth-stat-text">
                   {{ token.name }} Balance
                   </span><br> 
@@ -34,8 +34,8 @@
                     </div>
                     <div class="margin-top-20">
                        <span class="eth-stat-text">Contract Creator</span><br>
-                       <a href="/addr/{{token.creator}}">{{token.creator}}.substr(0,24)}}...</a> at txn 
-                       <a href="/tx/{{token.transaction}}">{{token.transaction}}.substr(0,24)}}...</a>
+                       <a href="/addr/{{token.creator}}">{{token.creator.substr(0,24)}}...</a> at txn 
+                       <a href="/tx/{{token.transaction}}">{{token.transaction.substr(0,24)}}...</a>
                     </div>
                     <div class="margin-top-20">
                        <span class="eth-stat-text">Token Address</span><br>
