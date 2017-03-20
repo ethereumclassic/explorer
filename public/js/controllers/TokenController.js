@@ -8,15 +8,18 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
       $scope.activeTab = activeTab[1];
 
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.hash; //replace with token name
-    $scope.token = {"balance": 0, "extra_balance": 0, "address": $stateParams.hash};
+    var address = isAddress($stateParams.hash) ? $stateParams.hash : undefined;
+    $scope.token = {"balance": 0};
 
     //fetch dao stuff
     $http({
       method: 'POST',
       url: '/tokenrelay',
-      data: {"action": "info"}
+      data: {"action": "info", "address": address}
     }).success(function(data) {
+      console.log(data)
       $scope.token = data;
+      $scope.token.address = address;
     });
 
     $scope.form = {};
@@ -34,7 +37,7 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
           $http({
             method: 'POST',
             url: '/tokenrelay',
-            data: {"action": "balanceOf", "addr": addr}
+            data: {"action": "balanceOf", "user": addr, "address": address}
           }).success(function(data) {
             console.log(data)
             $scope.showTokens = true;
