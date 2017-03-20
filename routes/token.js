@@ -33,7 +33,8 @@ module.exports = function(req, res){
       var tokenData = {
         "balance": actualBalance,
         "total_supply": totalSupply,
-        "count": count
+        "count": count,
+        "bytecode": eth.getCode(contractAddress)
       }
       res.write(JSON.stringify(tokenData));
       res.end();

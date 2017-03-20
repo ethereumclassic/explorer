@@ -20,6 +20,7 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
       console.log(data)
       $scope.token = data;
       $scope.token.address = address;
+      $scope.addr = {"bytecode": data.bytecode};
     });
 
     $scope.form = {};
@@ -41,7 +42,7 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
           }).success(function(data) {
             console.log(data)
             $scope.showTokens = true;
-            $scope.dao.tokens = data.tokens;
+            $scope.token.tokens = data.tokens;
           });
         } else 
             $scope.errors.address = "Invalid Address";
