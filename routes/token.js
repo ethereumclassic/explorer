@@ -28,7 +28,7 @@ module.exports = function(req, res){
       var actualBalance = eth.getBalance(contractAddress);
       actualBalance = etherUnits.toEther(actualBalance, 'wei');
       var totalSupply = Token.totalSupply();
-      totalSupply = etherUnits.toEther(totalSupply, 'wei')*100;
+      // totalSupply = etherUnits.toEther(totalSupply, 'wei')*100;
       var count = eth.getTransactionCount(contractAddress);
       var tokenData = {
         "balance": actualBalance,
@@ -45,7 +45,7 @@ module.exports = function(req, res){
     var addr = req.body.user.toLowerCase();
     try {
       var tokens = Token.balanceOf(addr);
-      tokens = etherUnits.toEther(tokens, 'wei')*100;
+      // tokens = etherUnits.toEther(tokens, 'wei')*100;
       res.write(JSON.stringify({"tokens": tokens}));
       res.end();
     } catch (e) {

@@ -8,7 +8,8 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
       $scope.activeTab = activeTab[1];
 
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.hash; //replace with token name
-    var address = isAddress($stateParams.hash) ? $stateParams.hash : undefined;
+    $scope.addrHash = isAddress($stateParams.hash) ? $stateParams.hash : undefined;
+    var address = $scope.addrHash;
     $scope.token = {"balance": 0};
 
     //fetch dao stuff
@@ -42,7 +43,7 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
           }).success(function(data) {
             console.log(data)
             $scope.showTokens = true;
-            $scope.token.tokens = data.tokens;
+            $scope.userTokens = data.tokens;
           });
         } else 
             $scope.errors.address = "Invalid Address";
