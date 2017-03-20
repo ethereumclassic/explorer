@@ -41,7 +41,7 @@ module.exports = function(req, res){
       console.error(e);
     }
   } else if (req.body.action=="balanceOf") {
-    var addr = req.body.addr.toLowerCase();
+    var addr = req.body.user.toLowerCase();
     try {
       var tokens = Token.balanceOf(addr);
       tokens = etherUnits.toEther(tokens, 'wei')*100;
