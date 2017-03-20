@@ -49,3 +49,20 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
     }
 
 })
+.directive('contractSource', function($http) {
+  return {
+    restrict: 'E',
+    templateUrl: '/views/contract-source.html',
+    scope: false,
+    link: function(scope, elem, attrs){
+        //fetch contract stuff
+        $http({
+          method: 'POST',
+          url: '/compile',
+          data: {"addr": scope.addrHash, "action": "find"}
+        }).success(function(data) {
+          scope.contract = data;
+        });
+      }
+  }
+})
