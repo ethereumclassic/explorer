@@ -11,6 +11,7 @@ module.exports = function(app){
   var web3relay = require('./web3relay');
 
   var DAO = require('./dao');
+  var Token = require('./token');
 
   var compile = require('./compiler');
   var fiat = require('./fiat');
@@ -28,6 +29,7 @@ module.exports = function(app){
   app.post('/data', getData);
 
   app.post('/daorelay', DAO);
+  app.post('/tokenrelay', Token);  
   app.post('/web3relay', web3relay.data);
   app.post('/compile', compile);
 
