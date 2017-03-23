@@ -46,7 +46,8 @@ exports.data = function(req, res){
         ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
         //get timestamp from block
         var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
-          ttx.timestamp = block.timestamp;
+          if (!err && block)
+            ttx.timestamp = block.timestamp;
           ttx.isTrace = (ttx.input != "0x");
           res.write(JSON.stringify(ttx));
           res.end();
@@ -70,7 +71,9 @@ exports.data = function(req, res){
     var addr = req.body.addr_trace.toLowerCase();
     // need to filter both to and from
     // from block to end block, paging "toAddress":[addr], 
-    var filter = {"fromBlock":"0x1d4c00", "fromAddress":[addr]};
+    // start from creation block to speed things up 
+    // TODO: store creation block
+    var filter = {"fromBlock":"0x1d4c00", "toAddress":[addr]};
     web3.trace.filter(filter, function(err, tx) {
       if(err || !tx) {
         console.error("TraceWeb3 error :" + err)
