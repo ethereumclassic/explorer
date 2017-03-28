@@ -9,7 +9,7 @@ var eth = require('./web3relay').eth;
 var BigNumber = require('bignumber.js');
 var etherUnits = require(__lib + "etherUnits.js")
 
-const ABI = [{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"}];
+const ABI = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"}];
 
 const Contract = eth.contract(ABI);
 
@@ -29,11 +29,16 @@ module.exports = function(req, res){
       actualBalance = etherUnits.toEther(actualBalance, 'wei');
       var totalSupply = Token.totalSupply();
       // totalSupply = etherUnits.toEther(totalSupply, 'wei')*100;
+      var decimals = Token.decimals();
+      var name = Token.name();
+      var symbol = Token.symbol();
       var count = eth.getTransactionCount(contractAddress);
       var tokenData = {
         "balance": actualBalance,
         "total_supply": totalSupply,
         "count": count,
+        "name": name,
+        "symbol": symbol,
         "bytecode": eth.getCode(contractAddress)
       }
       res.write(JSON.stringify(tokenData));
