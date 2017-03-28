@@ -71,7 +71,7 @@
           </ul>
           <div class="tab-content">
             <div class="tab-pane" ng-class="{active: activeTab == 'tab_token_1' || !activeTab}" id="tab_token_1">
-                <h4>Get {{ token.name }}  Token Balance</h4>
+                <h4>Get {{ token.name }}  <span ng-show="!token.name">Token</span> Balance</h4>
                 <div class="row"><!-- get my balance -->
                   <form class="col-md-10 center" name="form.tokens">
                     <span class="help-block"><b>Enter Your Address </b></span>
@@ -86,7 +86,7 @@
                 </div><!--end row-->
                 <div class="row" ng-show="showTokens"><!-- balance results -->
                   <div class="col-md-10">
-                    <h4>You have <span class="eth-stat-title font-blue-madison">0{{userTokens | number}}</span> {{ token.name }}  tokens.</h4>
+                    <h4>You have <span class="eth-stat-title font-blue-madison">0{{userTokens | number}}</span> {{ token.symbol }}  tokens.</h4>
                   </div>
                 </div>
             </div><!-- end get Token Balance Tab -->

@@ -22,6 +22,8 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
       $scope.token = data;
       $scope.token.address = address;
       $scope.addr = {"bytecode": data.bytecode};
+      if (data.name)
+        $rootScope.$state.current.data["pageTitle"] = data.name;
     });
 
     $scope.form = {};
