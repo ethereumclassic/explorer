@@ -1,0 +1,13 @@
+<div class="row ">
+    <div class="col-md-12 portlet light">
+        <div class="portlet-body">
+
+            <table class="col-md-6 table">
+                <tr ng-repeat="t in tokens track by $index">
+                    <td> <a class="font-green" href="/token/{{t.address}}">{{t.name}} ({{t.symbol}})</a> </td>
+                    <td > <a href="/token/{{t.address}}">{{t.address}}</a> </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
