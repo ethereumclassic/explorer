@@ -47,8 +47,8 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
       scope.stats = {};
 
       var etcEthURL = "/stats";
-      var etcPriceURL = "https://coinmarketcap-nexuist.rhcloud.com/api/etc";
-      var ethPriceURL = "https://coinmarketcap-nexuist.rhcloud.com/api/eth"
+      var etcPriceURL = "https://api.coinmarketcap.com/v1/ticker/ethereum-classic/";
+      var ethPriceURL = "https://api.coinmarketcap.com/v1/ticker/ethereum/"
       scope.stats.ethDiff = 1;
       scope.stats.ethHashrate = 1;
       scope.stats.usdEth = 1;
@@ -66,12 +66,12 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
         });
       $http.get(etcPriceURL)
        .then(function(res){
-          scope.stats.usdEtc = res.data.price["usd"].toFixed(2);
+          scope.stats.usdEtc = res.data[0]["price_usd"].toFixed(2);
           scope.stats.usdEtcEth = parseInt(100*scope.stats.usdEtc/scope.stats.usdEth);
         });
       $http.get(ethPriceURL)
        .then(function(res){
-          scope.stats.usdEth = res.data.price["usd"].toFixed(2);
+          scope.stats.usdEth = res.data[0]["price_usd"].toFixed(2);
           scope.stats.usdEtcEth = parseInt(100*scope.stats.usdEtc/scope.stats.usdEth);
           scope.stats.ethChange = parseFloat(res.data.change);
         });
