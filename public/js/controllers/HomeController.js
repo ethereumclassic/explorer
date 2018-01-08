@@ -71,7 +71,7 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
         });
       $http.get(ethPriceURL)
        .then(function(res){
-          scope.stats.usdEth = parseFloat(res.data[0]["price_usd"];
+          scope.stats.usdEth = parseFloat(res.data[0]["price_usd"]);
           scope.stats.usdEtcEth = parseInt(100*scope.stats.usdEtc/scope.stats.usdEth);
           scope.stats.ethChange = parseFloat(res.data.change);
         });
