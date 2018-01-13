@@ -5,6 +5,7 @@ node_js: '7'
 env: CXX=g++-4.8
 services:
   - mongodb
-before_script: npm install i
+  - docker
+before_script: docker run -d -p 8545:8545 ethereumjs/testrpc:latest
 script:
-- gulp prep
+- npm run start
