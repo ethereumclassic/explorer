@@ -6,7 +6,8 @@
   "repository": "https://github.com/ethereumproject/explorer",
   "license": "MIT",
   "scripts": {
-    "start": "concurrently \"node tools/grabber.js \" \"node app.js\" "
+    "start": "concurrently \"node tools/grabber.js \" \"node app.js\" ",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "bignumber.js": "^5.0.0",
