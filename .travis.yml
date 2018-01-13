@@ -7,7 +7,7 @@ services:
   - mongodb
   - docker
 before_install:
-  - docker pull ethereumjs/testrpc:latest
-  - docker run -d -p 8545:8545 ethereumjs/testrpc:latest
+  - docker pull trufflesuite/ganache-cli
+  - docker run -d -p 8545:8545 trufflesuite/ganache-cli
 script:
 - npm run start
