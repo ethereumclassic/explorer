@@ -6,6 +6,6 @@ env: CXX=g++-4.8
 services:
   - mongodb
   - docker
-before_script: docker run -d -p 8545:8545 ethereumjs/testrpc:latest
+before_script: docker pull ethereumjs/testrpc:latest && docker run -d -p 8545:8545 ethereumjs/testrpc:latest
 script:
 - npm run start
