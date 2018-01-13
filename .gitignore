@@ -38,3 +38,6 @@ jspm_packages
 
 # local data
 data/
+package-lock.json
+.node-xmlhttprequest-sync-19308
+.node-xmlhttprequest-sync-32644
