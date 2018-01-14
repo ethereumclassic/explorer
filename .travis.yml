@@ -9,6 +9,6 @@ services:
 before_install:
   - docker pull trufflesuite/ganache-cli
   - docker run -d -p 8545:8545 trufflesuite/ganache-cli
-  - mongod 
+  - node app.js
 script:
 - npm run test
