@@ -1,11 +1,9 @@
 FROM node:latest
 
-COPY . /tmp
-
-WORKDIR /tmp
+COPY . /
 
 RUN npm i
 
 EXPOSE 3000
 
-CMD ["/tmp/node app.js"]
+ENTRYPOINT ["node"]
