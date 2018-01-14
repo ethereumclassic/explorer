@@ -8,8 +8,8 @@ services:
   - docker
 before_install:
   - docker pull trufflesuite/ganache-cli
-  - docker run -d -p 8545:8545 trufflesuite/ganache-cli
+  - docker run -t -p 8545:8545 trufflesuite/ganache-cli
   - docker build -t ethereumclassic/explorer .
-  - docker run -t -p 3000:3000  ethereumclassic/explorer app.js
+  - docker run -t -p 3000:3000 -p 8545:8545  ethereumclassic/explorer app.js
 script:
 - npm run test
