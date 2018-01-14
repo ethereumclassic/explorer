@@ -15,7 +15,7 @@ describe("Classic Explorer Server Tests", function() {
       });
     });
     var badurl = "http://localhost:3000/ethereum_classic_is_best_classic";
-    it("bad pages fail", function(done) {
+    it("bad pages fail 404", function(done) {
       request(badurl, function(error, response, body) {
         expect(response.statusCode).to.equal(404);
         done();
