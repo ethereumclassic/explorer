@@ -7,8 +7,8 @@
   "license": "MIT",
   "scripts": {
     "start": "concurrently \"node tools/grabber.js \" \"node app.js\" ",
-    "pretest": "copyfiles app.js app/  ",
-    "test": " ./node_modules/.bin/mocha --reporter spec"
+    "pretest": "copyfiles app.js app/ && nohup node app.js &  ",
+    "test": "sleep 15 && ./node_modules/.bin/mocha --reporter spec  "
   },
   "dependencies": {
     "bignumber.js": "^5.0.0",
