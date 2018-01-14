@@ -7,7 +7,6 @@
   "license": "MIT",
   "scripts": {
     "start": "concurrently \"node tools/grabber.js \" \"node app.js\" ",
-    "pretest": "cp app.js app/server.js",
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "dependencies": {
