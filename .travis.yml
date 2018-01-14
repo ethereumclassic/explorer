@@ -10,7 +10,7 @@ before_install:
   - docker pull trufflesuite/ganache-cli
   - docker run -d -p 8545:8545 -p 3000:3000 trufflesuite/ganache-cli
   - docker build -t ethereumclassic/explorer .
-  - sleep 15
-  - docker run -it --network="container:9200f9289391" ethereumclassic/explorer app.js
+  - varA=`docker ps --no-trunc -q | cut -c 1-12`
+  - docker run -it --network="container:$varA" ethereumclassic/explorer app.js
 script:
 - npm run test
