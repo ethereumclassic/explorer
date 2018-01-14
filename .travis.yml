@@ -12,5 +12,4 @@ before_install:
   - docker build -t ethereumclassic/explorer .
   - docker run -d -p 3000:3000  ethereumclassic/explorer app.js
 script:
-- node app.js
 - npm run test
