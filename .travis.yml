@@ -9,6 +9,6 @@ services:
 before_install:
   - docker pull trufflesuite/ganache-cli
   - docker run -d -p 8545:8545 trufflesuite/ganache-cli
-  - node app.js
 script:
+- node app.js &
 - npm run test
