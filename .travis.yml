@@ -9,7 +9,6 @@ services:
 before_install:
   - docker pull trufflesuite/ganache-cli
   - docker run -d -p 8545:8545 trufflesuite/ganache-cli
-before_script:
-  -npm run start &
+before_script: npm run start &
 script:
 - npm run test
