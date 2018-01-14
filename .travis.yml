@@ -12,6 +12,6 @@ before_install:
   - docker pull mongo
   - docker run -d --network="container:$varA" mongo
   - docker build -t ethereumclassic/explorer .
-  - docker run -it --network="container:$varA" ethereumclassic/explorer app.js
+  - docker run -d --network="container:$varA" ethereumclassic/explorer app.js
 script:
 - npm run test
