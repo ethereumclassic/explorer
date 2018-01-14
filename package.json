@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "concurrently \"node tools/grabber.js \" \"node app.js\" ",
-    "pretest": "copyfiles app.js app/ && nohup node app.js &  ",
+    "pretest": "copyfiles app.js app/  ",
     "test": "sleep 15 && ./node_modules/.bin/mocha --reporter spec  "
   },
   "dependencies": {
