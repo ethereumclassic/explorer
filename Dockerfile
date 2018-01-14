@@ -1,8 +1,11 @@
-FROM node:alpine
+FROM node:latest
 
+COPY . /tmp
+
+WORKDIR /tmp
 
 RUN npm i
 
 EXPOSE 3000
 
-ENTRYPOINT ["node app.js"]
+CMD ["/tmp/node app.js"]
