@@ -1,0 +1,17 @@
+language: node_js
+sudo: required
+dist: trusty
+node_js: '7'
+env: CXX=g++-4.8
+services:
+  - docker
+before_install:
+  - docker pull trufflesuite/ganache-cli
+  - docker run -d -p 8545:8545 -p 3000:3000 -p 27017:27017 trufflesuite/ganache-cli
+  - varA=`docker ps --no-trunc -q | cut -c 1-12`
+  - docker pull mongo
+  - docker run -d --network="container:$varA" mongo
+  - docker build -t ethereumclassic/explorer .
+  - docker run -d --network="container:$varA" ethereumclassic/explorer app.js
+script:
+- npm run test

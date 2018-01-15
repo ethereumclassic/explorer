@@ -5,9 +5,15 @@
   "description": "A lightweight ethereum classic block explorer",
   "repository": "https://github.com/ethereumproject/explorer",
   "license": "MIT",
+  "scripts": {
+    "start": "concurrently \"node tools/grabber.js \" \"node app.js\" ",
+    "pretest": "copyfiles app.js app/  ",
+    "test": "./node_modules/.bin/mocha --reporter spec  "
+  },
   "dependencies": {
     "bignumber.js": "^5.0.0",
     "body-parser": "^1.12.2",
+    "concurrently": "^3.5.1",
     "ejs": "~2.5.7",
     "express": "^4.16.0",
     "mongoose": "^4.13.8",
@@ -16,5 +22,12 @@
     "socket.io": "^2.0.4",
     "solc": "^0.4.19",
     "web3": "~0.19.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "copyfiles": "^1.2.0",
+    "ethereumjs-testrpc": "^6.0.3",
+    "mocha": "^4.1.0",
+    "request": "^2.83.0"
   }
 }
