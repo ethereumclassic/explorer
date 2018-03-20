@@ -124,9 +124,14 @@ exports.data = function(req, res){
 
 
   } else if ("block" in req.body) {
-    var blockNum = parseInt(req.body.block);
+    var blockNumOrHash;
+    if (/^(0x)?[0-9a-f]{64}$/i.test(req.body.block.trim())) {
+        blockNumOrHash = req.body.block.toLowerCase();
+    } else {
+        blockNumOrHash = parseInt(req.body.block);
+    }
 
-    web3.eth.getBlock(blockNum, function(err, block) {
+    web3.eth.getBlock(blockNumOrHash, function(err, block) {
       if(err || !block) {
         console.error("BlockWeb3 error :" + err)
         res.write(JSON.stringify({"error": true}));
