@@ -39,8 +39,21 @@ exports.data = function(req, res){
     web3.eth.getTransaction(txHash, function(err, tx) {
       if(err || !tx) {
         console.error("TxWeb3 error :" + err)
-        res.write(JSON.stringify({"error": true}));
-        res.end();
+        if (!tx) {
+          web3.eth.getBlock(txHash, function(err, block) {
+            if(err || !block) {
+              console.error("BlockWeb3 error :" + err)
+              res.write(JSON.stringify({"error": true}));
+            } else {
+              console.log("BlockWeb3 found: " + txHash)
+              res.write(JSON.stringify({"error": true, "isBlock": true}));
+            }
+            res.end();
+          });
+        } else {
+          res.write(JSON.stringify({"error": true}));
+          res.end();
+        }
       } else {
         var ttx = tx;
         ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
