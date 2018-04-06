@@ -4,7 +4,7 @@ angular.module('BlocksApp').controller('TokenListController', function($statePar
         App.initAjax();
     });
 
-    $http.get('/TOKENS.json')
+    $http.get('/tokens.json')
       .then(function(res){
         $scope.tokens = res.data;
       })
