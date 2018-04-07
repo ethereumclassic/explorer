@@ -11,7 +11,7 @@
                 <span class="eth-stat-title">
                   {{ addr.balance | number: 10 }} </span><br>
                 <span class="eth-stat-text">
-                  ETC Balance <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="Note: Balance may not reflect transaction data if you have transactions resulting from Contract Internal Transactions. We are working on adding that functionality."></i>
+                  {{ settings.symbol }} Balance <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="Note: Balance may not reflect transaction data if you have transactions resulting from Contract Internal Transactions. We are working on adding that functionality."></i>
                   </span><br> 
                   <div class="margin-top-20">
                   <span class="fade">{{ addr.ethfiat | number: 10 }}</span> <span class="eth-stat-text fade">ETH-F balance
@@ -69,7 +69,7 @@
                           <th width="8%"> Block </th>
                           <th width="15%"> From </th>
                           <th width="15%"> To </th>
-                          <th width="10%"> ETC </th>
+                          <th width="10%"> {{ settings.symbol }} </th>
                           <th width="0%"> gas </th>
                           <th width="12%"> Age </th>
                       </tr>
@@ -85,7 +85,7 @@
                         <th width="8%"> Block </th>
                         <th width="15%"> From </th>
                         <th width="15%"> To </th>
-                        <th width="10%"> ETC </th>
+                        <th width="10%"> {{ settings.symbol }} </th>
                         <th width="0%"> gas </th>
                         <th></th>
                     </tr>

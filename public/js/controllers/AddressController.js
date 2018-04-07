@@ -10,6 +10,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.hash;
     $scope.addrHash = $stateParams.hash;
     $scope.addr = {"balance": 0, "count": 0};
+    $scope.settings = $rootScope.setup;
 
     //fetch web3 stuff
     $http({

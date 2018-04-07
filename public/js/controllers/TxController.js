@@ -7,6 +7,7 @@ angular.module('BlocksApp').controller('TxController', function($stateParams, $r
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.hash;
     $scope.hash = $stateParams.hash;
     $scope.tx = {"hash": $scope.hash};
+    $scope.settings = $rootScope.setup;
 
     //fetch web3 stuff
     $http({

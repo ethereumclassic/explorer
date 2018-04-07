@@ -7,6 +7,7 @@ angular.module('BlocksApp').controller('BlockController', function($stateParams,
 
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.number;
     $scope.blockNum = $stateParams.number;
+    $scope.settings = $rootScope.setup;
 
     //fetch transactions
     $http({

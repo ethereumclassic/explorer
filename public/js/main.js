@@ -35,6 +35,13 @@ BlocksApp.factory('settings', ['$rootScope', '$http', function($rootScope, $http
     return settings;
 }]);
 
+/* Load config settings */
+BlocksApp.factory('setupObj', ['$rootScope', '$http', function($rootScope, $http) {
+    return $http.get('/config').then(function(res) {
+        return res.data;
+    })
+}]);
+
 /* Setup App Main Controller */
 BlocksApp.controller('MainController', ['$scope', '$rootScope', function($scope, $rootScope) {
     $scope.$on('$viewContentLoaded', function() {
@@ -316,7 +323,10 @@ BlocksApp.filter('timeDuration', function() {
 })
 
 /* Init global settings and run the app */
-BlocksApp.run(["$rootScope", "settings", "$state", function($rootScope, settings, $state) {
+BlocksApp.run(["$rootScope", "settings", "$state", "setupObj", function($rootScope, settings, $state, setupObj) {
     $rootScope.$state = $state; // state to be accessed from view
     $rootScope.$settings = settings; // state to be accessed from view
+    setupObj.then(function(res) {
+        $rootScope.setup = res;
+    });
 }]);
