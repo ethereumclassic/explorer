@@ -154,6 +154,49 @@ exports.data = function(req, res){
       res.end();
     });
 
+  } else if ("uncle" in req.body) {
+    var uncle = req.body.uncle.trim();
+    var arr = uncle.split('/');
+    var uncleHashOrNumber;
+    var uncleIdx = parseInt(arr[1]) || 0;
+
+    if (/^(?:0x)?[0-9a-f]{64}$/i.test(arr[0])) {
+      uncleHashOrNumber = arr[0].toLowerCase();
+    } else {
+      uncleHashOrNumber = parseInt(arr[0]);
+    }
+
+    if (typeof uncleHashOrNumber == 'undefined') {
+      console.error("UncleWeb3 error :" + err);
+      res.write(JSON.stringify({"error": true}));
+      res.end();
+      return;
+    }
+
+    // XXX web3.getUncle(uncleHash) BUG
+    if (/^(?:0x)?[0-9a-f]{64}/i.test(uncleHashOrNumber)) {
+      web3.eth.getBlock(uncleHashOrNumber, function(err, uncle) {
+        if(err || !uncle) {
+          console.error("UncleWeb3 error :" + err)
+          res.write(JSON.stringify({"error": true}));
+        } else {
+          res.write(JSON.stringify(filterBlocks(uncle)));
+        }
+        res.end();
+      });
+      return;
+    }
+
+    web3.eth.getUncle(uncleHashOrNumber, uncleIdx, function(err, uncle) {
+      if(err || !uncle) {
+        console.error("UncleWeb3 error :" + err)
+        res.write(JSON.stringify({"error": true}));
+      } else {
+        res.write(JSON.stringify(filterBlocks(uncle)));
+      }
+      res.end();
+    });
+
   } else {
     console.error("Invalid Request: " + action)
     res.status(400).send();

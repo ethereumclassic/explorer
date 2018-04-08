@@ -160,6 +160,24 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             }
         })
 
+        .state('uncle', {
+            url: "/uncle/*number",
+            templateUrl: "views/block.html",
+            data: {pageTitle: 'Uncle'},
+            controller: "UncleController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                             '/js/controllers/UncleController.js'
+                        ]
+                    });
+                }]
+            }
+        })
+
         .state('tx', {
             url: "/tx/{hash}",
             templateUrl: "views/tx.html",
