@@ -88,10 +88,10 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
       scope.stats = {};
 
       var statsURL = "/stats";
-      scope.stats.ethDiff = "...";
-      scope.stats.ethHashrate = "...";
+      scope.stats.hashrate = "...";
+      scope.stats.difficulty = "...";
       scope.stats.blockHeight = "...";
-      scope.stats.blockTime = 14.4;
+      scope.stats.blockTime = "...";
  
       $http.post(statsURL, {"action": "hashrate"})
        .then(function(res){

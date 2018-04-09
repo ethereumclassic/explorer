@@ -52,7 +52,7 @@ var getHashrate = function(res) {
   hashFind.exec(function (err, docs) {
     var x = docs.reduce( function(hashR, doc) { 
                             return { "blockTime": hashR.blockTime + doc.blockTime, 
-                                     "blockHeight": doc.number,
+                                     "blockHeight": docs[0].number,
                                      "difficulty": Math.max(hashR.difficulty, doc.difficulty) }
                                  }, {"blockTime": 0, "blockHeight": 0, "difficulty": 0});
     var hashrate = x.difficulty / (x.blockTime / docs.length);
