@@ -78,5 +78,36 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
 
       }
   }
+})
+.directive('simpleSummaryStats', function($http) {
+  return {
+    restrict: 'E',
+    templateUrl: '/views/simple-summary-stats.html',
+    scope: true,
+    link: function(scope, elem, attrs){
+      scope.stats = {};
+
+      var statsURL = "/stats";
+      scope.stats.ethDiff = "...";
+      scope.stats.ethHashrate = "...";
+      scope.stats.blockHeight = "...";
+      scope.stats.blockTime = 14.4;
+ 
+      $http.post(statsURL, {"action": "hashrate"})
+       .then(function(res){
+          scope.stats.hashrate = res.data.hashrate;
+          scope.stats.difficulty = res.data.difficulty;
+          scope.stats.blockHeight = res.data.blockHeight;
+          scope.stats.blockTime = res.data.blockTime;
+        });
+
+      }
+  }
+})
+.directive('siteNotes', function() {
+  return {
+    restrict: 'E',
+    templateUrl: '/views/site-notes.html'
+  }
 });
 
