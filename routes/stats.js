@@ -43,14 +43,17 @@ var getMinerStats = function(res) {
   Get hashrate Diff stuff
 **/
 var getHashrate = function(res) {
-  var blockFind = Block.find({}, "difficulty blockTime number")
-                      .lean(true).sort('-number').limit(10);
+  var blockFind = Block.find({}, "difficulty timestamp number")
+                      .lean(true).sort('-number').limit(100);
   blockFind.exec(function (err, docs) {
+  var blockTime = (docs[0].timestamp - docs[99].timestamp)/100;
+  var hashrate = docs[0].difficulty / blockTime;
     res.write(JSON.stringify({
         "blocks": docs,
-        "blockTime": docs[0].blockTime,
+        "hashrate": hashrate,
+        "blockTime": blockTime,
         "blockHeight": docs[0].number,
-        "difficulty": docs[0].difficulty,
+        "difficulty": docs[0].difficulty
     }));
     res.end();
   });
