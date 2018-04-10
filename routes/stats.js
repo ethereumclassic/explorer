@@ -44,15 +44,8 @@ var getMinerStats = function(res) {
 **/
 var getHashrate = function(res) {
   var blockFind = Block.find({}, "difficulty timestamp number")
-<<<<<<< Updated upstream
                       .lean(true).sort('-number').limit(100);
-  blockFind.exec(function (err, docs) {
   var blockTime = (docs[0].timestamp - docs[99].timestamp)/100;
-=======
-                      .lean(true).sort('-number').limit(64);
-  blockFind.exec(function (err, docs) {
-  var blockTime = (docs[0].timestamp - docs[63].timestamp)/64;
->>>>>>> Stashed changes
   var hashrate = docs[0].difficulty / blockTime;
     res.write(JSON.stringify({
         "blocks": docs,
