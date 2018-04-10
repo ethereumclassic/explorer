@@ -49,7 +49,7 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
           scope.stats.difficulty = res.data.difficulty;
           scope.stats.blockHeight = res.data.blockHeight;
           scope.stats.blockTime = res.data.blockTime;
-          console.log(res);	
+          //console.log(res);	
 	});
       }
   }

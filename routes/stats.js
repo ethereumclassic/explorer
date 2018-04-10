@@ -55,8 +55,7 @@ var getHashrate = function(res) {
         "difficulty": docs[0].difficulty
     }));
     res.end();
-  });
-}
+};
 /**
   OLD CODE DON'T USE
   Swipe ETC ETH data
