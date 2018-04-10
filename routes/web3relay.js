@@ -1,9 +1,7 @@
 #!/usr/bin/env node
-
 /*
     Endpoint for client to talk to etc node
 */
-
 var Web3 = require("web3");
 var web3;
 
@@ -13,7 +11,6 @@ var etherUnits = require(__lib + "etherUnits.js")
 var getLatestBlocks = require('./index').getLatestBlocks;
 var filterBlocks = require('./filters').filterBlocks;
 var filterTrace = require('./filters').filterTrace;
-
 
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
@@ -25,8 +22,6 @@ if (web3.isConnected())
   console.log("Web3 connection established");
 else
   throw "No connection";
-
-
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
 
@@ -67,7 +62,6 @@ exports.data = function(req, res){
         });
       }
     });
-
   } else if ("tx_trace" in req.body) {
     var txHash = req.body.tx_trace.toLowerCase();
 
@@ -130,12 +124,9 @@ exports.data = function(req, res){
         console.error("AddrWeb3 error :" + err);
         addrData = {"error": true};
       }
-    }
-   
+    }  
     res.write(JSON.stringify(addrData));
     res.end();
-
-
   } else if ("block" in req.body) {
     var blockNumOrHash;
     if (/^(0x)?[0-9a-f]{64}$/i.test(req.body.block.trim())) {
@@ -143,7 +134,6 @@ exports.data = function(req, res){
     } else {
         blockNumOrHash = parseInt(req.body.block);
     }
-
     web3.eth.getBlock(blockNumOrHash, function(err, block) {
       if(err || !block) {
         console.error("BlockWeb3 error :" + err)
@@ -158,8 +148,6 @@ exports.data = function(req, res){
     console.error("Invalid Request: " + action)
     res.status(400).send();
   }
-
 };
-
 exports.eth = web3.eth;
   

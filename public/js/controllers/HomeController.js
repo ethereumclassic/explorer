@@ -1,5 +1,5 @@
 angular.module('BlocksApp').controller('HomeController', function($rootScope, $scope, $http, $timeout) {
-    $scope.$on('$viewContentLoaded', function() {   
+    $scope.$on('$viewContentLoaded', function() {
         // initialize core components
         App.initAjax();
     });
@@ -19,8 +19,6 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
         $scope.latest_blocks = data.blocks;
       });
     }
-    
-
     $scope.reloadTransactions = function() {
       $scope.txLoading = true;
       $http({
@@ -30,14 +28,38 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
       }).success(function(data) {
         $scope.latest_txs = data.txs;
         $scope.txLoading = false;
-      });  
+      });
     }
-
     $scope.reloadBlocks();
     $scope.reloadTransactions();
     $scope.txLoading = false;
     $scope.blockLoading = false;
 })
+.directive('simpleSummaryStats', function($http) {
+  return {
+    restrict: 'E',
+    templateUrl: '/views/simple-summary-stats.html',
+    scope: true,
+    link: function(scope, elem, attrs){
+      scope.stats = {};
+      var statsURL = "/stats";
+      $http.post(statsURL, {"action": "hashrate"})
+       .then(function(res){
+          scope.stats.hashrate = res.data.hashrate;
+          scope.stats.difficulty = res.data.difficulty;
+          scope.stats.blockHeight = res.data.blockHeight;
+          scope.stats.blockTime = res.data.blockTime;
+        });
+      }
+  }
+})
+.directive('siteNotes', function() {
+  return {
+    restrict: 'E',
+    templateUrl: '/views/site-notes.html'
+  }
+})
+//OLD CODE DONT USE
 .directive('summaryStats', function($http) {
   return {
     restrict: 'E',
@@ -51,10 +73,7 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
       var ethPriceURL = "https://api.coinmarketcap.com/v1/ticker/ethereum/"
       scope.stats.ethDiff = 1;
       scope.stats.ethHashrate = 1;
-      scope.stats.usdEth = 1;
-
-
-      
+      scope.stats.usdEth = 1;     
       $http.post(etcEthURL, {"action": "etceth"})
        .then(function(res){
           scope.stats.etcHashrate = res.data.etcHashrate;
@@ -78,36 +97,4 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
 
       }
   }
-})
-.directive('simpleSummaryStats', function($http) {
-  return {
-    restrict: 'E',
-    templateUrl: '/views/simple-summary-stats.html',
-    scope: true,
-    link: function(scope, elem, attrs){
-      scope.stats = {};
-
-      var statsURL = "/stats";
-      scope.stats.ethDiff = "...";
-      scope.stats.ethHashrate = "...";
-      scope.stats.blockHeight = "...";
-      scope.stats.blockTime = 14.4;
- 
-      $http.post(statsURL, {"action": "hashrate"})
-       .then(function(res){
-          scope.stats.hashrate = res.data.hashrate;
-          scope.stats.difficulty = res.data.difficulty;
-          scope.stats.blockHeight = res.data.blockHeight;
-          scope.stats.blockTime = res.data.blockTime;
-        });
-
-      }
-  }
-})
-.directive('siteNotes', function() {
-  return {
-    restrict: 'E',
-    templateUrl: '/views/site-notes.html'
-  }
 });
-
