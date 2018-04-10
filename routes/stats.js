@@ -48,9 +48,9 @@ var getHashrate = function(res) {
   blockFind.exec(function (err, docs) {
     res.write(JSON.stringify({
         "blocks": docs,
-        "blockTime": docs.blockTime,
-        "blockHeight": docs.number,
-        "difficulty": docs.difficulty,
+        "blockTime": docs[0].blockTime,
+        "blockHeight": docs[0].number,
+        "difficulty": docs[0].difficulty,
     }));
     res.end();
   });
