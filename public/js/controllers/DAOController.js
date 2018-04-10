@@ -7,6 +7,7 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
     if (activeTab.length > 1)
       $scope.activeTab = activeTab[1];
 
+    $scope.settings = $rootScope.setup;
     $scope.dao = {"balance": 0, "extra_balance": 0};
 
     //fetch dao stuff

@@ -3,5 +3,11 @@
     "blocks": [ {"start": 2000000, "end": "latest"}],
     "quiet": false,
     "terminateAtExistingDB": false,
-    "listenOnly": true
+    "listenOnly": false,
+    "settings": {
+        "symbol": "ETC",
+        "name": "Ethereum Classic",
+        "title": "Ethereum Classic Block Explorer",
+        "author": "Elaine"
+    }
 }

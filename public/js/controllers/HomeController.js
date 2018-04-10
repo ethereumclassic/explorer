@@ -37,6 +37,7 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
     $scope.reloadTransactions();
     $scope.txLoading = false;
     $scope.blockLoading = false;
+    $scope.settings = $rootScope.setup;
 })
 .directive('summaryStats', function($http) {
   return {

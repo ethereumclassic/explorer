@@ -32,6 +32,7 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
     $scope.form = {};
     $scope.contract = {"address": $stateParams.addr} 
     $scope.errors = {};
+    $scope.settings = $rootScope.setup;
     
     $scope.submitCode = function() {
       console.log($scope.contract)
