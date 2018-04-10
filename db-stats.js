@@ -13,8 +13,10 @@ var BlockStat = new Schema(
     "miner": String,
     "blockTime": Number,
     "uncleCount": Number
-}, { capped: { size: 512000, max: 1000}});
-
+});
 
 mongoose.model('BlockStat', BlockStat);
 module.exports.BlockStat = mongoose.model('BlockStat');
+
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
+mongoose.set('debug', true);
