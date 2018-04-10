@@ -45,17 +45,19 @@ var getMinerStats = function(res) {
   Calc difficulty, hashrate from recent blocks in DB
 **/
 var getHashrate = function(res) {
-  var hashFind = BlockStat.find({}, "difficulty blockTime")
+  var hashFind = BlockStat.find({}, "difficulty blockTime number")
                             .lean(true).limit(64).sort('-number');
     
   // highest difficulty / avg blocktime
   hashFind.exec(function (err, docs) {
     var x = docs.reduce( function(hashR, doc) { 
                             return { "blockTime": hashR.blockTime + doc.blockTime, 
+                                     "blockHeight": docs[0].number,
                                      "difficulty": Math.max(hashR.difficulty, doc.difficulty) }
-                                 }, {"blockTime": 0, "difficulty": 0}); 
-    var hashrate = x.difficulty / (1000*x.blockTime / docs.length);
-    res.write(JSON.stringify({"hashrate": hashrate, "difficulty": x.difficulty}));
+                                 }, {"blockTime": 0, "blockHeight": 0, "difficulty": 0});
+    var hashrate = x.difficulty / (x.blockTime / docs.length);
+    var blockTime = x.blockTime / docs.length;
+    res.write(JSON.stringify({"hashrate": hashrate, "blockHeight": x.blockHeight, "blockTime": blockTime, "difficulty": x.difficulty}));
     res.end();
   });
 }
