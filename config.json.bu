@@ -1,0 +1,7 @@
+{
+    "gethPort": 8545,
+    "blocks": [ {"start": 2000000, "end": "5303122"}],
+    "quiet": false,
+    "terminateAtExistingDB": true,
+    "listenOnly": true
+}
