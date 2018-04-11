@@ -6,14 +6,13 @@ var fs = require('fs');
 
 var Web3 = require('web3');
 
-var mongoose = require( 'mongoose' );
-var Block     = mongoose.model( 'Block' );
+var mongoose        = require( 'mongoose' );
+var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
 var grabBlocks = function(config) {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + 
         config.gethPort.toString()));
-
 
     if('listenOnly' in config && config.listenOnly === true) 
         listenBlocks(config, web3);
@@ -21,13 +20,11 @@ var grabBlocks = function(config) {
         setTimeout(function() {
             grabBlock(config, web3, config.blocks.pop());
         }, 2000);
-
 }
 
 var listenBlocks = function(config, web3) {
     var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error, log) {
-
         if(error) {
             console.log('Error: ' + error);
         } else if (log == null) {
@@ -35,18 +32,15 @@ var listenBlocks = function(config, web3) {
         } else {
             grabBlock(config, web3, log);
         }
-
     });
 }
 
 var grabBlock = function(config, web3, blockHashOrNumber) {
     var desiredBlockHashOrNumber;
-
     // check if done
     if(blockHashOrNumber == undefined) {
         return; 
     }
-
     if (typeof blockHashOrNumber === 'object') {
         if('start' in blockHashOrNumber && 'end' in blockHashOrNumber) {
             desiredBlockHashOrNumber = blockHashOrNumber.end;
@@ -60,9 +54,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     else {
         desiredBlockHashOrNumber = blockHashOrNumber;
     }
-
     if(web3.isConnected()) {
-
         web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
             if(error) {
                 console.log('Warning: error on getting block with hash/number: ' +
@@ -117,7 +109,6 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     }
 }
 
-
 var writeBlockToDB = function(config, blockData) {
     return new Block(blockData).save( function( err, block, count ){
         if ( typeof err !== 'undefined' && err ) {
@@ -161,7 +152,6 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 /**
     Break transactions out of blocks and write to DB
 **/
-
 var writeTransactionsToDB = function(config, blockData) {
     var bulkOps = [];
     if (blockData.transactions.length > 0) {
@@ -190,56 +180,6 @@ var writeTransactionsToDB = function(config, blockData) {
     }
 }
 
-/*
-  Patch Missing Blocks
-*/
-var patchBlocks = function(config) {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + 
-        config.gethPort.toString()));
-
-    // number of blocks should equal difference in block numbers
-    var firstBlock = 0;
-    var lastBlock = web3.eth.blockNumber;
-    blockIter(web3, firstBlock, lastBlock, config);
-}
-
-var blockIter = function(web3, firstBlock, lastBlock, config) {
-    // if consecutive, deal with it
-    if (lastBlock < firstBlock)
-        return;
-    if (lastBlock - firstBlock === 1) {
-        [lastBlock, firstBlock].forEach(function(blockNumber) {
-            Block.find({number: blockNumber}, function (err, b) {
-                if (!b.length)
-                    grabBlock(config, web3, firstBlock);
-            });
-        });
-    } else if (lastBlock === firstBlock) {
-        Block.find({number: firstBlock}, function (err, b) {
-            if (!b.length)
-                grabBlock(config, web3, firstBlock);
-        });
-    } else {
-
-        Block.count({number: {$gte: firstBlock, $lte: lastBlock}}, function(err, c) {
-          var expectedBlocks = lastBlock - firstBlock + 1;
-          if (c === 0) {
-            grabBlock(config, web3, {'start': firstBlock, 'end': lastBlock});
-          } else if (expectedBlocks > c) {
-            console.log("Missing: " + JSON.stringify(expectedBlocks - c));  
-            var midBlock = firstBlock + parseInt((lastBlock - firstBlock)/2); 
-            blockIter(web3, firstBlock, midBlock, config);
-            blockIter(web3, midBlock + 1, lastBlock, config);
-          } else 
-            return;
-        })
-    }
-}
-
-
-/** On Startup **/
-// geth --rpc --rpcaddr "localhost" --rpcport "8545"  --rpcapi "eth,net,web3"
-
 var config = {};
 
 try {
@@ -256,7 +196,6 @@ catch (error) {
         process.exit(1);
     }
 }
-
 // set the default geth port if it's not provided
 if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
     config.gethPort = 8545; // default
@@ -277,4 +216,3 @@ console.log('Using configuration:');
 console.log(config);
 
 grabBlocks(config);
-// patchBlocks(config);
