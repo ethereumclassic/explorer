@@ -43,7 +43,7 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
     scope: true,
     link: function(scope, elem, attrs){
       scope.stats = {};
-      var statsURL = "/stats";
+      var statsURL = "/web3relay";
       $http.post(statsURL, {"action": "hashrate"})
        .then(function(res){
           scope.stats.hashrate = res.data.hashrate;
