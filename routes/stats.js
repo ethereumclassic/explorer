@@ -12,13 +12,13 @@ module.exports = function(req, res) {
 
   if (!("action" in req.body))
     res.status(400).send();
-
-  else if (req.body.action=="miners")
+  
+  else if (req.body.action=="miners") 
     getMinerStats(res)
-
-  else if (req.body.action=="hashrate")
+  
+  else if (req.body.action=="hashrate") 
     getHashrate(res);
-
+  
 }
 /**
   Aggregate miner stats
@@ -26,7 +26,7 @@ module.exports = function(req, res) {
 var getMinerStats = function(res) {
   BlockStat.aggregate([
       { $group: {
-        _id: '$miner',
+        _id: '$miner',  
         count: {$sum: 1} }
       }
   ], function (err, result) {
@@ -45,6 +45,7 @@ var getMinerStats = function(res) {
 var getHashrate = function(res) {
   var blockFind = Block.find({}, "difficulty timestamp number")
                       .lean(true).sort('-number').limit(100);
+  blockFind.exec(function (err, docs) {
   var blockTime = (docs[0].timestamp - docs[99].timestamp)/100;
   var hashrate = docs[0].difficulty / blockTime;
     res.write(JSON.stringify({
@@ -55,7 +56,8 @@ var getHashrate = function(res) {
         "difficulty": docs[0].difficulty
     }));
     res.end();
-};
+  });
+}
 /**
   OLD CODE DON'T USE
   Swipe ETC ETH data
@@ -72,8 +74,9 @@ var getEtcEth = function(res) {
     method: 'GET',
     data: 'eth'
   }];
+  
   async.map(options, function(opt, callback) {
-
+    
     https.request(opt, function(mg) {
       mg.on('data', function (data) {
         try {
