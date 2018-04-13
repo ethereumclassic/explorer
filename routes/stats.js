@@ -1,4 +1,8 @@
-var BlockStat = require( '../db-stats.js' ).BlockStat;
+var mongoose = require( 'mongoose' );
+var Block     = mongoose.model( 'Block' );
+var BlockStat = mongoose.model( 'BlockStat' );
+var filters = require('./filters');
+
 var https = require('https');
 var async = require('async');
 
@@ -15,12 +19,7 @@ module.exports = function(req, res) {
   else if (req.body.action=="hashrate") 
     getHashrate(res);
   
-  else if (req.body.action=="etceth") 
-    getEtcEth(res);
-  
-
 }
-
 /**
   Aggregate miner stats
 **/
@@ -40,27 +39,27 @@ var getMinerStats = function(res) {
       }
   });
 }
-
 /**
-  Calc difficulty, hashrate from recent blocks in DB
+  Get hashrate Diff stuff
 **/
 var getHashrate = function(res) {
-  var hashFind = BlockStat.find({}, "difficulty blockTime")
-                            .lean(true).limit(64).sort('-number');
-    
-  // highest difficulty / avg blocktime
-  hashFind.exec(function (err, docs) {
-    var x = docs.reduce( function(hashR, doc) { 
-                            return { "blockTime": hashR.blockTime + doc.blockTime, 
-                                     "difficulty": Math.max(hashR.difficulty, doc.difficulty) }
-                                 }, {"blockTime": 0, "difficulty": 0}); 
-    var hashrate = x.difficulty / (1000*x.blockTime / docs.length);
-    res.write(JSON.stringify({"hashrate": hashrate, "difficulty": x.difficulty}));
+  var blockFind = Block.find({}, "difficulty timestamp number")
+                      .lean(true).sort('-number').limit(100);
+  blockFind.exec(function (err, docs) {
+  var blockTime = (docs[0].timestamp - docs[99].timestamp)/100;
+  var hashrate = docs[0].difficulty / blockTime;
+    res.write(JSON.stringify({
+        "blocks": docs,
+        "hashrate": hashrate,
+        "blockTime": blockTime,
+        "blockHeight": docs[0].number,
+        "difficulty": docs[0].difficulty
+    }));
     res.end();
   });
 }
-
 /**
+  OLD CODE DON'T USE
   Swipe ETC ETH data
 **/
 var getEtcEth = function(res) {
@@ -89,7 +88,6 @@ var getEtcEth = function(res) {
         }
       })
     }).end();
-
   }, function(err, results) {
     if (err) {
       console.error(err);

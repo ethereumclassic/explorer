@@ -8,7 +8,7 @@
                 <span class="eth-stat-title">
                   {{ token.balance | number: 10 }} </span><br>
                 <span class="eth-stat-text">
-                  {{ token.name }} Address Balance (ETC)
+                  {{ token.name }} Address Balance ({{ settings.symbol }})
                   </span><br> 
                   <div class="margin-top-20">
                   {{ token.total_supply | number:1 }} <span class="eth-stat-text">Total {{ token.symbol }} Tokens</span>
@@ -102,7 +102,7 @@
                           <th width="8%"> Block </th>
                           <th width="15%"> From </th>
                           <th width="15%"> To </th>
-                          <th width="10%"> ETC </th>
+                          <th width="10%"> {{ settings.symbol }} </th>
                           <th width="0%"> gas </th>
                           <th width="12%"> Age </th>
                       </tr>
