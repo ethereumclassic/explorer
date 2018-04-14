@@ -1,6 +1,6 @@
 # ETCExplorer 
 
-<b>Live Version: [etherhub.io](http://etherhub.io)</b>
+<b>Live Version: [etherhub.io](http://etherhub.io) & [classic.chainkorea.kr](http://classic.chainkorea.kr)</b>
 
 Follow the project progress at: [ETC Block Explorer Development](https://trello.com/b/W3ftl57z/etc-block-explorer-development) 
 
