@@ -46,7 +46,7 @@ if (!('output' in config) || (typeof config.output) !== 'string') {
 }
 
 // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
-var web3 = new Web3(new Web3.providers.HttpProvider('http://'+config.nodeAddr.toString(): +
+var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr: +
     config.gethPort.toString()));
 
 
