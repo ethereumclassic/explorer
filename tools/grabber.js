@@ -14,32 +14,16 @@ var grabBlocks = function(config) {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' +
         config.gethPort.toString()));
 
-    if('listenOnly' in config && config.listenOnly === true)
-        listenBlocks(config, web3);
-    else
         setTimeout(function() {
             grabBlock(config, web3, config.blocks.pop());
         }, 2000);
-}
-
-var listenBlocks = function(config, web3) {
-    var newBlocks = web3.eth.filter("latest");
-    newBlocks.watch(function (error, log) {
-        if(error) {
-            console.log('Error: ' + error);
-        } else if (log == null) {
-            console.log('Warning: null block hash');
-        } else {
-            grabBlock(config, web3, log);
-        }
-    });
 }
 
 var grabBlock = function(config, web3, blockHashOrNumber) {
     var desiredBlockHashOrNumber;
     // check if done
     if(blockHashOrNumber == undefined) {
-        return;
+        grabBlocks(config);
     }
 
     if (typeof blockHashOrNumber === 'object') {
@@ -180,7 +164,9 @@ var writeTransactionsToDB = function(config, blockData) {
         });
     }
 }
-
+/**
+Take the last block the grabber exited on and update the param 'end' in the grabberConfig.JSON
+**/
 var config = {};
 
 try {
@@ -197,16 +183,21 @@ catch (error) {
         process.exit(1);
     }
 }
+var updateENDblock = function(lastBlock){
+  var file = grabberConfig.json
+}
+// set the default NODE address to localhost if it's not provided
+if (!('nodeAddr' in config) || !(config.nodeAddr)) {
+    config.nodeAddr = 'localhost'; // default
+}
 // set the default geth port if it's not provided
 if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
     config.gethPort = 8545; // default
 }
-
 // set the default output directory if it's not provided
 if (!('output' in config) || (typeof config.output) !== 'string') {
     config.output = '.'; // default this directory
 }
-
 // set the default blocks if it's not provided
 if (!('blocks' in config) || !(Array.isArray(config.blocks))) {
     config.blocks = [];

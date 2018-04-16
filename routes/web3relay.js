@@ -21,7 +21,7 @@ if (typeof web3 !== "undefined") {
 if (web3.isConnected())
   console.log("Web3 connection established");
 else
-  throw "No connection";
+  throw "No connection, if your using a remote node please update the host in: ./routes/web3relay.js";
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
 exports.data = function(req, res){

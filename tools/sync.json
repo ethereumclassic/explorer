@@ -1,4 +1,4 @@
 {
-    "nodeAddr": localhost,
+    "nodeAddr": "localhost",
     "gethPort": 8545
 }
