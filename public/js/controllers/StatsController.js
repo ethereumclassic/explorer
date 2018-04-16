@@ -47,6 +47,11 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
        * Created by chenxiangyu on 2016/8/5.
        */
       scope.init = function(dataset, chartid) {
+        var total = 0;
+        dataset.forEach(function(d) {
+          total += d.count;
+        });
+
         var svg = d3.select(chartid)
           .append("g");
 
@@ -139,7 +144,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                     div.style("left", d3.event.pageX + 10 + "px");
                     div.style("top", d3.event.pageY - 25 + "px");
                     div.style("display", "inline-block");
-                    div.html((d.data._id) + "<br>" + (d.data.count) + " ");
+                    div.html((d.data._id) + "<br>" + (d.data.count) + "<br>(" + d3.format(".2%")(d.data.count / total) + ")");
                 });
             slice
                 .on("mouseout", function (d) {
