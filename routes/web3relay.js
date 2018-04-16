@@ -18,13 +18,12 @@ if (typeof web3 !== "undefined") {
   web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 }
 
-if (web3.isConnected()) 
+if (web3.isConnected())
   console.log("Web3 connection established");
 else
   throw "No connection";
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
-
 exports.data = function(req, res){
   console.log(req.body)
 
@@ -77,8 +76,8 @@ exports.data = function(req, res){
   } else if ("addr_trace" in req.body) {
     var addr = req.body.addr_trace.toLowerCase();
     // need to filter both to and from
-    // from block to end block, paging "toAddress":[addr], 
-    // start from creation block to speed things up 
+    // from block to end block, paging "toAddress":[addr],
+    // start from creation block to speed things up
     // TODO: store creation block
     var filter = {"fromBlock":"0x1d4c00", "toAddress":[addr]};
     web3.trace.filter(filter, function(err, tx) {
@@ -89,7 +88,7 @@ exports.data = function(req, res){
         res.write(JSON.stringify(filterTrace(tx)));
       }
       res.end();
-    }) 
+    })
   } else if ("addr" in req.body) {
     var addr = req.body.addr.toLowerCase();
     var options = req.body.options;
@@ -98,7 +97,7 @@ exports.data = function(req, res){
 
     if (options.indexOf("balance") > -1) {
       try {
-        addrData["balance"] = web3.eth.getBalance(addr);  
+        addrData["balance"] = web3.eth.getBalance(addr);
         addrData["balance"] = etherUnits.toEther(addrData["balance"], 'wei');
       } catch(err) {
         console.error("AddrWeb3 error :" + err);
@@ -116,7 +115,7 @@ exports.data = function(req, res){
     if (options.indexOf("bytecode") > -1) {
       try {
          addrData["bytecode"] = web3.eth.getCode(addr);
-         if (addrData["bytecode"].length > 2) 
+         if (addrData["bytecode"].length > 2)
             addrData["isContract"] = true;
          else
             addrData["isContract"] = false;
@@ -124,7 +123,7 @@ exports.data = function(req, res){
         console.error("AddrWeb3 error :" + err);
         addrData = {"error": true};
       }
-    }  
+    }
     res.write(JSON.stringify(addrData));
     res.end();
   } else if ("block" in req.body) {
@@ -150,4 +149,3 @@ exports.data = function(req, res){
   }
 };
 exports.eth = web3.eth;
-  

@@ -11,10 +11,10 @@ var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
 var grabBlocks = function(config) {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + 
+    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' +
         config.gethPort.toString()));
 
-    if('listenOnly' in config && config.listenOnly === true) 
+    if('listenOnly' in config && config.listenOnly === true)
         listenBlocks(config, web3);
     else
         setTimeout(function() {
@@ -39,8 +39,9 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     var desiredBlockHashOrNumber;
     // check if done
     if(blockHashOrNumber == undefined) {
-        return; 
+        return;
     }
+
     if (typeof blockHashOrNumber === 'object') {
         if('start' in blockHashOrNumber && 'end' in blockHashOrNumber) {
             desiredBlockHashOrNumber = blockHashOrNumber.end;
@@ -54,6 +55,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     else {
         desiredBlockHashOrNumber = blockHashOrNumber;
     }
+
     if(web3.isConnected()) {
         web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
             if(error) {
@@ -73,14 +75,14 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 }
                 if (!('skipTransactions' in config && config.skipTransactions === true))
                     writeTransactionsToDB(config, blockData);
-                if('listenOnly' in config && config.listenOnly === true) 
+                if('listenOnly' in config && config.listenOnly === true)
                     return;
 
                 if('hash' in blockData && 'number' in blockData) {
-                    // If currently working on an interval (typeof blockHashOrNumber === 'object') and 
-                    // the block number or block hash just grabbed isn't equal to the start yet: 
-                    // then grab the parent block number (<this block's number> - 1). Otherwise done 
-                    // with this interval object (or not currently working on an interval) 
+                    // If currently working on an interval (typeof blockHashOrNumber === 'object') and
+                    // the block number or block hash just grabbed isn't equal to the start yet:
+                    // then grab the parent block number (<this block's number> - 1). Otherwise done
+                    // with this interval object (or not currently working on an interval)
                     // -> so move onto the next thing in the blocks array.
                     if(typeof blockHashOrNumber === 'object' &&
                         (
@@ -113,12 +115,12 @@ var writeBlockToDB = function(config, blockData) {
     return new Block(blockData).save( function( err, block, count ){
         if ( typeof err !== 'undefined' && err ) {
             if (err.code == 11000) {
-                console.log('Skip: Duplicate key ' + 
-                blockData.number.toString() + ': ' + 
+                console.log('Skip: Duplicate key ' +
+                blockData.number.toString() + ': ' +
                 err);
             } else {
-               console.log('Error: Aborted due to error on ' + 
-                    'block number ' + blockData.number.toString() + ': ' + 
+               console.log('Error: Aborted due to error on ' +
+                    'block number ' + blockData.number.toString() + ': ' +
                     err);
                process.exit(9);
            }
@@ -126,7 +128,7 @@ var writeBlockToDB = function(config, blockData) {
             if(!('quiet' in config && config.quiet === true)) {
                 console.log('DB successfully written for block number ' +
                     blockData.number.toString() );
-            }            
+            }
         }
       });
 }
@@ -141,7 +143,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
         if (!b.length)
             writeBlockToDB(config, blockData);
         else {
-            console.log('Aborting because block number: ' + blockData.number.toString() + 
+            console.log('Aborting because block number: ' + blockData.number.toString() +
                 ' already exists in DB.');
             process.exit(9);
         }
@@ -164,16 +166,16 @@ var writeTransactionsToDB = function(config, blockData) {
         Transaction.collection.insert(bulkOps, function( err, tx ){
             if ( typeof err !== 'undefined' && err ) {
                 if (err.code == 11000) {
-                    console.log('Skip: Duplicate key ' + 
+                    console.log('Skip: Duplicate key ' +
                     err);
                 } else {
-                   console.log('Error: Aborted due to error: ' + 
+                   console.log('Error: Aborted due to error: ' +
                         err);
                    process.exit(9);
                }
             } else if(!('quiet' in config && config.quiet === true)) {
                 console.log('DB successfully written for block ' +
-                    blockData.transactions.length.toString() );                
+                    blockData.transactions.length.toString() );
             }
         });
     }
@@ -182,12 +184,12 @@ var writeTransactionsToDB = function(config, blockData) {
 var config = {};
 
 try {
-    var configContents = fs.readFileSync('config.json');
+    var configContents = fs.readFileSync('grabberConfig.json');
     config = JSON.parse(configContents);
 }
 catch (error) {
     if (error.code === 'ENOENT') {
-        console.log('No config file found. Using default configuration (will ' + 
+        console.log('No config file found. Using default configuration (will ' +
             'download all blocks starting from latest)');
     }
     else {
