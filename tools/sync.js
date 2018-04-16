@@ -1,10 +1,10 @@
 /*
-If you don't want to use localhost node but a remote node to grab and syn blocks from.
+If you don't want to use localhost node but a remote node to grab and sync blocks from.
 Copy and paste the sync.json from the ./tools/ directory to the root directory of explorer.
 And setup the remote NODE address and port before luanching the app.
 Use grabber.js and grabberConfig.json to setup and sync the rest of the chain.
 */
-
+require( './blockHelper');
 require( '../db.js' );
 //require( './grabber.js')
 var etherUnits = require("../lib/etherUnits.js");
@@ -16,7 +16,6 @@ var Web3 = require('web3');
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
-
 
 /*Start config for node connection and sync*/
 var config = {};
@@ -37,6 +36,7 @@ if (!('output' in config) || (typeof config.output) !== 'string') {
 try {
     var configContents = fs.readFileSync('sync.json');
     config = JSON.parse(configContents);
+    console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
 }
 catch (error) {
     if (error.code === 'ENOENT') {
@@ -63,4 +63,5 @@ var listenBlocks = function(config) {
         }
     });
 }
+
 listenBlocks(config);
