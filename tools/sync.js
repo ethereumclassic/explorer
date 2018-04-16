@@ -6,7 +6,7 @@ Use grabber.js and grabberConfig.json to setup and sync the rest of the chain.
 */
 
 require( '../db.js' );
-require( './grabber.js')
+//require( './grabber.js')
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
 
