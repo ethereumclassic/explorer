@@ -18,6 +18,9 @@ module.exports = function(req, res) {
   
   else if (req.body.action=="hashrate") 
     getHashrate(res);
+
+  else if (req.body.action=="hashrates")
+    getHashrates(res);
   
 }
 /**
@@ -39,6 +42,33 @@ var getMinerStats = function(res) {
       }
   });
 }
+
+/**
+  Aggregate network hashrates
+**/
+var getHashrates = function(res) {
+  BlockStat.aggregate([{
+    $group: {
+      _id: {
+          timestamp: {
+            $subtract: [ '$timestamp', { $mod: [ '$timestamp', 3600 ] } ]
+          }
+      },
+      blockTime: { $avg: '$blockTime' },
+      difficulty: { $max: '$difficulty' }
+    }
+  }]).sort('_id.timestamp').exec(function(err, docs) {
+    var hashrates = [];
+    docs.forEach(function(doc) {
+      doc.instantHashrate = doc.difficulty / doc.blockTime;
+      doc.unixtime = doc._id.timestamp;
+      doc.timestamp = doc._id.timestamp;
+    });
+    res.write(JSON.stringify({"hashrates": docs}));
+    res.end();
+  });
+}
+
 /**
   Get hashrate Diff stuff
 **/
