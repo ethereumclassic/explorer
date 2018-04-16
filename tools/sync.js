@@ -6,7 +6,6 @@ Use grabber.js and grabberConfig.json to setup and sync the rest of the chain.
 */
 require( './blockHelper.js');
 require( '../db.js' );
-//require( './grabber.js')
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
 
@@ -58,8 +57,9 @@ var listenBlocks = function(config) {
         } else if (log == null) {
             console.log('Warning: null block hash');
         } else {
-            //grabBlock(config, web3, log);
-            console.log('Found new block: ' + log);
+          console.log('Found new block: ' + log);
+          grabBlock(config, web3, log);
+
         }
     });
 }
