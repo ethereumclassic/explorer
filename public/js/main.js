@@ -4,6 +4,7 @@ var BlocksApp = angular.module("BlocksApp", [
     "oc.lazyLoad",  
     "ngSanitize"
 ]); 
+BlocksApp.constant('_', window._); // loadsh
 BlocksApp.config(['$ocLazyLoadProvider',  '$locationProvider', 
     function($ocLazyLoadProvider, $locationProvider) {
     $ocLazyLoadProvider.config({
