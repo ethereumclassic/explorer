@@ -48,6 +48,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                     desiredBlockHashOrNumber);
             }
             else {
+                /*
                 if('terminateAtExistingDB' in config && config.terminateAtExistingDB === true) {
                     checkBlockDBExistsThenWrite(config, blockData);
                 }
@@ -56,8 +57,8 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 }
                 if (!('skipTransactions' in config && config.skipTransactions === true))
                     writeTransactionsToDB(config, blockData);
-                if('listenOnly' in config && config.listenOnly === true)
-                    return;
+                */
+                return;
 
                 if('hash' in blockData && 'number' in blockData) {
                     // If currently working on an interval (typeof blockHashOrNumber === 'object') and
