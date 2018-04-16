@@ -1,5 +1,5 @@
 require( '../db.js' );
-require( './blockHelper');
+require( './blockHelper.js');
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
 
