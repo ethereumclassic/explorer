@@ -58,8 +58,7 @@ var listenBlocks = function(config) {
             console.log('Warning: null block hash');
         } else {
           console.log('Found new block: ' + log);
-          grabBlock(config, web3, log);
-
+          //grabBlock(config, web3, log);
         }
     });
 }
