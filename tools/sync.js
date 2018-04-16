@@ -67,4 +67,4 @@ var listenBlocks = function(config) {
     });
 }
 
-listenBlocks(config, web3);
+listenBlocks(config);
