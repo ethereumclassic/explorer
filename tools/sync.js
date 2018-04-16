@@ -24,8 +24,7 @@ try {
 }
 catch (error) {
     if (error.code === 'ENOENT') {
-        console.log('No config file found. Using default configuration (will ' +
-            'download all blocks starting from latest)');
+        console.log('No config file found. Using default configuration: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
     }
     else {
         throw error;
@@ -48,7 +47,7 @@ if (!('output' in config) || (typeof config.output) !== 'string') {
 // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
 var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 
-
+//Just lsiten for latest blocks and sync from the start of the app.
 var listenBlocks = function(config, web3) {
     var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error, log) {
@@ -62,3 +61,5 @@ var listenBlocks = function(config, web3) {
         }
     });
 }
+
+listenBlocks(config, web3);
