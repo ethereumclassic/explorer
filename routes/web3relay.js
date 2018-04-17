@@ -12,10 +12,38 @@ var getLatestBlocks = require('./index').getLatestBlocks;
 var filterBlocks = require('./filters').filterBlocks;
 var filterTrace = require('./filters').filterTrace;
 
+/*Start config for node connection and sync*/
+var config = {};
+/*Start config for node connection and sync*/
+var config = {};
+// set the default NODE address to localhost if it's not provided
+if (!('nodeAddr' in config) || !(config.nodeAddr)) {
+    config.nodeAddr = 'localhost'; // default
+}
+// set the default geth port if it's not provided
+if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
+    config.gethPort = 8545; // default
+}
+//Look for config.json file if not
+try {
+    var configContents = fs.readFileSync('config.json');
+    config = JSON.parse(configContents);
+    console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
+}
+catch (error) {
+    if (error.code === 'ENOENT') {
+        console.log('No config file found. Using default configuration: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
+    }
+    else {
+        throw error;
+        process.exit(1);
+    }
+}
+//Create Web3 connection
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
 } else {
-  web3 = new Web3(new Web3.providers.HttpProvider("http://mordenapi.ethertrack.io:8545"));
+  web3 = new Web3(new Web3.providers.HttpProvider('http://'+config.nodeAddr+':'+config.gethPort));
 }
 
 if (web3.isConnected())

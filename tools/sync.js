@@ -43,8 +43,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
             desiredBlockHashOrNumber = blockHashOrNumber.end;
         }
         else {
-            console.log('Error: Aborted becasue found a interval in blocks ' +
-                'array that doesn\'t have both a start and end.');
+            console.log('Error: Aborted becasue found a interval in blocks ' + 'array that doesn\'t have both a start and end.');
             process.exit(9);
         }
     }
@@ -54,34 +53,28 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     if(web3.isConnected()) {
         web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
             if(error) {
-                console.log('Warning: error on getting block with hash/number: ' +
-                    desiredBlockHashOrNumber + ': ' + error);
+                console.log('Warning: error on getting block with hash/number: ' +   desiredBlockHashOrNumber + ': ' + error);
             }
             else if(blockData == null) {
-                console.log('Warning: null block data received from the block with hash/number: ' +
-                    desiredBlockHashOrNumber);
+                console.log('Warning: null block data received from the block with hash/number: ' + desiredBlockHashOrNumber);
             }
             else {
                 //checkBlockDBExistsThenWrite(config, blockData);
                 writeBlockToDB(config, blockData);
                 writeTransactionsToDB(config, blockData);
-
+                return;
                 /*
                 if('listenOnly' in config && config.listenOnly === true)
                     return;
                 */
+                /*
                 if('hash' in blockData && 'number' in blockData) {
                     // If currently working on an interval (typeof blockHashOrNumber === 'object') and
                     // the block number or block hash just grabbed isn't equal to the start yet:
                     // then grab the parent block number (<this block's number> - 1). Otherwise done
                     // with this interval object (or not currently working on an interval)
                     // -> so move onto the next thing in the blocks array.
-                    if(typeof blockHashOrNumber === 'object' &&
-                        (
-                            (typeof blockHashOrNumber['start'] === 'string' && blockData['hash'] !== blockHashOrNumber['start']) ||
-                            (typeof blockHashOrNumber['start'] === 'number' && blockData['number'] > blockHashOrNumber['start'])
-                        )
-                    ) {
+                    if(typeof blockHashOrNumber === 'object' && ((typeof blockHashOrNumber['start'] === 'string' && blockData['hash'] !== blockHashOrNumber['start']) || (typeof blockHashOrNumber['start'] === 'number' && blockData['number'] > blockHashOrNumber['start']))){
                         blockHashOrNumber['end'] = blockData['number'] - 1;
                         grabBlock(config, web3, blockHashOrNumber);
                     }
@@ -89,6 +82,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                         grabBlock(config, web3, config.blocks.pop());
                     }
                 }
+                */
                 else {
                     console.log('Error: No hash or number was found for block: ' + blockHashOrNumber);
                     process.exit(9);
@@ -97,8 +91,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
         });
     }
     else {
-        console.log('Error: Aborted due to web3 is not connected when trying to ' +
-            'get block ' + desiredBlockHashOrNumber);
+        console.log('Error: Aborted due to web3 is not connected when trying to ' + 'get block ' + desiredBlockHashOrNumber);
         process.exit(9);
     }
 }
@@ -106,28 +99,23 @@ var writeBlockToDB = function(config, blockData) {
     return new Block(blockData).save( function( err, block, count ){
         if ( typeof err !== 'undefined' && err ) {
             if (err.code == 11000) {
-                console.log('Skip: Duplicate key ' +
-                blockData.number.toString() + ': ' +
-                err);
+                console.log('Skip: Duplicate key ' +   blockData.number.toString() + ': ' + err);
             } else {
-               console.log('Error: Aborted due to error on ' +
-                    'block number ' + blockData.number.toString() + ': ' +
-                    err);
+               console.log('Error: Aborted due to error on ' + 'block number ' + blockData.number.toString() + ': ' +  err);
                process.exit(9);
            }
         } else {
             if(!('quiet' in config && config.quiet === true)) {
-                console.log('DB successfully written for block number ' +
-                    blockData.number.toString() );
+                console.log('DB successfully written for block number ' + blockData.number.toString() );
             }
         }
       });
 }
 var checkBlockDBExistsThenWrite = function(config, blockData) {
     Block.find({number: blockData.number}, function (err, b) {
-        if (!b.length)
+        if (!b.length){
             writeBlockToDB(config, blockData);
-        else {
+        }else {
             console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
             listenBlocks(config);
         }
@@ -172,7 +160,6 @@ var updateENDblock = function(lastBlock){
 
 /*Start config for node connection and sync*/
 var config = {};
-
 // set the default NODE address to localhost if it's not provided
 if (!('nodeAddr' in config) || !(config.nodeAddr)) {
     config.nodeAddr = 'localhost'; // default
@@ -185,7 +172,7 @@ if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
 if (!('output' in config) || (typeof config.output) !== 'string') {
     config.output = '.'; // default this directory
 }
-//Look for sync.config file if not
+//Look for config.json file if not
 try {
     var configContents = fs.readFileSync('config.json');
     config = JSON.parse(configContents);
