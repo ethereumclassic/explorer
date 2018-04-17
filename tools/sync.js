@@ -62,7 +62,8 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                     desiredBlockHashOrNumber);
             }
             else {
-                checkBlockDBExistsThenWrite(config, blockData);
+                //checkBlockDBExistsThenWrite(config, blockData);
+                writeBlockToDB(config, blockData);
                 /*
                 if('terminateAtExistingDB' in config && config.terminateAtExistingDB === true) {
 
