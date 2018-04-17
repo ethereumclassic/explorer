@@ -138,8 +138,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
 var updateENDblock = function(lastBlock){
-
-  var fileName = './config.json';
+  var fileName = './conf.json';
   var file = require(fileName);
 
   file.end = lastBlock;
@@ -150,7 +149,6 @@ var updateENDblock = function(lastBlock){
     console.log('writing to ' + fileName);
   });
 }
-
 /*Start config for node connection and sync*/
 var config = {};
 // set the default NODE address to localhost if it's not provided
