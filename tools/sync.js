@@ -64,28 +64,27 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 writeTransactionsToDB(config, blockData);
                 return;
                 /*
-                if('listenOnly' in config && config.listenOnly === true)
-                    return;
+                if('syncAll' in config && config.syncAll === true)
 
-                if('hash' in blockData && 'number' in blockData) {
-                    // If currently working on an interval (typeof blockHashOrNumber === 'object') and
-                    // the block number or block hash just grabbed isn't equal to the start yet:
-                    // then grab the parent block number (<this block's number> - 1). Otherwise done
-                    // with this interval object (or not currently working on an interval)
-                    // -> so move onto the next thing in the blocks array.
-                    if(typeof blockHashOrNumber === 'object' && ((typeof blockHashOrNumber['start'] === 'string' && blockData['hash'] !== blockHashOrNumber['start']) || (typeof blockHashOrNumber['start'] === 'number' && blockData['number'] > blockHashOrNumber['start']))){
-                          blockHashOrNumber['end'] = blockData['number'] - 1;
-                          grabBlock(config, web3, blockHashOrNumber);
-                    }
-                    else {
-                        grabBlock(config, web3, config.blocks.pop());
-                    }
-                }
-                else {
-                    console.log('Error: No hash or number was found for block: ' + blockHashOrNumber);
-                    process.exit(9);
-                }
-                */
+                  if('hash' in blockData && 'number' in blockData) {
+                      // If currently working on an interval (typeof blockHashOrNumber === 'object') and
+                      // the block number or block hash just grabbed isn't equal to the start yet:
+                      // then grab the parent block number (<this block's number> - 1). Otherwise done
+                      // with this interval object (or not currently working on an interval)
+                      // -> so move onto the next thing in the blocks array.
+                      if(typeof blockHashOrNumber === 'object' && ((typeof blockHashOrNumber['start'] === 'string' && blockData['hash'] !== blockHashOrNumber['start']) || (typeof blockHashOrNumber['start'] === 'number' && blockData['number'] > blockHashOrNumber['start']))){
+                            blockHashOrNumber['end'] = blockData['number'] - 1;
+                            grabBlock(config, web3, blockHashOrNumber);
+                      }
+                      else {
+                          grabBlock(config, web3, config.blocks.pop());
+                      }
+                  }
+                  else {
+                      console.log('Error: No hash or number was found for block: ' + blockHashOrNumber);
+                      process.exit(9);
+                  }
+                  */
             }
         });
     }
@@ -110,17 +109,6 @@ var writeBlockToDB = function(config, blockData) {
         }
       });
 }
-var checkBlockDBExistsThenWrite = function(config, blockData) {
-    Block.find({number: blockData.number}, function (err, b) {
-        if (!b.length){
-            writeBlockToDB(config, blockData);
-        }else {
-            console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
-            listenBlocks(config);
-        }
-
-    })
-}
 /**
     Break transactions out of blocks and write to DB
 **/
@@ -144,17 +132,27 @@ var writeTransactionsToDB = function(config, blockData) {
                    process.exit(9);
                }
             } else if(!('quiet' in config && config.quiet === true)) {
-                console.log('DB successfully written for block ' +
-                    blockData.transactions.length.toString() );
+                console.log('DB successfully written for transaction ' + blockData.transactions.length.toString() );
             }
         });
     }
 }
+var checkBlockDBExistsThenWrite = function(config, blockData) {
+    Block.find({number: blockData.number}, function (err, b) {
+        if (!b.length){
+            writeBlockToDB(config, blockData);
+        }else {
+            console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
+            listenBlocks(config);
+        }
+
+    })
+}
 /**
-Take the last block the grabber exited on and update the param 'end' in the grabberConfig.JSON
+Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
 var updateENDblock = function(lastBlock){
-  var file = grabberConfig.json;
+  var file = config.json;
 }
 
 /*Start config for node connection and sync*/
