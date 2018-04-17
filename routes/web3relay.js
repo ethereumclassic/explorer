@@ -154,40 +154,31 @@ exports.data = function(req, res){
       res.end();
     });
 
+    /* 
+    / TODO: Refactor, "block" / "uncle" determinations should likely come later
+    / Can parse out the request once and then determine the path.
+    */
   } else if ("uncle" in req.body) {
     var uncle = req.body.uncle.trim();
     var arr = uncle.split('/');
-    var uncleHashOrNumber;
+    var blockNumOrHash; // Ugly, does the same as blockNumOrHash above
     var uncleIdx = parseInt(arr[1]) || 0;
 
     if (/^(?:0x)?[0-9a-f]{64}$/i.test(arr[0])) {
-      uncleHashOrNumber = arr[0].toLowerCase();
+      blockNumOrHash = arr[0].toLowerCase();
+      console.log(blockNumOrHash)
     } else {
-      uncleHashOrNumber = parseInt(arr[0]);
+      blockNumOrHash = parseInt(arr[0]);
     }
 
-    if (typeof uncleHashOrNumber == 'undefined') {
+    if (typeof blockNumOrHash == 'undefined') {
       console.error("UncleWeb3 error :" + err);
       res.write(JSON.stringify({"error": true}));
       res.end();
       return;
     }
 
-    // XXX web3.getUncle(uncleHash) BUG
-    if (/^(?:0x)?[0-9a-f]{64}/i.test(uncleHashOrNumber)) {
-      web3.eth.getBlock(uncleHashOrNumber, function(err, uncle) {
-        if(err || !uncle) {
-          console.error("UncleWeb3 error :" + err)
-          res.write(JSON.stringify({"error": true}));
-        } else {
-          res.write(JSON.stringify(filterBlocks(uncle)));
-        }
-        res.end();
-      });
-      return;
-    }
-
-    web3.eth.getUncle(uncleHashOrNumber, uncleIdx, function(err, uncle) {
+    web3.eth.getUncle(blockNumOrHash, uncleIdx, function(err, uncle) {
       if(err || !uncle) {
         console.error("UncleWeb3 error :" + err)
         res.write(JSON.stringify({"error": true}));
