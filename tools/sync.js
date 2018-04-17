@@ -66,6 +66,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
               if('syncAll' in config && config.syncAll === true){
                 var lastBlock = blockData.number
                 console.log('Last block captured: ' + lastBlock);
+                updateENDblock(lastBlock);
                 return;
               }else{
                 return;
@@ -137,7 +138,15 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
 var updateENDblock = function(lastBlock){
-  var file = config.json;
+  var file = ./conf.json;
+
+  file.end = lastBlock;
+
+  fs.writeFile(fileName, JSON.stringify(file), function (err) {
+    if (err) return console.log(err);
+    JSON.stringify(file, null, 2)
+    console.log('writing to ' + fileName);
+  });
 }
 
 /*Start config for node connection and sync*/
