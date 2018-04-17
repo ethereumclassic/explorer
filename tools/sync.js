@@ -4,7 +4,6 @@ Copy and paste the sync.json from the ./tools/ directory to the root directory o
 And setup the remote NODE address and port before luanching the app.
 Use grabber.js and grabberConfig.json to setup and sync the rest of the chain.
 */
-require( './blockHelper.js');
 require( '../db.js' );
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
