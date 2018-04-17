@@ -141,7 +141,7 @@ var updateENDblock = function(lastBlock){
   var fileName = '../conf.json';
   var file = require(fileName);
 
-  file.end = lastBlock;
+  file.blocks.end = lastBlock;
 
   fs.writeFile(fileName, JSON.stringify(file), function (err) {
     if (err) return console.log(err);
