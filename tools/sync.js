@@ -136,9 +136,8 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
         if (!b.length)
             writeBlockToDB(config, blockData);
         else {
-            console.log('Block number: ' + blockData.number.toString() +
-                ' already exists in DB. Lo');
-            grabBlock(config, web3, blockHashOrNumber);
+            console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
+            listenBlocks(config);
         }
 
     })
