@@ -59,32 +59,17 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 console.log('Warning: null block data received from the block with hash/number: ' + desiredBlockHashOrNumber);
             }
             else {
-                //checkBlockDBExistsThenWrite(config, blockData);
-                writeBlockToDB(config, blockData);
-                writeTransactionsToDB(config, blockData);
-                return;
-                /*
-                if('syncAll' in config && config.syncAll === true)
+              //checkBlockDBExistsThenWrite(config, blockData);
+              writeBlockToDB(config, blockData);
+              writeTransactionsToDB(config, blockData);
 
-                  if('hash' in blockData && 'number' in blockData) {
-                      // If currently working on an interval (typeof blockHashOrNumber === 'object') and
-                      // the block number or block hash just grabbed isn't equal to the start yet:
-                      // then grab the parent block number (<this block's number> - 1). Otherwise done
-                      // with this interval object (or not currently working on an interval)
-                      // -> so move onto the next thing in the blocks array.
-                      if(typeof blockHashOrNumber === 'object' && ((typeof blockHashOrNumber['start'] === 'string' && blockData['hash'] !== blockHashOrNumber['start']) || (typeof blockHashOrNumber['start'] === 'number' && blockData['number'] > blockHashOrNumber['start']))){
-                            blockHashOrNumber['end'] = blockData['number'] - 1;
-                            grabBlock(config, web3, blockHashOrNumber);
-                      }
-                      else {
-                          grabBlock(config, web3, config.blocks.pop());
-                      }
-                  }
-                  else {
-                      console.log('Error: No hash or number was found for block: ' + blockHashOrNumber);
-                      process.exit(9);
-                  }
-                  */
+              if('syncAll' in config && config.syncAll === true){
+                var lastBlock = blockData.number
+                console.log('Last block captured: ' + lastBlock);
+                return;
+              }else{
+                return;
+              }
             }
         });
     }
