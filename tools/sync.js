@@ -66,8 +66,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 /*
                 if('listenOnly' in config && config.listenOnly === true)
                     return;
-                */
-                /*
+
                 if('hash' in blockData && 'number' in blockData) {
                     // If currently working on an interval (typeof blockHashOrNumber === 'object') and
                     // the block number or block hash just grabbed isn't equal to the start yet:
@@ -75,18 +74,18 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                     // with this interval object (or not currently working on an interval)
                     // -> so move onto the next thing in the blocks array.
                     if(typeof blockHashOrNumber === 'object' && ((typeof blockHashOrNumber['start'] === 'string' && blockData['hash'] !== blockHashOrNumber['start']) || (typeof blockHashOrNumber['start'] === 'number' && blockData['number'] > blockHashOrNumber['start']))){
-                        blockHashOrNumber['end'] = blockData['number'] - 1;
-                        grabBlock(config, web3, blockHashOrNumber);
+                          blockHashOrNumber['end'] = blockData['number'] - 1;
+                          grabBlock(config, web3, blockHashOrNumber);
                     }
                     else {
                         grabBlock(config, web3, config.blocks.pop());
                     }
                 }
-                */
-              }else {
+                else {
                     console.log('Error: No hash or number was found for block: ' + blockHashOrNumber);
                     process.exit(9);
                 }
+                */
             }
         });
     }
