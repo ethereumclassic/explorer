@@ -74,10 +74,10 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 if (!('skipTransactions' in config && config.skipTransactions === true))
                     writeTransactionsToDB(config, blockData);
 
-
+                /*
                 if('listenOnly' in config && config.listenOnly === true)
                     return;
-
+                */
                 if('hash' in blockData && 'number' in blockData) {
                     // If currently working on an interval (typeof blockHashOrNumber === 'object') and
                     // the block number or block hash just grabbed isn't equal to the start yet:
@@ -94,7 +94,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                         grabBlock(config, web3, blockHashOrNumber);
                     }
                     else {
-                        grabBlock(config, web3, config.blocks.pop());
+                        listenBlocks(config);
                     }
                 }
                 else {
