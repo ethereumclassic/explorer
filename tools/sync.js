@@ -62,17 +62,18 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                     desiredBlockHashOrNumber);
             }
             else {
-                if('terminateAtExistingDB' in config && config.terminateAtExistingDB === true) {
-                    checkBlockDBExistsThenWrite(config, blockData);
-                }
-
+                checkBlockDBExistsThenWrite(config, blockData);
                 /*
+                if('terminateAtExistingDB' in config && config.terminateAtExistingDB === true) {
+
+                }
                 else {
                     writeBlockToDB(config, blockData);
                 }
+                */
                 if (!('skipTransactions' in config && config.skipTransactions === true))
                     writeTransactionsToDB(config, blockData);
-                */
+
 
                 if('listenOnly' in config && config.listenOnly === true)
                     return;
