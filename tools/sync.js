@@ -64,16 +64,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
             else {
                 //checkBlockDBExistsThenWrite(config, blockData);
                 writeBlockToDB(config, blockData);
-                /*
-                if('terminateAtExistingDB' in config && config.terminateAtExistingDB === true) {
-
-                }
-                else {
-                    writeBlockToDB(config, blockData);
-                }
-                */
-                if (!('skipTransactions' in config && config.skipTransactions === true))
-                    writeTransactionsToDB(config, blockData);
+                writeTransactionsToDB(config, blockData);
 
                 /*
                 if('listenOnly' in config && config.listenOnly === true)
@@ -95,7 +86,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                         grabBlock(config, web3, blockHashOrNumber);
                     }
                     else {
-                        listenBlocks(config);
+                        grabBlock(config, web3, config.blocks.pop());
                     }
                 }
                 else {
