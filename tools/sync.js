@@ -132,7 +132,7 @@ var writeTransactionsToDB = function(config, blockData) {
                    process.exit(9);
                }
             } else if(!('quiet' in config && config.quiet === true)) {
-                console.log('DB successfully written for transaction ' + blockData.transactions.length.toString() );
+                console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
             }
         });
     }
