@@ -16,13 +16,29 @@ var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
+//Just lsiten for latest blocks and sync from the start of the app.
+var listenBlocks = function(config) {
+    // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
+    var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+    var newBlocks = web3.eth.filter("latest");
+    newBlocks.watch(function (error, log) {
+        if(error) {
+            console.log('Error: ' + error);
+        } else if (log == null) {
+            console.log('Warning: null block hash');
+        } else {
+          console.log('Found new block: ' + log);
+          //grabBlock(config, web3, log);
+        }
+    });
+}
+//Grab latest block info and it transactions and write to db
 var grabBlock = function(config, web3, blockHashOrNumber) {
     var desiredBlockHashOrNumber;
     // check if done
     if(blockHashOrNumber == undefined) {
-        grabBlocks(config);
+        return;
     }
-
     if (typeof blockHashOrNumber === 'object') {
         if('start' in blockHashOrNumber && 'end' in blockHashOrNumber) {
             desiredBlockHashOrNumber = blockHashOrNumber.end;
@@ -36,7 +52,6 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     else {
         desiredBlockHashOrNumber = blockHashOrNumber;
     }
-
     if(web3.isConnected()) {
         web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
             if(error) {
@@ -48,17 +63,20 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                     desiredBlockHashOrNumber);
             }
             else {
-                /*
                 if('terminateAtExistingDB' in config && config.terminateAtExistingDB === true) {
                     checkBlockDBExistsThenWrite(config, blockData);
                 }
+
+                /*
                 else {
                     writeBlockToDB(config, blockData);
                 }
                 if (!('skipTransactions' in config && config.skipTransactions === true))
                     writeTransactionsToDB(config, blockData);
                 */
-                return;
+
+                if('listenOnly' in config && config.listenOnly === true)
+                    return;
 
                 if('hash' in blockData && 'number' in blockData) {
                     // If currently working on an interval (typeof blockHashOrNumber === 'object') and
@@ -113,25 +131,18 @@ var writeBlockToDB = function(config, blockData) {
         }
       });
 }
-
-/**
-  * Checks if the a record exists for the block number then ->
-  *     if record exists: abort
-  *     if record DNE: write a file for the block
-  */
 var checkBlockDBExistsThenWrite = function(config, blockData) {
     Block.find({number: blockData.number}, function (err, b) {
         if (!b.length)
             writeBlockToDB(config, blockData);
         else {
-            console.log('Aborting because block number: ' + blockData.number.toString() +
-                ' already exists in DB.');
-            process.exit(9);
+            console.log('Block number: ' + blockData.number.toString() +
+                ' already exists in DB. Lo');
+            grabBlock(config, web3, blockHashOrNumber);
         }
 
     })
 }
-
 /**
     Break transactions out of blocks and write to DB
 **/
@@ -197,22 +208,6 @@ catch (error) {
         throw error;
         process.exit(1);
     }
-}
-//Just lsiten for latest blocks and sync from the start of the app.
-var listenBlocks = function(config) {
-    // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
-    var newBlocks = web3.eth.filter("latest");
-    newBlocks.watch(function (error, log) {
-        if(error) {
-            console.log('Error: ' + error);
-        } else if (log == null) {
-            console.log('Warning: null block hash');
-        } else {
-          console.log('Found new block: ' + log);
-          grabBlock(config, web3, log);
-        }
-    });
 }
 
 listenBlocks(config);
