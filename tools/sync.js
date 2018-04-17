@@ -138,7 +138,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
 var updateENDblock = function(lastBlock){
-  var fileName = './conf.json';
+  var fileName = '../conf.json';
   var file = require(fileName);
 
   file.end = lastBlock;
