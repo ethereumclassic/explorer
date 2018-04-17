@@ -16,8 +16,6 @@ var filterTrace = require('./filters').filterTrace;
 
 /*Start config for node connection and sync*/
 var config = {};
-/*Start config for node connection and sync*/
-var config = {};
 // set the default NODE address to localhost if it's not provided
 if (!('nodeAddr' in config) || !(config.nodeAddr)) {
     config.nodeAddr = 'localhost'; // default
@@ -28,7 +26,7 @@ if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
 }
 //Look for config.json file if not
 try {
-    var configContents = fs.readFileSync('config.json');
+    var configContents = fs.readFileSync('conf.json');
     config = JSON.parse(configContents);
     console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
 }
@@ -51,7 +49,7 @@ if (typeof web3 !== "undefined") {
 if (web3.isConnected())
   console.log("Web3 connection established");
 else
-  throw "No connection, please specify web3host in conig.json";
+  throw "No connection, please specify web3host in conf.json";
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
 exports.data = function(req, res){
