@@ -2,6 +2,8 @@
 /*
     Endpoint for client to talk to etc node
 */
+var fs = require('fs');
+
 var Web3 = require("web3");
 var web3;
 

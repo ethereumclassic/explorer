@@ -83,7 +83,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                     }
                 }
                 */
-                else {
+              }else {
                     console.log('Error: No hash or number was found for block: ' + blockHashOrNumber);
                     process.exit(9);
                 }
