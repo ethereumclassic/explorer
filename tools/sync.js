@@ -57,7 +57,6 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                   writeTransactionsToDB(config, blockData);
                   var lastSync = config.lastSynced - 1;
                   updateLastSynced(config, lastSync);
-
                 }
               }else{
                 writeBlockToDB(config, blockData);
@@ -188,6 +187,9 @@ try {
     console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
     // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
     var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+    if (config.syncAll == true){
+      config.syncer = 1;
+    }
 }
 catch (error) {
     if (error.code === 'ENOENT') {
