@@ -50,10 +50,11 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
 
                 if('syncAll' in config && config.syncAll === true){
                   if(config.lastSynced === 0){
-                     var lastBlock = blockData.number;
-                     updateLastSynced(config, lastBlock);
-                     return;
+                    console.log('No Last Sync Found');
+                    var lastBlock = blockData.number;
+                    updateLastSynced(config, lastBlock);
                   }else{
+                    console.log('Found existing last Sync');
                     var lastBlock = config.lastSynced - 1;
                     updateLastSynced(config, lastBlock);
                   }
@@ -130,9 +131,11 @@ Take the last block the grabber exited on and update the param 'end' in the conf
 **/
 var updateLastSynced = function(config, lastBlock){
   var configFile = '../conf.json';
-  var config = require(configFile);
+  var file = require(configFile);
 
-  fs.writeFile(configFile, JSON.stringify(lastBlock, null, 2), function (err) {
+  file.lastSynced = lastBlock;
+
+  fs.writeFile(configFile, JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
     console.log('writing to ' + configFile);
   });
