@@ -1,4 +1,5 @@
 /*
+Name: Ethereum Blockchain syncer
 This file will start syncing the blockchain from the node address you provide in the conf.json file.
 Please read the README in the root directory that explains the parameters of this code
 */
@@ -23,6 +24,7 @@ var listenBlocks = function(config) {
             console.log('Warning: null block hash');
         } else {
           console.log('Found new block: ' + log);
+          config.syncer = 0;
           grabBlock(config,web3,log);
           updatedEndBlock(config,log);
         }
@@ -42,7 +44,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
             console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
           }
           else {
-              if('syncAll' in config && config.syncAll === true){
+              if('syncAll' in config && config.syncAll === true && config.syncer == 1){
                 if(config.lastSynced === 0){
                   writeBlockToDB(config, blockData);
                   writeTransactionsToDB(config, blockData);
@@ -159,7 +161,8 @@ var updateLastSynced = function(config,lastSync){
       });
     }else{
       setTimeout(function() {
-          grabBlock(config, web3, config.lastSynced);
+        config.syncer = 1;
+        grabBlock(config, web3, config.lastSynced);
       }, 2000);
     }
   });
