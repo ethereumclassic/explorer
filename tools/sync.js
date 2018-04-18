@@ -134,7 +134,7 @@ var updatedEndBlock = function(config,lastBlock){
 
   fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
-    console.log('Wirting new Sycned Block ' + lastBlock + ' to ' + configFile);
+    //console.log('Wirting new Synced Block ' + lastBlock + ' to ' + configFile);
   });
 };
 /**
@@ -149,7 +149,7 @@ var updateLastSynced = function(config,lastSync){
 
   fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
-    console.log('writing block ' + lastSync + ' to ' + configFile);
+    //console.log('writing block ' + lastSync + ' to ' + configFile);
 
     if (config.lastSynced === config.startBlock){
       config.syncAll = false;
