@@ -15,10 +15,11 @@ var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
+// Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
+var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+
 //Just lsiten for latest blocks and sync from the start of the app.
 var listenBlocks = function(config) {
-    // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
     var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error, log) {
         if(error) {
