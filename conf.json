@@ -2,7 +2,7 @@
     "nodeAddr":     "localhost",
     "gethPort":     8545,
     "startBlock":   0,
-    "endBlock":    "latest",
+    "endBlock":     0,
     "lastSynced":   0,
     "quiet":        false,
     "syncAll":      true,

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /*
     Endpoint for client to talk to etc node
+    COnfigure settings in config.json
 */
 var fs = require('fs');
 

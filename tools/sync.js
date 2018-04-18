@@ -1,8 +1,6 @@
 /*
-If you don't want to use localhost node but a remote node to grab and sync blocks from.
-Copy and paste the sync.json from the ./tools/ directory to the root directory of explorer.
-And setup the remote NODE address and port before luanching the app.
-Use grabber.js and grabberConfig.json to setup and sync the rest of the chain.
+This file will start syncing the blockchain from the node address you provide in the conf.json file.
+Please read the README in the root directory that explains the parameters of this code
 */
 require( '../db.js' );
 var etherUnits = require("../lib/etherUnits.js");
@@ -33,56 +31,55 @@ var listenBlocks = function(config) {
 //Grab latest block info and it transactions and write to db
 var grabBlock = function(config, web3, blockHashOrNumber) {
     if(blockHashOrNumber == undefined) {
-        return;
+      return;
     }
     if(web3.isConnected()) {
-        web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
-            if(error) {
-                console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
-            }
-            else if(blockData == null) {
-                console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
-            }
-            else {
-              writeBlockToDB(config, blockData);
-              writeTransactionsToDB(config, blockData);
-
-                if('syncAll' in config && config.syncAll === true){
-                  if(config.lastSynced === 0){
-                    console.log('No Last Sync Found');
-                    var lastSync = blockData.number;
-                    updateLastSynced(config, lastSync);
-                  }else{
-                    console.log('Found existing last Sync');
-                    var lastSync = config.lastSynced - 1;
-                    updateLastSynced(config, lastSync);
-                  }
+      web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
+          if(error) {
+            console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
+          }
+          else if(blockData == null) {
+            console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
+          }
+          else {
+            writeBlockToDB(config, blockData);
+            writeTransactionsToDB(config, blockData);
+              if('syncAll' in config && config.syncAll === true){
+                if(config.lastSynced === 0){
+                  console.log('No Last Sync Found');
+                  var lastSync = blockData.number;
+                  updateLastSynced(config, lastSync);
                 }else{
-                  return;
+                  console.log('Found existing last Sync');
+                  var lastSync = config.lastSynced - 1;
+                  updateLastSynced(config, lastSync);
                 }
-            }
-        });
+              }else{
+                return;
+              }
+          }
+      });
     }
     else {
-        console.log('Error: Aborted due to web3 is not connected when trying to ' + 'get block ' + blockHashOrNumber);
-        process.exit(9);
+      console.log('Error: Aborted due to web3 is not connected when trying to ' + 'get block ' + blockHashOrNumber);
+      process.exit(9);
     }
 }
 var writeBlockToDB = function(config, blockData) {
-    return new Block(blockData).save( function( err, block, count ){
-        if ( typeof err !== 'undefined' && err ) {
-            if (err.code == 11000) {
-                console.log('Skip: Duplicate key ' +   blockData.number.toString() + ': ' + err);
-            } else {
-               console.log('Error: Aborted due to error on ' + 'block number ' + blockData.number.toString() + ': ' +  err);
-               process.exit(9);
-           }
+  return new Block(blockData).save( function( err, block, count ){
+    if ( typeof err !== 'undefined' && err ) {
+        if (err.code == 11000) {
+            console.log('Skip: Duplicate key ' +   blockData.number.toString() + ': ' + err);
         } else {
-            if(!('quiet' in config && config.quiet === true)) {
-                console.log('DB successfully written for block number ' + blockData.number.toString());
-            }
+           console.log('Error: Aborted due to error on ' + 'block number ' + blockData.number.toString() + ': ' +  err);
+           process.exit(9);
+       }
+    } else {
+        if(!('quiet' in config && config.quiet === true)) {
+            console.log('DB successfully written for block number ' + blockData.number.toString());
         }
-      });
+    }
+  });
 }
 /**
     Break transactions out of blocks and write to DB
