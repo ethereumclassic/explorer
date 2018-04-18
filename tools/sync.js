@@ -51,12 +51,12 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 if('syncAll' in config && config.syncAll === true){
                   if(config.lastSynced === 0){
                     console.log('No Last Sync Found');
-                    var lastBlock = blockData.number;
-                    updateLastSynced(config, lastBlock);
+                    var lastSync && config.lastSync = blockData.number;
+                    updateLastSynced(config, lastSync);
                   }else{
                     console.log('Found existing last Sync');
-                    var lastBlock = config.lastSynced - 1;
-                    updateLastSynced(config, lastBlock);
+                    var lastSync && config.lastSync = config.lastSynced - 1;
+                    updateLastSynced(config, lastSync);
                   }
                 }else{
                   return;
@@ -129,15 +129,15 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 /**
 Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
-var updateLastSynced = function(config, lastBlock){
+var updateLastSynced = function(config, lastSync){
   var configFile = '../conf.json';
   var file = require(configFile);
 
-  file.lastSynced = lastBlock;
+  file.lastSynced = lastSync;
 
-  fs.writeFile(configFile, JSON.stringify(file, null, 2), function (err) {
+  fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
-    console.log('writing to ' + configFile);
+    console.log('writing block ' + lastSync + ' to ' + configFile);
   });
 }
 /*Start config for node connection and sync*/
