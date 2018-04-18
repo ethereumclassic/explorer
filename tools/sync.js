@@ -33,49 +33,38 @@ var listenBlocks = function(config) {
 }
 //Grab latest block info and it transactions and write to db
 var grabBlock = function(config, web3, blockHashOrNumber) {
-    var desiredBlockHashOrNumber;
-    // check if done
     if(blockHashOrNumber == undefined) {
         return;
     }
-    if (typeof blockHashOrNumber === 'object') {
-        if('start' in blockHashOrNumber && 'end' in blockHashOrNumber) {
-            desiredBlockHashOrNumber = blockHashOrNumber.end;
-        }
-        else {
-            console.log('Error: Aborted becasue found a interval in blocks ' + 'array that doesn\'t have both a start and end.');
-            process.exit(9);
-        }
-    }
-    else {
-        desiredBlockHashOrNumber = blockHashOrNumber;
-    }
     if(web3.isConnected()) {
-        web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
+        web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
             if(error) {
-                console.log('Warning: error on getting block with hash/number: ' +   desiredBlockHashOrNumber + ': ' + error);
+                console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
             }
             else if(blockData == null) {
-                console.log('Warning: null block data received from the block with hash/number: ' + desiredBlockHashOrNumber);
+                console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
             }
             else {
-              //checkBlockDBExistsThenWrite(config, blockData);
               writeBlockToDB(config, blockData);
               writeTransactionsToDB(config, blockData);
 
-              if('syncAll' in config && config.syncAll === true){
-                var lastBlock = blockData.number
-                console.log('Last block captured: ' + lastBlock);
-                updateLastSynced(lastBlock);
-                return;
-              }else{
-                return;
-              }
+                if('syncAll' in config && config.syncAll === true){
+                  if(config.lastSynced === 0){
+                     var lastBlock = blockData.number
+                     updateLastSynced(config, lastBlock);
+                     return;
+                  }else{
+                    var lastBlock = config.lastSynced;
+                    updateLastSynced(config, lastBlock);
+                  }
+                }else{
+                  return;
+                }
             }
         });
     }
     else {
-        console.log('Error: Aborted due to web3 is not connected when trying to ' + 'get block ' + desiredBlockHashOrNumber);
+        console.log('Error: Aborted due to web3 is not connected when trying to ' + 'get block ' + blockHashOrNumber);
         process.exit(9);
     }
 }
@@ -91,6 +80,7 @@ var writeBlockToDB = function(config, blockData) {
         } else {
             if(!('quiet' in config && config.quiet === true)) {
                 console.log('DB successfully written for block number ' + blockData.number.toString() );
+
             }
         }
       });
@@ -127,6 +117,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
     Block.find({number: blockData.number}, function (err, b) {
         if (!b.length){
             writeBlockToDB(config, blockData);
+            writeTransactionsToDB(config, blockData);
         }else {
             console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
             listenBlocks(config);
@@ -138,15 +129,14 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
 var updateLastSynced = function(lastBlock){
-  var fileName = '../conf.json';
-  var file = require(fileName);
+  var configFile = '../conf.json';
+  var config = require(configFile);
 
-  file.lastSynced = lastBlock;
+  config.lastSynced = lastBlock;
 
-  fs.writeFile(fileName, JSON.stringify(file), function (err) {
+  fs.writeFile(configFile, JSON.stringify(lastBlock, , null, 2), function (err) {
     if (err) return console.log(err);
-    JSON.stringify(file, null, 2)
-    console.log('writing to ' + fileName);
+    console.log('writing to ' + configFile);
   });
 }
 /*Start config for node connection and sync*/

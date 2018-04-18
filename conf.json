@@ -1,9 +1,9 @@
 {
-    "nodeAddr":     "m ordenapi.ethertrack.io",
+    "nodeAddr":     "mordenapi.ethertrack.io",
     "gethPort":     8545,
     "startBlock":   2000000,
     "lastBlock":    "latest",
-    "lastSynced":   0,  //Keep track of last block synced when doing full chain sync
+    "lastSynced":   0,
     "stopAtStart":  false,
     "quiet":        false,
     "syncAll":      true,
