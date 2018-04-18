@@ -33,7 +33,7 @@ var listenBlocks = function(config) {
 //Grab latest block info and it transactions and write to db
 var grabBlock = function(config, web3, blockHashOrNumber) {
     if(blockHashOrNumber == undefined) {
-      return;
+      blockHashOrNumber = config.endBlock
     }
     if(web3.isConnected()) {
       web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
@@ -44,7 +44,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
             console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
           }
           else {
-              if(config.syncAll === true && config.syncer == 1){
+              if(config.syncAll === true && config.syncer = 1;){
                 if(config.lastSynced === 0){
                   writeBlockToDB(config, blockData);
                   writeTransactionsToDB(config, blockData);
@@ -187,8 +187,9 @@ try {
     console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
     // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
     var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
-    if (config.syncAll == true){
+    if (config.syncAll === true){
       config.syncer = 1;
+      grabBlock(config,web3,log);
     }
 }
 catch (error) {
