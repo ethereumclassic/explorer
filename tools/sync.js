@@ -121,8 +121,8 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
             listenBlocks(config);
         }
 
-    })
-}
+    });
+};
 var updatedEndBlock = function(config,lastBlock){
   var configFile = '../conf.json';
   var file = require(configFile);
@@ -133,7 +133,7 @@ var updatedEndBlock = function(config,lastBlock){
     if (err) return console.log(err);
     console.log('Wirting new Sycned Block ' + lastBlock + ' to ' + configFile);
   });
-});
+};
 /**
 Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
