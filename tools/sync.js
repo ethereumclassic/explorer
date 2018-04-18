@@ -42,19 +42,24 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
             console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
           }
           else {
-            writeBlockToDB(config, blockData);
-            writeTransactionsToDB(config, blockData);
               if('syncAll' in config && config.syncAll === true){
                 if(config.lastSynced === 0){
+                  writeBlockToDB(config, blockData);
+                  writeTransactionsToDB(config, blockData);
                   console.log('No Last Sync Found');
                   var lastSync = blockData.number;
                   updateLastSynced(config, lastSync);
                 }else{
                   console.log('Found existing last Sync');
+                  writeBlockToDB(config, blockData);
+                  writeTransactionsToDB(config, blockData);
                   var lastSync = config.lastSynced - 1;
                   updateLastSynced(config, lastSync);
+
                 }
               }else{
+                writeBlockToDB(config, blockData);
+                writeTransactionsToDB(config, blockData);
                 return;
               }
           }
@@ -153,7 +158,9 @@ var updateLastSynced = function(config,lastSync){
         if (err) return console.log(err);
       });
     }else{
-      grabBlock(config, web3, config.lastSynced);
+      setTimeout(function() {
+          grabBlock(config, web3, config.lastSynced);
+      }, 2000);
     }
   });
 }
