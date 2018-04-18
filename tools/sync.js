@@ -54,7 +54,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                      updateLastSynced(config, lastBlock);
                      return;
                   }else{
-                    var lastBlock = config.lastSynced;
+                    var lastBlock = config.lastSynced - 1;
                     updateLastSynced(config, lastBlock);
                   }
                 }else{
