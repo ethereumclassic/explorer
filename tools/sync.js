@@ -51,11 +51,11 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
                 if('syncAll' in config && config.syncAll === true){
                   if(config.lastSynced === 0){
                     console.log('No Last Sync Found');
-                    var lastSync && config.lastSync = blockData.number;
+                    var lastSync = blockData.number;
                     updateLastSynced(config, lastSync);
                   }else{
                     console.log('Found existing last Sync');
-                    var lastSync && config.lastSync = config.lastSynced - 1;
+                    var lastSync = config.lastSynced - 1;
                     updateLastSynced(config, lastSync);
                   }
                 }else{
@@ -134,6 +134,7 @@ var updateLastSynced = function(config, lastSync){
   var file = require(configFile);
 
   file.lastSynced = lastSync;
+  config.lastSynced = lastSync;
 
   fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
