@@ -123,10 +123,21 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 
     })
 }
+var updatedEndBlock = function(config,lastBlock){
+  var configFile = '../conf.json';
+  var file = require(configFile);
+
+  file.endBlock = lastBlock;
+
+  fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
+    if (err) return console.log(err);
+    console.log('Wirting new Sycned Block ' + lastBlock + ' to ' + configFile);
+  });
+});
 /**
 Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
-var updateLastSynced = function(config, lastSync){
+var updateLastSynced = function(config,lastSync){
   var configFile = '../conf.json';
   var file = require(configFile);
 
@@ -136,7 +147,16 @@ var updateLastSynced = function(config, lastSync){
   fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
     console.log('writing block ' + lastSync + ' to ' + configFile);
-    grabBlock(config, web3, config.lastSynced);
+
+    if (config.lastSynced === config.startBlock){
+      config.syncAll = false;
+      file.syncAll  = false;
+      fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
+        if (err) return console.log(err);
+      });
+    }else{
+      grabBlock(config, web3, config.lastSynced);
+    }
   });
 }
 /*Start config for node connection and sync*/
