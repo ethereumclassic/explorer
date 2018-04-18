@@ -134,7 +134,7 @@ var updateLastSynced = function(lastBlock){
 
   config.lastSynced = lastBlock;
 
-  fs.writeFile(configFile, JSON.stringify(lastBlock, , null, 2), function (err) {
+  fs.writeFile(configFile, JSON.stringify(lastBlock, null, 2), function (err) {
     if (err) return console.log(err);
     console.log('writing to ' + configFile);
   });
