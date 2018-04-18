@@ -1,5 +1,5 @@
 {
-    "nodeAddr":     "mordenapi.ethertrack.io",
+    "nodeAddr":     "localhost",
     "gethPort":     8545,
     "startBlock":   2000000,
     "lastBlock":    "latest",

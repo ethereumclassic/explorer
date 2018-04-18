@@ -80,8 +80,7 @@ var writeBlockToDB = function(config, blockData) {
            }
         } else {
             if(!('quiet' in config && config.quiet === true)) {
-                console.log('DB successfully written for block number ' + blockData.number.toString() );
-
+                console.log('DB successfully written for block number ' + blockData.number.toString());
             }
         }
       });
@@ -139,6 +138,7 @@ var updateLastSynced = function(config, lastSync){
   fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
     console.log('writing block ' + lastSync + ' to ' + configFile);
+    grabBlock(config, web3, config.lastSynced);
   });
 }
 /*Start config for node connection and sync*/
@@ -170,5 +170,4 @@ catch (error) {
         process.exit(1);
     }
 }
-
 listenBlocks(config);
