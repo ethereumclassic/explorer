@@ -26,7 +26,6 @@ var listenBlocks = function(config) {
           console.log('Found new block: ' + log);
           grabBlock(config,web3,log);
           updatedEndBlock(config,log);
-          config.syncer = 0;
         }
     });
 }
@@ -44,7 +43,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
             console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
           }
           else {
-              if(config.syncAll === true && config.syncer = 1;){
+              if(config.syncAll === true){
                 if(config.lastSynced === 0){
                   writeBlockToDB(config, blockData);
                   writeTransactionsToDB(config, blockData);
@@ -188,8 +187,7 @@ try {
     // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
     var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
     if (config.syncAll === true){
-      config.syncer = 1;
-      grabBlock(config,web3,log);
+      grabBlock(config,web3);
     }
 }
 catch (error) {
