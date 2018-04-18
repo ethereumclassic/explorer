@@ -19,16 +19,16 @@ var Transaction     = mongoose.model( 'Transaction' );
 var listenBlocks = function(config) {
     var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error, log) {
-        if(error) {
-            console.log('Error: ' + error);
-        } else if (log == null) {
-            console.log('Warning: null block hash');
-        } else {
-          console.log('Found new block: ' + log);
-          grabBlock(config,web3,log);
-          updatedEndBlock(config,log);
-        }
-    });
+      if(error) {
+          console.log('Error: ' + error);
+      } else if (log == null) {
+          console.log('Warning: null block hash');
+      } else {
+        console.log('Found new block: ' + log);
+        grabBlock(config,web3,log);
+        updatedEndBlock(config,log);
+      }
+  });
 }
 //Grab latest block info and it transactions and write to db
 var grabBlock = function(config, web3, blockHashOrNumber) {
@@ -37,39 +37,39 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     }
     if(web3.isConnected()) {
       web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
-          if(error) {
-            console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
-          }
-          else if(blockData == null) {
-            console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
-          }
-          else {
-              if(config.syncAll === true){
-                if(config.lastSynced === 0){
-                  writeBlockToDB(config, blockData);
-                  writeTransactionsToDB(config, blockData);
-                  console.log('No Last Sync Found');
-                  var lastSync = blockData.number;
-                  updateLastSynced(config, lastSync);
-                }else{
-                  console.log('Found existing last Sync');
-                  writeBlockToDB(config, blockData);
-                  writeTransactionsToDB(config, blockData);
-                  var lastSync = config.lastSynced - 1;
-                  updateLastSynced(config, lastSync);
-                }
-              }else{
+        if(error) {
+          console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
+        }
+        else if(blockData == null) {
+          console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
+        }
+        else {
+            if(config.syncAll === true){
+              if(config.lastSynced === 0){
                 writeBlockToDB(config, blockData);
                 writeTransactionsToDB(config, blockData);
-                return;
+                console.log('No Last Sync Found');
+                var lastSync = blockData.number;
+                updateLastSynced(config, lastSync);
+              }else{
+                console.log('Found existing last Sync');
+                writeBlockToDB(config, blockData);
+                writeTransactionsToDB(config, blockData);
+                var lastSync = config.lastSynced - 1;
+                updateLastSynced(config, lastSync);
               }
-          }
-      });
-    }
-    else {
-      console.log('Error: Aborted due to web3 is not connected when trying to ' + 'get block ' + blockHashOrNumber);
-      process.exit(9);
-    }
+            }else{
+              writeBlockToDB(config, blockData);
+              writeTransactionsToDB(config, blockData);
+              return;
+            }
+        }
+    });
+  }
+  else {
+    console.log('Error: Aborted due to web3 is not connected when trying to ' + 'get block ' + blockHashOrNumber);
+    process.exit(9);
+  }
 }
 var writeBlockToDB = function(config, blockData) {
   return new Block(blockData).save( function( err, block, count ){
@@ -91,41 +91,40 @@ var writeBlockToDB = function(config, blockData) {
     Break transactions out of blocks and write to DB
 **/
 var writeTransactionsToDB = function(config, blockData) {
-    var bulkOps = [];
-    if (blockData.transactions.length > 0) {
-        for (d in blockData.transactions) {
-            var txData = blockData.transactions[d];
-            txData.timestamp = blockData.timestamp;
-            txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
-            bulkOps.push(txData);
-        }
-        Transaction.collection.insert(bulkOps, function( err, tx ){
-            if ( typeof err !== 'undefined' && err ) {
-                if (err.code == 11000) {
-                    console.log('Skip: Duplicate key ' +
-                    err);
-                } else {
-                   console.log('Error: Aborted due to error: ' +
-                        err);
-                   process.exit(9);
-               }
-            } else if(!('quiet' in config && config.quiet === true)) {
-                console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
-            }
-        });
-    }
+  var bulkOps = [];
+  if (blockData.transactions.length > 0) {
+      for (d in blockData.transactions) {
+          var txData = blockData.transactions[d];
+          txData.timestamp = blockData.timestamp;
+          txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
+          bulkOps.push(txData);
+      }
+      Transaction.collection.insert(bulkOps, function( err, tx ){
+          if ( typeof err !== 'undefined' && err ) {
+              if (err.code == 11000) {
+                  console.log('Skip: Duplicate key ' +
+                  err);
+              } else {
+                 console.log('Error: Aborted due to error: ' +
+                      err);
+                 process.exit(9);
+             }
+          } else if(!('quiet' in config && config.quiet === true)) {
+              console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
+          }
+      });
+  }
 }
 var checkBlockDBExistsThenWrite = function(config, blockData) {
-    Block.find({number: blockData.number}, function (err, b) {
-        if (!b.length){
-            writeBlockToDB(config, blockData);
-            writeTransactionsToDB(config, blockData);
-        }else {
-            console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
-            listenBlocks(config);
-        }
-
-    });
+  Block.find({number: blockData.number}, function (err, b) {
+      if (!b.length){
+          writeBlockToDB(config, blockData);
+          writeTransactionsToDB(config, blockData);
+      }else {
+          console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
+          listenBlocks(config);
+      }
+  });
 };
 var updatedEndBlock = function(config,lastBlock){
   var configFile = '../conf.json';
