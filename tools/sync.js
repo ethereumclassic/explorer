@@ -67,8 +67,8 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     });
   }
   else {
-    console.log('Error: Aborted due to web3 is not connected when trying to ' + 'get block ' + blockHashOrNumber);
-    process.exit(9);
+    console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
+    return;
   }
 }
 var writeBlockToDB = function(config, blockData) {
