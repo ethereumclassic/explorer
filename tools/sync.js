@@ -15,7 +15,7 @@ var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
-//Just lsiten for latest blocks and sync from the start of the app.
+//Just listen for latest blocks and sync from the start of the app.
 var listenBlocks = function(config) {
     var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error, log) {
@@ -25,7 +25,8 @@ var listenBlocks = function(config) {
             console.log('Warning: null block hash');
         } else {
           console.log('Found new block: ' + log);
-          grabBlock(config, web3, log);
+          grabBlock(config,web3,log);
+          updatedEndBlock(config,log);
         }
     });
 }
