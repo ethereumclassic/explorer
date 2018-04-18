@@ -24,9 +24,9 @@ var listenBlocks = function(config) {
             console.log('Warning: null block hash');
         } else {
           console.log('Found new block: ' + log);
-          config.syncer = 0;
           grabBlock(config,web3,log);
           updatedEndBlock(config,log);
+          config.syncer = 0;
         }
     });
 }
@@ -44,7 +44,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
             console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
           }
           else {
-              if('syncAll' in config && config.syncAll === true && config.syncer == 1){
+              if(config.syncAll === true && config.syncer == 1){
                 if(config.lastSynced === 0){
                   writeBlockToDB(config, blockData);
                   writeTransactionsToDB(config, blockData);
