@@ -697,10 +697,11 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
     template: '<svg id="bombchartwithecip1010" width="100%" height="500px"></svg>',
     scope: true,
     link: function(scope, elem, attrs) {
-      $http.post("/stats", {"action": "hashrates"})
+      $http.post("/stats", {"action": "hashrates", "range": 12 * 30 * 24 * 60 * 60 })
         .then(function(res) {
           //console.log(res.data);
 
+          res.data.hashrates.forEach(function(d) { d.difficulty = d.difficulty / d.blockTime; }); // FIXME 
           scope.init(res.data, '#bombchartwithecip1010');
         });
 
@@ -788,7 +789,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
             var bomb_array_with_ECIP_1010 =[];
 
             //var base_diff = arg2.base_diff;
-            var base_diff = arg1.hashrates[0].difficulty; // FIXME
+            var base_diff = 7580000000000.00; // FIXME
 
 
 
