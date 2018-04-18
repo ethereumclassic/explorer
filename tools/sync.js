@@ -158,10 +158,7 @@ var updateLastSynced = function(config,lastSync){
         if (err) return console.log(err);
       });
     }else{
-      setTimeout(function() {
-        config.syncer = 1;
-        grabBlock(config, web3, config.lastSynced);
-      }, 2000);
+      grabBlock(config, web3, config.lastSynced);
     }
   });
 }
