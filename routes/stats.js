@@ -8,6 +8,19 @@ var async = require('async');
 
 var etherUnits = require(__lib + "etherUnits.js")
 
+var config = {};
+try {
+  config = require('../config.json');
+} catch(e) {
+  if (e.code == 'MODULE_NOT_FOUND') {
+    console.log('No config file found. Using default configuration... (tools/config.json)');
+    config = require('../tools/config.json');
+  } else {
+    throw e;
+    process.exit(1);
+  }
+}
+
 module.exports = function(req, res) {
 
   if (!("action" in req.body))
@@ -59,6 +72,13 @@ var getMinerStats = function(req, res) {
           console.error(err);
           res.status(500).send();
         } else {
+          if (config.settings.miners) {
+            result.forEach(function(m) {
+              if (config.settings.miners[m._id]) {
+                m._id = config.settings.miners[m._id];
+              }
+            });
+          }
           res.write(JSON.stringify(result));
           res.end();
         }

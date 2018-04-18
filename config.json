@@ -10,6 +10,17 @@
         "symbol": "ETC",
         "name": "Ethereum Classic",
         "title": "Ethereum Classic Block Explorer",
-        "author": "Elaine"
+        "author": "Elaine",
+        "miners": {
+           "0xdf7d7e053933b5cc24372f878c90e62dadad5d42": "EtherMine",
+           "0xc91716199ccde49dc4fafaeb68925127ac80443f": "F2Pool",
+           "0x9eab4b0fc468a7f5d46228bf5a76cb52370d068d": "NanoPool",
+           "0x8c5535afdbdeea80adedc955420f684931bf91e0": "MiningPoolHub",
+           "0x4750e296949b747df1585aa67beee8be903dd560": "UUPool",
+           "0xef224fa5fad302b51f38898f4df499d7af127af0": "91pool",
+           "0x00d29bfdf5f8d2d0466da4b948f37692ca50867a": "2miners",
+           "0x4c2b4e716883a2c3f6b980b70b577e54b9441060": "ETCPool PL",
+           "0xd144e30a0571aaf0d0c050070ac435deba461fab": "Clona Network"
+        }
     }
 }
