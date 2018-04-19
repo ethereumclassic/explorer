@@ -25,6 +25,7 @@ var listenBlocks = function(config) {
           console.log('Warning: null block hash');
       } else {
         console.log('Found new block: ' + log);
+
         grabBlock(config,web3,log);
         updatedEndBlock(config,log);
       }
@@ -71,11 +72,54 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     return;
   }
 }
+//Grab latest block info and it transactions and write to db
+var grabBlock2 = function(config, web3, blockHashOrNumber) {
+    if(blockHashOrNumber == undefined) {
+      blockHashOrNumber = config.endBlock
+    }
+    if(web3.isConnected()) {
+      web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
+        if(error) {
+          console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
+        }
+        else if(blockData == null) {
+          console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
+        }
+        else {
+            if(config.syncAll === true){
+              if(config.lastSynced === 0){
+                writeBlockToDB(config, blockData);
+                writeTransactionsToDB(config, blockData);
+                console.log('No Last Sync Found');
+                var lastSync = blockData.number;
+                updateLastSynced(config, lastSync);
+              }else{
+                console.log('Found existing last Sync');
+                writeBlockToDB(config, blockData);
+                writeTransactionsToDB(config, blockData);
+                var lastSync = config.lastSynced - 1;
+                updateLastSynced(config, lastSync);
+              }
+            }else{
+              writeBlockToDB(config, blockData);
+              writeTransactionsToDB(config, blockData);
+              return;
+            }
+        }
+    });
+  }
+  else {
+    console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
+    return;
+  }
+}
 var writeBlockToDB = function(config, blockData) {
   return new Block(blockData).save( function( err, block, count ){
     if ( typeof err !== 'undefined' && err ) {
         if (err.code == 11000) {
-            console.log('Skip: Duplicate key ' +   blockData.number.toString() + ': ' + err);
+            if(!('quiet' in config && config.quiet === true)) {
+              console.log('Skip: Duplicate key ' +   blockData.number.toString() + ': ' + err);
+            }
         } else {
            console.log('Error: Aborted due to error on ' + 'block number ' + blockData.number.toString() + ': ' +  err);
            process.exit(9);
@@ -120,7 +164,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
       if (!b.length){
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
-      }else {
+      }else if(!('quiet' in config && config.quiet === true)) {
           console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
           listenBlocks(config);
       }
@@ -158,7 +202,7 @@ var updateLastSynced = function(config,lastSync){
         if (err) return console.log(err);
       });
     }else{
-      grabBlock(config, web3, config.lastSynced);
+      grabBlock2(config, web3, config.lastSynced);
     }
   });
 }
@@ -184,7 +228,7 @@ try {
     // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
     var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
     if (config.syncAll === true){
-      grabBlock(config,web3);
+      grabBlock2(config,web3);
     }
 }
 catch (error) {
