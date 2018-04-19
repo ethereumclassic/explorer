@@ -52,7 +52,7 @@ var listenBlocks = function(config) {
 **/
 var syncChain = function(config, web3, blockHashOrNumber) {
   if(blockHashOrNumber == undefined) {
-    blockHashOrNumber = config.lastSynced
+    blockHashOrNumber = config.endBlock
   }
   if(web3.isConnected()) {
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
@@ -62,9 +62,9 @@ var syncChain = function(config, web3, blockHashOrNumber) {
         console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
        }else{
         if(config.lastSynced === 0){
+          console.log('No Last Sync Found');
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
-          console.log('No Last Sync Found');
           var lastSync = blockData.number;
           updateLastSynced(config, lastSync);
         }else{
