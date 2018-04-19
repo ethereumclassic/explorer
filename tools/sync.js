@@ -19,100 +19,71 @@ var Transaction     = mongoose.model( 'Transaction' );
 var listenBlocks = function(config) {
     var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error, log) {
-      if(error) {
-          console.log('Error: ' + error);
-      } else if (log == null) {
-          console.log('Warning: null block hash');
-      } else {
-        console.log('Found new block: ' + log);
-
-        grabBlock(config,web3,log);
-        updatedEndBlock(config,log);
-      }
+    if(error) {
+        console.log('Error: ' + error);
+    } else if (log == null) {
+        console.log('Warning: null block hash');
+    } else {
+      console.log('Found new block: ' + log);
+      grabBlock(config,web3,log);
+      updatedEndBlock(config,log);
+    }
   });
 }
 //Grab latest block info and it transactions and write to db
 var grabBlock = function(config, web3, blockHashOrNumber) {
-    if(blockHashOrNumber == undefined) {
-      blockHashOrNumber = config.endBlock
-    }
-    if(web3.isConnected()) {
-      web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
-        if(error) {
-          console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
-        }
-        else if(blockData == null) {
-          console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
-        }
-        else {
-            if(config.syncAll === true){
-              if(config.lastSynced === 0){
-                writeBlockToDB(config, blockData);
-                writeTransactionsToDB(config, blockData);
-                console.log('No Last Sync Found');
-                var lastSync = blockData.number;
-                updateLastSynced(config, lastSync);
-              }else{
-                console.log('Found existing last Sync');
-                writeBlockToDB(config, blockData);
-                writeTransactionsToDB(config, blockData);
-                var lastSync = config.lastSynced - 1;
-                updateLastSynced(config, lastSync);
-              }
-            }else{
-              writeBlockToDB(config, blockData);
-              writeTransactionsToDB(config, blockData);
-              return;
-            }
-        }
-    });
+  if(blockHashOrNumber == undefined) {
+    blockHashOrNumber = config.endBlock
   }
-  else {
+  if(web3.isConnected()) {
+    web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
+      if(error) {
+        console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
+      }else if(blockData == null) {
+        console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
+      }else{
+        writeBlockToDB(config, blockData);
+        writeTransactionsToDB(config, blockData);
+        return;
+      }
+    });
+  }else{
     console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
     return;
   }
 }
-//Grab latest block info and it transactions and write to db
+//Full chain syncer
 var grabBlock2 = function(config, web3, blockHashOrNumber) {
-    if(blockHashOrNumber == undefined) {
-      blockHashOrNumber = config.endBlock
-    }
-    if(web3.isConnected()) {
-      web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
-        if(error) {
-          console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
-        }
-        else if(blockData == null) {
-          console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
-        }
-        else {
-            if(config.syncAll === true){
-              if(config.lastSynced === 0){
-                writeBlockToDB(config, blockData);
-                writeTransactionsToDB(config, blockData);
-                console.log('No Last Sync Found');
-                var lastSync = blockData.number;
-                updateLastSynced(config, lastSync);
-              }else{
-                console.log('Found existing last Sync');
-                writeBlockToDB(config, blockData);
-                writeTransactionsToDB(config, blockData);
-                var lastSync = config.lastSynced - 1;
-                updateLastSynced(config, lastSync);
-              }
-            }else{
-              writeBlockToDB(config, blockData);
-              writeTransactionsToDB(config, blockData);
-              return;
-            }
-        }
-    });
+  if(blockHashOrNumber == undefined) {
+    blockHashOrNumber = config.endBlock
   }
-  else {
+  if(web3.isConnected()) {
+    web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
+      if(error) {
+        console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
+      }else if(blockData == null) {
+        console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
+       }else{
+        if(config.lastSynced === 0){
+          writeBlockToDB(config, blockData);
+          writeTransactionsToDB(config, blockData);
+          console.log('No Last Sync Found');
+          var lastSync = blockData.number;
+          updateLastSynced(config, lastSync);
+        }else{
+          console.log('Found existing last Sync');
+          writeBlockToDB(config, blockData);
+          writeTransactionsToDB(config, blockData);
+          var lastSync = config.lastSynced - 1;
+          updateLastSynced(config, lastSync);
+        }
+      }
+    });
+  }else{
     console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
     return;
   }
-}
+};
 var writeBlockToDB = function(config, blockData) {
   return new Block(blockData).save( function( err, block, count ){
     if ( typeof err !== 'undefined' && err ) {
