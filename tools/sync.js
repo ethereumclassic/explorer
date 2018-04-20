@@ -78,6 +78,7 @@ var syncChain = function(config, web3, blockHashOrNumber) {
     });
   }else{
     console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
+    syncChain(config, web3, blockHashOrNumber);
     return;
   }
 };
