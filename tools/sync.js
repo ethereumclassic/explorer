@@ -19,7 +19,11 @@ var Transaction     = mongoose.model( 'Transaction' );
   //Just listen for latest blocks and sync from the start of the app.
 **/
 var listenBlocks = function(config) {
-    var newBlocks = web3.eth.getBlock("latest");
+    var options = {
+      logIndex: "Number",
+      fromBlock: "latest",
+    };
+    var newBlocks = web3.eth.filter(options);
     newBlocks.watch(function (error, blockHashOrNumber) {
     if(error) {
         console.log('Error: ' + error);
