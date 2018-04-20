@@ -23,7 +23,7 @@ var listenBlocks = function(config) {
       logIndex: "Number",
       fromBlock: "latest",
     };
-    var newBlocks = web3.eth.filter("number");
+    var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error, blockHashOrNumber) {
     if(error) {
         console.log('Error: ' + error);
