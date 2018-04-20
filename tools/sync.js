@@ -62,13 +62,13 @@ var syncChain = function(config, web3, blockHashOrNumber) {
         console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
        }else{
         if(config.lastSynced === 0){
-          console.log('No Last Sync Found');
+          console.log('No last full sync record found, start from block: latest');
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
           var lastSync = blockData.number;
           updateLastSynced(config, lastSync);
         }else{
-          console.log('Found existing last Sync');
+          console.log('Found last full sync record: ' + config.lastSynced);
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
           var lastSync = config.lastSynced - 1;
@@ -79,7 +79,6 @@ var syncChain = function(config, web3, blockHashOrNumber) {
   }else{
     console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
     syncChain(config, web3, blockHashOrNumber);
-    return;
   }
 };
 /**
@@ -90,7 +89,7 @@ var writeBlockToDB = function(config, blockData) {
     if ( typeof err !== 'undefined' && err ) {
         if (err.code == 11000) {
             if(!('quiet' in config && config.quiet === true)) {
-              console.log('Skip: Duplicate key ' +   blockData.number.toString() + ': ' + err);
+              console.log('Skip: Duplicate key ' +  blockData.number.toString() + ': ' + err);
             }
         } else {
           console.log('Error: Aborted due to error on ' + 'block number ' + blockData.number.toString() + ': ' +  err);
