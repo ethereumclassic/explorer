@@ -31,14 +31,14 @@ Configuration file: `/conf.json`
 Basic settings:
 ```json
   {
-      "nodeAddr":     "localhost",
-      "gethPort":     8545,
-      "startBlock":   0,
-      "endBlock":     0,
-      "lastSynced":   0,      
-      "syncAll":      true,
-      "patch":        false
-      "quiet":        false,
+    "nodeAddr":     "localhost",
+    "gethPort":     8545,
+    "startBlock":   0,
+    "endBlock":     "latest",
+    "quiet":        true,
+    "syncAll":      true,
+    "patch":        false,
+    "patchBlocks":  0  
   }
 ```
 
@@ -46,10 +46,11 @@ Basic settings:
 ```gethPort```    Your node API RPC port.
 ```startBLock```  This is the start block of the blockchain, should always be 0 if you want to sync the whole ETC blockchain.
 ```endBlock````   This is usually the 'latest'/'newest' block in the blockchain, this value gets updated automatically, and will be used to patch missing blocks if the whole app goes down.
-```lastSynced```  If `syncAll` is set to true, the sync will record the last block it has written to the db, this will be automatically updated and used when  sync.js prematurely exits.
-```syncAll```     If this is set to true at the start of the app, the sync will start syncing all blocks from lastSync, and if lastSync is 0 it will start from whatever the endBlock or latest block in the blockchain is.
-```patch```       This is not used yet but it will be directly corolated with the startBlock param.
 ```quiet```       Prints out the log of what it is doing, Might not work for all messages in this release
+```syncAll```     If this is set to true at the start of the app, the sync will start syncing all blocks from lastSync, and if lastSync is 0 it will start from whatever the endBlock or latest block in the blockchain is.
+```patch```       If set to true and below value is set, sync will iterated through the # of blocks specified
+```patchBlocks``` If `patch` is set to true, the amount of block specified will be check from the latest one.
+
 
 ### Run:
 If you run
