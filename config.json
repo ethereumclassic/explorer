@@ -1,0 +1,16 @@
+{
+    "nodeAddr":     "localhost",
+    "gethPort":     8545,
+    "startBlock":   0,
+    "endBlock":     "latest",
+    "quiet":        true,
+    "syncAll":      true,
+    "patch":        false,
+    "patchBlocks":  100,
+    "settings": {
+        "symbol": "ETC",
+        "name": "Ethereum Classic",
+        "title": "Ethereum Classic Block Explorer",
+        "author": "Elaine"
+    }
+}
