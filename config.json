@@ -5,9 +5,8 @@
     "endBlock":     "latest",
     "quiet":        true,
     "syncAll":      true,
-    "patch":        true,
+    "patch":        false,
     "patchBlocks":  100,
-    "blocks": [ {"start": 2000000, "end": "latest"}],
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",
