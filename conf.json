@@ -1,0 +1,10 @@
+{
+    "nodeAddr":     "localhost",
+    "gethPort":     8545,
+    "startBlock":   0,
+    "endBlock":     "latest",
+    "quiet":        true,
+    "syncAll":      true,
+    "patch":        false,
+    "patchBlocks":  0
+}
