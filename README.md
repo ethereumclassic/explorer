@@ -30,16 +30,24 @@ Configuration file: `/conf.json`
 
 Basic settings:
 ```json
-  {
+{
     "nodeAddr":     "localhost",
     "gethPort":     8545,
     "startBlock":   0,
     "endBlock":     "latest",
     "quiet":        true,
     "syncAll":      true,
-    "patch":        false,
-    "patchBlocks":  0  
-  }
+    "patch":        true,
+    "patchBlocks":  100,
+    "blocks": [ {"start": 2000000, "end": "latest"}],
+    "settings": {
+        "symbol": "ETC",
+        "name": "Ethereum Classic",
+        "title": "Ethereum Classic Block Explorer",
+        "author": "Elaine"
+    }
+}
+
 ```
 
 ```nodeAddr```    Your node API RPC address.

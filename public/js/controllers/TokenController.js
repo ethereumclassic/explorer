@@ -11,6 +11,7 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
     $scope.addrHash = isAddress($stateParams.hash) ? $stateParams.hash : undefined;
     var address = $scope.addrHash;
     $scope.token = {"balance": 0};
+    $scope.settings = $rootScope.setup;
 
     //fetch dao stuff
     $http({

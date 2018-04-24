@@ -18,6 +18,7 @@
     "express": "^4.16.0",
     "mongoose": "^4.10.8",
     "morgan": "^1.9.0",
+    "rlp": "^2.0.0",
     "serve-favicon": "~2.4.5",
     "socket.io": "^2.0.4",
     "solc": "^0.4.19",

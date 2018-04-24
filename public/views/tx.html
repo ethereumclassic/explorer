@@ -18,9 +18,9 @@
                 <td><a href="/addr/{{tx.to}}">{{tx.to}}</a></td></tr>
           <tr ng-show="tx.creates"><td width="25%">creates</td>
                 <td><a href="/addr/{{tx.creates}}">{{tx.creates}}</a></td></tr>                
-          <tr ><td width="25%">value</td><td>{{tx.value}} ETC</td></tr>
-          <tr ><td width="25%">gas Provided</td><td>{{tx.gas}}</td></tr>
-          <tr ><td width="25%">gasPrice</td><td>{{tx.gasPrice}}</td></tr>
+          <tr ><td width="25%">value</td><td>{{tx.value}} {{ settings.symbol }}</td></tr>
+          <tr ><td width="25%">gas Provided</td><td>{{tx.gas | number}}</td></tr>
+          <tr ><td width="25%">gasPrice</td><td>{{tx.gasPrice | number}}</td></tr>
           <tr ><td width="25%">nonce</td><td>{{tx.nonce}}</td></tr>
           <tr ><td width="25%">Input Data</td><td><pre class="code">{{tx.input}}</pre></td></tr>
         </table>

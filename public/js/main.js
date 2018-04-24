@@ -31,6 +31,14 @@ BlocksApp.factory('settings', ['$rootScope', '$http', function($rootScope, $http
     $rootScope.settings = settings;
     return settings;
 }]);
+
+/* Load config settings */
+BlocksApp.factory('setupObj', ['$rootScope', '$http', function($rootScope, $http) {
+    return $http.get('/config').then(function(res) {
+        return res.data;
+    })
+}]);
+
 /* Setup App Main Controller */
 BlocksApp.controller('MainController', ['$scope', '$rootScope', function($scope, $rootScope) {
     $scope.$on('$viewContentLoaded', function() {
@@ -138,6 +146,25 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                 }]
             }
         })
+
+        .state('uncle', {
+            url: "/uncle/*number",
+            templateUrl: "views/block.html",
+            data: {pageTitle: 'Uncle'},
+            controller: "UncleController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                             '/js/controllers/UncleController.js'
+                        ]
+                    });
+                }]
+            }
+        })
+
         .state('tx', {
             url: "/tx/{hash}",
             templateUrl: "views/tx.html",
@@ -294,7 +321,10 @@ BlocksApp.filter('timeDuration', function() {
   }
 })
 /* Init global settings and run the app */
-BlocksApp.run(["$rootScope", "settings", "$state", function($rootScope, settings, $state) {
+BlocksApp.run(["$rootScope", "settings", "$state", "setupObj", function($rootScope, settings, $state, setupObj) {
     $rootScope.$state = $state; // state to be accessed from view
     $rootScope.$settings = settings; // state to be accessed from view
+    setupObj.then(function(res) {
+        $rootScope.setup = res;
+    });
 }]);

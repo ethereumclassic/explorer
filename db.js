@@ -50,7 +50,7 @@ var Transaction = new Schema(
     "gasPrice": String,
     "timestamp": Number,
     "input": String
-});
+}, {collection: "Transaction"});
 
 var BlockStat = new Schema(
 {
@@ -75,5 +75,11 @@ module.exports.Block = mongoose.model('Block');
 module.exports.Contract = mongoose.model('Contract');
 module.exports.Transaction = mongoose.model('Transaction');
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
+
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB', function(err) {
+    mongoose.connection.db.collection('Transaction').createIndex({blockNumber:-1}, function(err, res) {
+        console.log(res);
+    });
+});
+
 mongoose.set('debug', true);
