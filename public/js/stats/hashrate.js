@@ -18,8 +18,6 @@ window.call_hashrate_chart = function(){
     });
 
     function myFirstFunction(callback) {
-
-
         request('http://drawpie.com/etc_hash_rate_api', function (error, response, body) {
             if (!error && response.statusCode == 200) {
 
@@ -28,9 +26,6 @@ window.call_hashrate_chart = function(){
                 callback(null, hashrate, 'two');
             }
         });
-
-
-
         //callback(null, 'one', 'two');
     }
     function mySecondFunction(arg1, arg2, callback) {
