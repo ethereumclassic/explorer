@@ -177,8 +177,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .style('fill', function (d,i) {
                     //console.log(i);
                     return color(d._id);
-                })
-                .style('stroke', color);
+                });
 
             legend.append('text')
 
@@ -310,7 +309,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 return d3.svg.axis()
                     .scale(x)
                     .orient("bottom")
-                    .ticks(8)
+                    .ticks(30)
             }
 
             // function for the y grid lines

@@ -10,7 +10,7 @@ text.shadow {
 
 path {
     stroke: steelblue;
-    stroke-width: 2;
+    stroke-width: 1;
     fill: none;
 }
 
@@ -48,6 +48,8 @@ path {
 
     path.slice{
         stroke-width:2px;
+        stroke: #3a3a3a;
+        opacity: .7;
     }
 
     polyline{
@@ -80,5 +82,5 @@ path {
         text-align: center;
     }
     text {
-        font: 12px sans-serif;
+        font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
