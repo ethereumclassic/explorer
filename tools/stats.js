@@ -5,7 +5,7 @@
 var Web3 = require('web3');
 
 var mongoose = require( 'mongoose' );
-var BlockStat = require( '../db-stats.js' ).BlockStat;
+var BlockStat = require( '../db.js' ).BlockStat;
 
 var updateStats = function() {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545')); 
