@@ -8,7 +8,7 @@ Follow the project progress at: [ETC Block Explorer Development](https://github.
 
 Clone the repo
 
-`git clone https://github.com/ethernodeio/explorer`
+`git clone https://github.com/ethereumproject/explorer`
 
 Download [Nodejs and npm](https://docs.npmjs.com/getting-started/installing-node "Nodejs install") if you don't have them
 
