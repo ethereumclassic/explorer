@@ -2,7 +2,7 @@
 
 <b>Live Version: [etherhub.io](http://etherhub.io)</b>
 
-Follow the project progress at: [ETC Block Explorer Development](https://github.com/ethernodeio/explorer)
+Follow the project progress at: [ETC Block Explorer Development](https://github.com/ethereumproject/explorer)
 
 ## Local installation
 
