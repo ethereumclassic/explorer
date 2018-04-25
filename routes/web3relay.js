@@ -18,14 +18,6 @@ var filterTrace = require('./filters').filterTrace;
 
 /*Start config for node connection and sync*/
 var config = {};
-// set the default NODE address to localhost if it's not provided
-if (!('nodeAddr' in config) || !(config.nodeAddr)) {
-    config.nodeAddr = 'localhost'; // default
-}
-// set the default geth port if it's not provided
-if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
-    config.gethPort = 8545; // default
-}
 //Look for config.json file if not
 try {
     var configContents = fs.readFileSync('config.json');
@@ -41,6 +33,16 @@ catch (error) {
         process.exit(1);
     }
 }
+
+// set the default NODE address to localhost if it's not provided
+if (!('nodeAddr' in config) || !(config.nodeAddr)) {
+    config.nodeAddr = 'localhost'; // default
+}
+// set the default geth port if it's not provided
+if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
+    config.gethPort = 8545; // default
+}
+
 //Create Web3 connection
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
