@@ -28,7 +28,7 @@ if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
 }
 //Look for config.json file if not
 try {
-    var configContents = fs.readFileSync('conf.json');
+    var configContents = fs.readFileSync('config.json');
     config = JSON.parse(configContents);
     console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
 }
