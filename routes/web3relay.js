@@ -4,6 +4,8 @@
     Endpoint for client to talk to etc node
 */
 
+var fs = require('fs');
+
 var Web3 = require("web3");
 var web3;
 
@@ -14,18 +16,44 @@ var getLatestBlocks = require('./index').getLatestBlocks;
 var filterBlocks = require('./filters').filterBlocks;
 var filterTrace = require('./filters').filterTrace;
 
+/*Start config for node connection and sync*/
+var config = {};
+//Look for config.json file if not
+try {
+    var configContents = fs.readFileSync('config.json');
+    config = JSON.parse(configContents);
+    console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
+}
+catch (error) {
+    if (error.code === 'ENOENT') {
+        console.log('No config file found. Using default configuration: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
+    }
+    else {
+        throw error;
+        process.exit(1);
+    }
+}
 
+// set the default NODE address to localhost if it's not provided
+if (!('nodeAddr' in config) || !(config.nodeAddr)) {
+    config.nodeAddr = 'localhost'; // default
+}
+// set the default geth port if it's not provided
+if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
+    config.gethPort = 8545; // default
+}
+
+//Create Web3 connection
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
 } else {
-  web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  web3 = new Web3(new Web3.providers.HttpProvider('http://'+config.nodeAddr+':'+config.gethPort));
 }
 
-if (web3.isConnected()) 
+if (web3.isConnected())
   console.log("Web3 connection established");
 else
-  throw "No connection";
-
+  throw "No connection, please specify web3host in conf.json";
 
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
@@ -227,4 +255,3 @@ exports.data = function(req, res){
 };
 
 exports.eth = web3.eth;
-  

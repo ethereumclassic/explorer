@@ -14,9 +14,9 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
         method: 'POST',
         url: URL,
         data: {"action": "latest_blocks"}
-      }).success(function(data) {
-        $scope.blockLoading = false;
+      }).success(function(data) {      
         $scope.latest_blocks = data.blocks;
+        $scope.blockLoading = false;
       });
     }
     $scope.reloadTransactions = function() {
@@ -50,7 +50,8 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
           scope.stats.difficulty = res.data.difficulty;
           scope.stats.blockHeight = res.data.blockHeight;
           scope.stats.blockTime = res.data.blockTime;
-        });
+          //console.log(res);
+	});
       }
   }
 })
@@ -74,7 +75,7 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
       var ethPriceURL = "https://api.coinmarketcap.com/v1/ticker/ethereum/"
       scope.stats.ethDiff = 1;
       scope.stats.ethHashrate = 1;
-      scope.stats.usdEth = 1;     
+      scope.stats.usdEth = 1;
       $http.post(etcEthURL, {"action": "etceth"})
        .then(function(res){
           scope.stats.etcHashrate = res.data.etcHashrate;
