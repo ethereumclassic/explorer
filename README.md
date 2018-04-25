@@ -29,7 +29,7 @@ This will fetch and parse the entire blockchain.
 Configuration file: `/tools/config.json`
 
 Basic settings:
-```json
+```javascript
 {
     "gethPort": 8545, 
     "blocks": [ {"start": 2000000, "end": "latest"}],
