@@ -5,7 +5,7 @@
     "endBlock":     "latest",
     "quiet":        false,
     "syncAll":      true,
-    "patch":        false,
+    "patch":        true,
     "patchBlocks":  100,
     "settings": {
         "symbol": "ETC",
