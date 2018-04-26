@@ -82,4 +82,4 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB', functio
     });
 });
 
-mongoose.set('debug', true);
+// mongoose.set('debug', true);
