@@ -37,7 +37,7 @@ Basic settings:
     "gethPort":     8545,
     "startBlock":   0,
     "endBlock":     "latest",
-    "quiet":        false,
+    "quiet":        true,
     "syncAll":      true,
     "patch":        true,
     "patchBlocks":  100,

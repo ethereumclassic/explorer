@@ -3,9 +3,9 @@
     "gethPort":     8545,
     "startBlock":   0,
     "endBlock":     "latest",
-    "quiet":        false,
+    "quiet":        true,
     "syncAll":      true,
-    "patch":        false,
+    "patch":        true,
     "patchBlocks":  100,
     "settings": {
         "symbol": "ETC",
