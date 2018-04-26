@@ -143,7 +143,7 @@ var getOldestBlockDB = function() {
       console.log('nothing here starting from latest');
     }else{
       var nextBlock = (docs[0].number - 1);
-      if(nextBlock == config.startBlock){
+      if( nextBlock <= config.startBlock ){
         console.log('Sync Finsihed');
         config.syncAll = false;
         return;
