@@ -26,7 +26,7 @@ Ubuntu: `sudo apt-get install -y mongodb-org`
 
 This will fetch and parse the entire blockchain.
 
-Setup your configuration file: `cp config.json.example config.json`
+Setup your configuration file: `cp config.example.json config.json`
 
 Edit `config.json` as you wish
 
