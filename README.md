@@ -26,28 +26,19 @@ Ubuntu: `sudo apt-get install -y mongodb-org`
 
 This will fetch and parse the entire blockchain.
 
-Configuration file: `/config.json`
+Configuration file: `/conf.json`
 
 Basic settings:
-```javascript
+```json
 {
-    // Your node API RPC address.
     "nodeAddr":     "localhost",
-    // Your node API RPC port.
     "gethPort":     8545,
-    // This is the start block of the blockchain, should always be 0 if you want to sync the whole ETC blockchain.
     "startBlock":   0,
-    // This is usually the 'latest'/'newest' block in the blockchain, this value gets updated automatically, and will be used to patch missing blocks if the whole app goes down.
     "endBlock":     "latest",
-    // Prints out the log of what it is doing, Might not work for all messages in this release
     "quiet":        true,
-    // If this is set to true at the start of the app, the sync will start syncing all blocks from lastSync, and if lastSync is 0 it will start from whatever the endBlock or latest block in the blockchain is.
     "syncAll":      true,
-    // If set to true and below value is set, sync will iterated through the # of blocks specified
     "patch":        true,
-    // If `patch` is set to true, the amount of block specified will be check from the latest one.
     "patchBlocks":  100,
-    // blocks is a list of blocks to grab. It can be specified as a list of block numbers or an interval of block numbers. When specified as an interval, it will start at the end block and keep recording decreasing block numbers.
     "blocks": [ {"start": 2000000, "end": "latest"}],
     "settings": {
         "symbol": "ETC",
@@ -58,6 +49,16 @@ Basic settings:
 }
 
 ```
+
+```nodeAddr```    Your node API RPC address.
+```gethPort```    Your node API RPC port.
+```startBLock```  This is the start block of the blockchain, should always be 0 if you want to sync the whole ETC blockchain.
+```endBlock````   This is usually the 'latest'/'newest' block in the blockchain, this value gets updated automatically, and will be used to patch missing blocks if the whole app goes down.
+```quiet```       Prints out the log of what it is doing, Might not work for all messages in this release
+```syncAll```     If this is set to true at the start of the app, the sync will start syncing all blocks from lastSync, and if lastSync is 0 it will start from whatever the endBlock or latest block in the blockchain is.
+```patch```       If set to true and below value is set, sync will iterated through the # of blocks specified
+```patchBlocks``` If `patch` is set to true, the amount of block specified will be check from the latest one.
+
 
 ### Run:
 If you run
