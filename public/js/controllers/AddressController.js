@@ -9,7 +9,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
 
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.hash;
     $scope.addrHash = $stateParams.hash;
-    $scope.addr = {"balance": 0, "count": 0};
+    $scope.addr = {"balance": 0, "count": 0, "mined": 0};
     $scope.settings = $rootScope.setup;
 
     //fetch web3 stuff
@@ -18,7 +18,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       url: '/web3relay',
       data: {"addr": $scope.addrHash, "options": ["balance", "count", "bytecode"]}
     }).success(function(data) {
-      $scope.addr = data;
+      $scope.addr = $.extend($scope.addr, data);
       fetchTxs($scope.addr.count);
       if (data.isContract) {
         $rootScope.$state.current.data["pageTitle"] = "Contract Address";
@@ -80,6 +80,9 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
                         return getDuration(data).toString();
                       }, "targets": [6]},
           ]
+      }).on('xhr', function(e, settings, json) {
+        $scope.addr.count = json.recordsTotal;
+        $scope.addr.mined = parseInt(json.mined);
       });
     }
 
