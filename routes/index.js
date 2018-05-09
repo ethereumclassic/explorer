@@ -166,11 +166,34 @@ var getLatest = function(lim, res, callback) {
 
 /* get blocks from db */
 var sendBlocks = function(lim, res) {
-  var blockFind = Block.find({}, "number transactions timestamp miner extraData")
+  var blockFind = Block.find({}, "number timestamp miner extraData")
                       .lean(true).sort('-number').limit(lim);
   blockFind.exec(function (err, docs) {
-    res.write(JSON.stringify({"blocks": filters.filterBlocks(docs)}));
-    res.end();
+    if(!err && docs) {
+      var blockNumber = docs[docs.length - 1].number;
+      // aggregate transaction counters
+      Transaction.aggregate([
+        {$match: { blockNumber: { $gte: blockNumber } }},
+        {$group: { _id: '$blockNumber', count: { $sum: 1 } }}
+      ]).exec(function(err, results) {
+        var txns = {};
+        if (!err && results) {
+          // set transaction counters
+          results.forEach(function(txn) {
+            txns[txn._id] = txn.count;
+          });
+          docs.forEach(function(doc) {
+            doc.txn = txns[doc.number] || 0;
+          });
+        }
+        res.write(JSON.stringify({"blocks": filters.filterBlocks(docs)}));
+        res.end();
+      });
+    } else {
+      console.log("blockFind error:" + err);
+      res.write(JSON.stringify({"error": true}));
+      res.end();
+    }
   });
 }
 
