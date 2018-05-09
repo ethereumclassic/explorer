@@ -4,30 +4,30 @@
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
                 <h2>About</h2>
-                <p> This is an open source Blockchain Explorer. </p>
-                <p> <a href="https://github.com/ethereumproject/explorer" target="_blank">Fork me on github.</a> </p>
+                <p> {{settings.about}} </p>
+                <p> Powered by <a href="https://github.com/ethereumproject/explorer" target="_blank">ETC Explorer</a> </p>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
                 <h2>Follow Us On</h2>
                 <ul class="social-icons">
                     <li>
-                        <a href="http://ethereumclassic.org" data-original-title="rss" class="rss"></a>
+                        <a ng-show="settings.rss" href="{{settings.rss}}" data-original-title="rss" class="rss"></a>
                     </li>
                     <li>
-                        <a href="https://www.reddit.com/r/EthereumClassic" data-original-title="reddit" class="reddit"></a>
+                        <a ng-show="settings.reddit" href="{{settings.reddit}}" data-original-title="reddit" class="reddit"></a>
                     </li>
                     <li>
-                        <a href="https://twitter.com/ethereumclassic" data-original-title="twitter" class="twitter"></a>
+                        <a ng-show="settings.twitter" href="{{settings.twitter}}" data-original-title="twitter" class="twitter"></a>
                     </li>
                     <li>
-                        <a href="https://github.com/ethereumproject" data-original-title="github" class="github"></a>
+                        <a ng-show="settings.github" href="{{settings.github}}" data-original-title="github" class="github"></a>
                     </li>
                     <li>
-                        <a href="https://www.linkedin.com/company/ethereum-classic" data-original-title="linkedin" class="linkedin"></a>
+                        <a ng-show="settings.linkedin" href="{{settings.linkedin}}" data-original-title="linkedin" class="linkedin"></a>
                     </li>
                 </ul>
             </div>
-            <div class="col-md-6 col-sm-12 col-xs-12 footer-block">
+            <div ng-show="settings.symbol == 'ETC'" class="col-md-6 col-sm-12 col-xs-12 footer-block">
                 <h2>Help, it's Broken!</h2>
                 <address class="margin-bottom-40"> 
                     <br>Open an Issue: <a href="https://github.com/ethereumproject/explorer/issues">github</a>
@@ -41,7 +41,7 @@
 <!-- END PRE-FOOTER -->
 <!-- BEGIN POST-FOOTER -->
 <div class="page-footer">
-    <div class="container"> 2018 &copy; Ethereum Classic. </div>
+    <div class="container" ng-bind-html="settings.copyright"></div>
 </div>
 <div class="scroll-to-top">
     <i class="icon-arrow-up"></i>

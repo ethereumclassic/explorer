@@ -10,6 +10,16 @@
         "symbol": "ETC",
         "name": "Ethereum Classic",
         "title": "Ethereum Classic Block Explorer",
-        "author": "Elaine"
+        "author": "Elaine, Cody, Hackmod, Bakon",
+        "contact": "mailto:ethereumclassicanthony@gmail.com",
+        "about": "This is an open source Blockchain Explorer.",
+        "rss": "http://ethereumclassic.org",
+        "reddit": "https://www.reddit.com/r/EthereumClassic",
+        "twitter": "https://twitter.com/ethereumclassic",
+        "linkedin": "https://www.linkedin.com/company/ethereum-classic",
+        "github": "https://github.com/ethereumproject",
+        "logo": "/img/explorer-logo.png",
+        "customCss": "green-haze.min.css",
+        "copyright": "2018 &copy; Ethereum Classic."
     }
 }
