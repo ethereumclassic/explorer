@@ -63,7 +63,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
         "columnDefs": [ 
           { "targets": [ 5 ], "visible": false, "searchable": false },
           {"type": "date", "targets": 6},
-          {"orderable": false, "targets": [0,2,3]},
+          {"orderable": false, "targets": [0,2,3,4]},
           { "render": function(data, type, row) {
                         if (data != $scope.addrHash)
                           return '<a href="/addr/'+data+'">'+data+'</a>'

@@ -53,7 +53,7 @@ Layout Partials.
 By default the partials are loaded through AngularJS ng-include directive.
 ***/
 /* Setup Layout Part - Header */
-BlocksApp.controller('HeaderController', ['$scope', '$location', function($scope, $location) {
+BlocksApp.controller('HeaderController', ['$scope', '$location', 'setupObj', function($scope, $location, setupObj) {
     $scope.$on('$includeContentLoaded', function() {
         Layout.initHeader(); // init header
     });
@@ -73,17 +73,26 @@ BlocksApp.controller('HeaderController', ['$scope', '$location', function($scope
         else 
             $scope.form.searchInput = search;
     }
+    setupObj.then(function(res) {
+        $scope.settings = res;
+    });
 }]);
 /* Search Bar */
-BlocksApp.controller('PageHeadController', ['$scope', function($scope) {
+BlocksApp.controller('PageHeadController', ['$scope', 'setupObj', function($scope, setupObj) {
     $scope.$on('$includeContentLoaded', function() {        
         
     });
+    setupObj.then(function(res) {
+        $scope.settings = res;
+    });
 }]);
 /* Setup Layout Part - Footer */
-BlocksApp.controller('FooterController', ['$scope', function($scope) {
+BlocksApp.controller('FooterController', ['$scope', 'setupObj', function($scope, setupObj) {
     $scope.$on('$includeContentLoaded', function() {
         Layout.initFooter(); // init footer
+    });
+    setupObj.then(function(res) {
+        $scope.settings = res;
     });
 }]);
 /* Setup Rounting For All Pages */
