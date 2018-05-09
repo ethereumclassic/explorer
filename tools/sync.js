@@ -34,8 +34,8 @@ var listenBlocks = function(config) {
           }else if(blockData == null) {
             console.log('Warning: null block data received from the block with hash/number: ' + latestBlock);
           }else{
-            writeBlockToDB(config, blockData);
-            writeTransactionsToDB(config, blockData);
+            writeBlockToDB(config, blockData, true);
+            writeTransactionsToDB(config, blockData, true);
           }
         });
       }else{
@@ -65,6 +65,8 @@ var syncChain = function(config, nextBlock){
       console.log('nextBlock is null');
       return;
     } else if( nextBlock < config.startBlock ) {
+      writeBlockToDB(config, null, true);
+      writeTransactionsToDB(config, null, true);
       console.log('*** Sync Finsihed ***');
       config.syncAll = false;
       return;
@@ -90,46 +92,75 @@ var syncChain = function(config, nextBlock){
 /**
   Write the whole block object to DB
 **/
-var writeBlockToDB = function(config, blockData) {
-  return new Block(blockData).save( function( err, block, count ){
-    if ( typeof err !== 'undefined' && err ) {
-      if (err.code == 11000) {
-        if(!('quiet' in config && config.quiet === true)) {
-          console.log('Skip: Duplicate key ' + blockData.number.toString() + ': ' +err);
+var writeBlockToDB = function(config, blockData, flush) {
+  var self = writeBlockToDB;
+  if (!self.bulkOps) {
+    self.bulkOps = [];
+  }
+  if (blockData && blockData.number >= 0) {
+    self.bulkOps.push(new Block(blockData));
+    console.log('\t- block #' + blockData.number.toString() + ' inserted.');
+  }
+
+  if(flush && self.bulkOps.length > 0 || self.bulkOps.length >= 10) {
+    var bulk = self.bulkOps;
+    self.bulkOps = [];
+    if(bulk.length == 0) return;
+
+    Block.collection.insert(bulk, function( err, blocks ){
+      if ( typeof err !== 'undefined' && err ) {
+        if (err.code == 11000) {
+          if(!('quiet' in config && config.quiet === true)) {
+            console.log('Skip: Duplicate DB key : ' +err);
+          }
+        }else{
+          console.log('Error: Aborted due to error on DB: ' + err);
+          process.exit(9);
         }
       }else{
-        console.log('Error: Aborted due to error on ' + 'block number ' + blockData.number.toString() + ': ' + err);
-        process.exit(9);
+        console.log('* ' + blocks.insertedCount + ' blocks successfully written.');
       }
-    }else{
-      console.log('DB successfully written for block number ' + blockData.number.toString() );
-    }
-  });
+    });
+  }
 }
 /**
   Break transactions out of blocks and write to DB
 **/
-var writeTransactionsToDB = function(config, blockData) {
-  var bulkOps = [];
-  if (blockData.transactions.length > 0) {
+var writeTransactionsToDB = function(config, blockData, flush) {
+  var self = writeTransactionsToDB;
+  if (!self.bulkOps) {
+    self.bulkOps = [];
+    self.blocks = 0;
+  }
+  if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
       var txData = blockData.transactions[d];
       txData.timestamp = blockData.timestamp;
       txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
-      bulkOps.push(txData);
+      self.bulkOps.push(txData);
     }
-    Transaction.collection.insert(bulkOps, function( err, tx ){
+    console.log('\t- block #' + blockData.number.toString() + ': ' + blockData.transactions.length.toString() + ' transactions recorded.');
+  }
+  self.blocks++;
+
+  if (flush && self.blocks > 0 || self.blocks >= 10) {
+    var bulk = self.bulkOps;
+    self.bulkOps = [];
+    self.blocks = 0;
+    if(bulk.length == 0) return;
+
+    Transaction.collection.insert(bulk, function( err, tx ){
       if ( typeof err !== 'undefined' && err ) {
         if (err.code == 11000) {
           if(!('quiet' in config && config.quiet === true)) {
-            console.log('Skip: Duplicate key ' + err);
+            console.log('Skip: Duplicate transaction key ' + err);
           }
         }else{
-          console.log('Error: Aborted due to error: ' + err);
+          console.log('Error: Aborted due to error on Transaction: ' + err);
           process.exit(9);
         }
       }else{
-        console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
+        console.log('* ' + tx.insertedCount + ' transactions successfully recorded.');
       }
     });
   }
@@ -193,7 +224,7 @@ var runPatcher = function(config) {
       }else if(patchData == null) {
         console.log('Warning: null block data received from the block with hash/number: ' + patchBlock);
       }else{
-        checkBlockDBExistsThenWrite(config,patchData)
+        checkBlockDBExistsThenWrite(config, patchData, true)
       }
     });
     if (config.patchBlocks == 0){
@@ -205,11 +236,11 @@ var runPatcher = function(config) {
 /**
   This will be used for the patcher(experimental)
 **/
-var checkBlockDBExistsThenWrite = function(config,patchData) {
+var checkBlockDBExistsThenWrite = function(config, patchData, flush) {
   Block.find({number: patchData.number}, function (err, b) {
     if (!b.length){
-      writeBlockToDB(config,patchData);
-      writeTransactionsToDB(config,patchData);
+      writeBlockToDB(config, patchData, flush);
+      writeTransactionsToDB(config, patchData, flush);
     }else if(!('quiet' in config && config.quiet === true)) {
       console.log('Block number: ' +patchData.number.toString() + ' already exists in DB.');
     }
