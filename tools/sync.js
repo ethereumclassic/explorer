@@ -72,7 +72,7 @@ var syncChain = function(config, nextBlock){
       return;
     }
 
-    var count = 10;
+    var count = config.bulkSize;
     while(nextBlock >= config.startBlock && count > 0) {
       web3.eth.getBlock(nextBlock, true, function(error,blockData) {
         if(error) {
@@ -107,7 +107,7 @@ var writeBlockToDB = function(config, blockData, flush) {
     console.log('\t- block #' + blockData.number.toString() + ' inserted.');
   }
 
-  if(flush && self.bulkOps.length > 0 || self.bulkOps.length >= 10) {
+  if(flush && self.bulkOps.length > 0 || self.bulkOps.length >= config.bulkSize) {
     var bulk = self.bulkOps;
     self.bulkOps = [];
     if(bulk.length == 0) return;
@@ -148,7 +148,7 @@ var writeTransactionsToDB = function(config, blockData, flush) {
   }
   self.blocks++;
 
-  if (flush && self.blocks > 0 || self.blocks >= 10) {
+  if (flush && self.blocks > 0 || self.blocks >= config.bulkSize) {
     var bulk = self.bulkOps;
     self.bulkOps = [];
     self.blocks = 0;
@@ -281,6 +281,10 @@ if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
 // set the default output directory if it's not provided
 if (!('output' in config) || (typeof config.output) !== 'string') {
   config.output = '.'; // default this directory
+}
+// set the default size of array in block to use bulk operation.
+if (!('bulkSize' in config) || (typeof config.bulkSize) !== 'number') {
+  config.bulkSize = 100;
 }
 console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
 

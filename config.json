@@ -6,6 +6,7 @@
     "syncAll":      true,
     "patch":        true,
     "patchBlocks":  100,
+    "bulkSize":     100,
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",
