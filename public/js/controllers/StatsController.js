@@ -68,7 +68,14 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
         var width = parseInt(d3.select(chartid).style("width"));
         var height = parseInt(d3.select(chartid).style("height"));
 
-        var radius = Math.min(1000, 450) / 2;
+        // fix for mobile layout
+        var radius;
+        if (window.innerWidth < 800) {
+            radius = Math.min(width, 450) * 0.6;
+            d3.select(chartid).attr("height", '700px');
+        } else {
+            radius = 450 * 0.5;
+        }
 
         var pie = d3.layout.pie()
             .sort(null)
@@ -91,8 +98,12 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
 
         var div = d3.select("body").append("div").attr("class", "toolTip");
 
-        svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-        svg.attr("transform", "translate(" + 200 + "," + 200 + ")");
+        // fix for mobile layout
+        if (window.innerWidth < 800) {
+            svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        } else {
+            svg.attr("transform", "translate(" + 200 + "," + 200 + ")");
+        }
 
         var colorRange = d3.scale.category20();
         var color = d3.scale.ordinal()
@@ -166,9 +177,16 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                     var height = legendRectSize + legendSpacing;
                     var offset = height * color.domain().length / 2;
                     var horz = -3 * legendRectSize;
-                    //var vert = i * height - offset;
-                    var vert = i * height - offset;
-                    return 'translate(' + 250 + ',' + vert + ')';
+                    var vert = i * height;
+                    var tx, ty;
+                    if (window.innerWidth > 800) {
+                       tx = 250;
+                       ty = vert - offset;
+                    } else {
+                       tx = - radius * 0.8;
+                       ty = vert + radius;
+                    }
+                    return 'translate(' + tx + ',' + ty + ')';
                 });
 
             legend.append('rect')
@@ -243,7 +261,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
             //console.log(window.screen.availWidth);
             var width1 = parseInt(d3.select(chartid).style("width"));
 
-            var margin = {top: 0, right: 50, bottom: 50, left: 100},
+            var margin = {top: 0, right: 10, bottom: 50, left: 65},
                 //var margin = {top: 30, right: 0, bottom: 0, left: 0},
                 // For Responsive web design, get window.innerWidth
                 //width = window.innerWidth - margin.left - margin.right,
@@ -260,15 +278,14 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
             var y = d3.scale.linear().range([height, 0]);
 
             // For Responsive web design
-            //When window.innerWidth < 800 , Reduce the ticks to 2
-
+            var tick = window.innerWidth < 800 ? 2:5;
 
             var xAxis = d3.svg.axis()
                 .scale(x)
                 .orient("bottom")
                 //.tickFormat(d3.time.format("%x %H:%M"))
                 .tickFormat(d3.time.format("%x"))
-                .ticks(5);
+                .ticks(tick);
 
 
 
@@ -300,16 +317,15 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
 
-
-
-
+            // fix for mobile layout
+            var tick = window.innerWidth < 800 ? 15:30;
 
             // function for the x grid lines
             function make_x_axis() {
                 return d3.svg.axis()
                     .scale(x)
                     .orient("bottom")
-                    .ticks(30)
+                    .ticks(tick)
             }
 
             // function for the y grid lines
