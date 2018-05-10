@@ -213,29 +213,62 @@ var prepareSync = function(config, callback) {
 /**
   Block Patcher(experimental)
 **/
-var runPatcher = function(config) {
-  currentBlock = web3.eth.blockNumber;
-  patchBlock = currentBlock - config.patchBlocks;
-  console.log('Starting patching from block: '+patchBlock);
-  while(config.patchBlocks > 0){
-    config.patchBlocks--;
-    patchBlock++;
-    if(!('quiet' in config && config.quiet === true)) {
-      console.log('Patching Block: '+patchBlock)
-    }
-    web3.eth.getBlock(patchBlock, true, function(error,patchData) {
-      if(error) {
-        console.log('Warning: error on getting block with hash/number: ' + patchBlock + ': ' + error);
-      }else if(patchData == null) {
-        console.log('Warning: null block data received from the block with hash/number: ' + patchBlock);
-      }else{
-        checkBlockDBExistsThenWrite(config, patchData, true)
+var runPatcher = function(config, startBlock, endBlock) {
+  if(!web3 || !web3.isConnected()) {
+    console.log('Error: Web3 is not connected. Retrying connection shortly...');
+    setTimeout(function() { runPatcher(config); }, 3000);
+    return;
+  }
+
+  if(typeof startBlock === 'undefined' || typeof endBlock === 'undefined') {
+    // get the last saved block
+    var blockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
+    blockFind.exec(function (err, docs) {
+      if(err || !docs || docs.length < 1) {
+        // no blocks found. terminate runPatcher()
+        console.log('No need to patch blocks.');
+        return;
       }
+
+      var lastMissingBlock = docs[0].number + 1;
+      var currentBlock = web3.eth.blockNumber;
+      runPatcher(config, lastMissingBlock, currentBlock - 1);
     });
-    if (config.patchBlocks == 0){
-      config.patch = false;
-      console.log('Block Patching Complete')
+    return;
+  }
+
+  var missingBlocks = endBlock - startBlock + 1;
+  if (missingBlocks > 0) {
+    console.log('Patching from #' + startBlock + ' to #' + endBlock);
+    var patchBlock = startBlock;
+    var count = 0;
+    while(count < config.patchBlocks && patchBlock <= endBlock) {
+      if(!('quiet' in config && config.quiet === true)) {
+        console.log('Patching Block: ' + patchBlock)
+      }
+      web3.eth.getBlock(patchBlock, true, function(error, patchData) {
+        if(error) {
+          console.log('Warning: error on getting block with hash/number: ' + patchBlock + ': ' + error);
+        } else if(patchData == null) {
+          console.log('Warning: null block data received from the block with hash/number: ' + patchBlock);
+        } else {
+          checkBlockDBExistsThenWrite(config, patchData)
+        }
+      });
+      patchBlock++;
+      count++;
     }
+    // flush
+    writeBlockToDB(config, null, true);
+    writeTransactionsToDB(config, null, true);
+
+    setTimeout(function() { runPatcher(config, patchBlock, endBlock); }, 1000);
+  } else {
+    // flush
+    writeBlockToDB(config, null, true);
+    writeTransactionsToDB(config, null, true);
+
+    console.log('*** Block Patching Completed ***');
   }
 }
 /**
@@ -290,6 +323,13 @@ console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
 
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
 var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+
+// patch missing blocks
+if (config.patch === true){
+  console.log('Checking for missing blocks');
+  runPatcher(config);
+}
+
 // Start listening for latest blocks
 listenBlocks(config);
 
@@ -297,9 +337,4 @@ listenBlocks(config);
 if (config.syncAll === true){
   console.log('Starting Full Sync');
   syncChain(config);
-}
-// Starts full sync when set to true in config
-if (config.patch === true){
-  console.log('Checking for missing blocks');
-  runPatcher(config);
 }
