@@ -72,18 +72,23 @@ var syncChain = function(config, nextBlock){
       return;
     }
 
-    web3.eth.getBlock(nextBlock, true, function(error,blockData) {
-      if(error) {
-        console.log('Warning: error on getting block with hash/number: ' + nextBlock + ': ' + error);
-      }else if(blockData == null) {
-        console.log('Warning: null block data received from the block with hash/number: ' + nextBlock);
-      }else{
-        writeBlockToDB(config, blockData);
-        writeTransactionsToDB(config, blockData);
-      }
+    var count = 10;
+    while(nextBlock >= config.startBlock && count > 0) {
+      web3.eth.getBlock(nextBlock, true, function(error,blockData) {
+        if(error) {
+          console.log('Warning: error on getting block with hash/number: ' + nextBlock + ': ' + error);
+        }else if(blockData == null) {
+          console.log('Warning: null block data received from the block with hash/number: ' + nextBlock);
+        }else{
+          writeBlockToDB(config, blockData);
+          writeTransactionsToDB(config, blockData);
+        }
+      });
       nextBlock--;
-      syncChain(config, nextBlock);
-    });
+      count--;
+    }
+
+    setTimeout(function() { syncChain(config, nextBlock); }, 500);
   }else{
     console.log('Error: Web3 connection time out trying to get block ' + nextBlock + ' retrying connection now');
     syncChain(config, nextBlock);
