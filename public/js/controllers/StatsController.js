@@ -72,7 +72,6 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
         var radius;
         if (window.innerWidth < 800) {
             radius = Math.min(width, 450) * 0.6;
-            d3.select(chartid).attr("height", '700px');
         } else {
             radius = 450 * 0.5;
         }
@@ -95,6 +94,14 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
 
         var legendRectSize = (radius * 0.05);
         var legendSpacing = radius * 0.02;
+
+        var maxMiners = 23;
+        if (window.innerWidth < 800) {
+            var legendHeight = legendRectSize + legendSpacing;
+            var fixHeight = Math.min(maxMiners, dataset.length) * legendHeight;
+            fixHeight = height + parseInt(fixHeight) + 50;
+            d3.select(chartid).attr("height", fixHeight + 'px');
+        }
 
         var div = d3.select("body").append("div").attr("class", "toolTip");
 
@@ -167,6 +174,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
 
                 //console.log(data.length);
 
+            var legendHeight = Math.min(maxMiners, color.domain().length);
             var legend = svg.selectAll('.legend')
                 //.data(color.domain())
                 .data(data)
@@ -174,10 +182,14 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .append('g')
                 .attr('class', 'legend')
                 .attr('transform', function (d, i) {
+                    if (data.length - i >= maxMiners) {
+                        // show maxMiners, hide remains
+                        return 'translate(2000,0)';
+                    }
                     var height = legendRectSize + legendSpacing;
-                    var offset = height * color.domain().length / 2;
+                    var offset = height * legendHeight / 2;
                     var horz = -3 * legendRectSize;
-                    var vert = i * height;
+                    var vert = (data.length - i) * height;
                     var tx, ty;
                     if (window.innerWidth > 800) {
                        tx = 250;
