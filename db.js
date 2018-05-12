@@ -66,6 +66,12 @@ var BlockStat = new Schema(
     "uncleCount": Number
 });
 
+// create indices
+Transaction.index({blockNumber:-1});
+Transaction.index({from:1, blockNumber:-1});
+Transaction.index({to:1, blockNumber:-1});
+Block.index({miner:1});
+
 mongoose.model('BlockStat', BlockStat);
 mongoose.model('Block', Block);
 mongoose.model('Contract', Contract);
@@ -76,10 +82,6 @@ module.exports.Contract = mongoose.model('Contract');
 module.exports.Transaction = mongoose.model('Transaction');
 
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB', function(err) {
-    mongoose.connection.db.collection('Transaction').createIndex({blockNumber:-1}, function(err, res) {
-        console.log(res);
-    });
-});
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
 
 // mongoose.set('debug', true);
