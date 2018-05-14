@@ -82,15 +82,28 @@ var testValidCode = function(output, data, bytecode, response) {
                             "bytecode": output.contracts[contractName].bytecode});
   }
 
+  // Remove swarm hash
+  var bytecodeClean = bytecode.replace(/a165627a7a72305820.{64}0029$/gi, "");
+
+  var contractName = ':' + data.contractName; // XXX
+
   // compare to bytecode at address
-  if (!output.contracts || !output.contracts[data.contractName])
+  if (!output.contracts || !output.contracts[contractName])
     data.valid = false;
-  else if (output.contracts[data.contractName].bytecode.indexOf(bytecode) > -1){
-    data.valid = true;
-    //write to db
-    data.abi = output.contracts[data.contractName].interface;
-    data.byteCode = bytecode;
-    Contract.addContract(data);
+  else if (output.contracts[contractName].bytecode.indexOf(bytecodeClean) > -1){
+    var contractBytecodeClean = output.contracts[contractName].bytecode.replace(/a165627a7a72305820.{64}0029$/gi, "");
+    constructorArgs = contractBytecodeClean.replace(bytecodeClean, "");
+    contractBytecodeClean = contractBytecodeClean.replace(constructorArgs, "");
+
+    if (contractBytecodeClean == bytecodeClean) {
+      data.valid = true;
+      //write to db
+      data.abi = output.contracts[contractName].interface;
+      data.byteCode = bytecode;
+      Contract.addContract(data);
+    } else {
+      data.valid = false;
+    }
   }  else
     data.valid = false;
 
