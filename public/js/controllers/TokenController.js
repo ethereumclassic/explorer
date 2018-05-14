@@ -71,3 +71,20 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
       }
   }
 })
+.directive('transferTokens', function($http) {
+  return {
+    restrict: 'E',
+    templateUrl: '/views/transfer-tokens.html',
+    scope: false,
+    link: function(scope, elem, attrs) {
+      //fetch transfer
+      $http({
+        method: 'POST',
+        url: '/tokenrelay',
+        data: {"action": "transfer", "address": scope.addrHash}
+      }).then(function(resp) {
+        scope.transfer_tokens = resp.data;
+      });
+    }
+  }
+})

@@ -10,10 +10,12 @@ var mongoose = require( 'mongoose' );
 var Contract = mongoose.model( 'Contract' );
 
 var eth = require('./web3relay').eth;
+var web3 = require('./web3relay').web3;
 
 var BigNumber = require('bignumber.js');
 var etherUnits = require(__lib + "etherUnits.js")
 var async = require('async');
+var filterTrace = require('./filters').filterTrace;
 
 const ABI = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"}];
 
@@ -80,6 +82,20 @@ module.exports = function(req, res){
     } catch (e) {
       console.error(e);
     }
+  } else if (req.body.action == "transfer") {
+    var addr = req.body.address.toLowerCase();
+
+    var filter = {"fromBlock":"0x00", "toAddress":[addr]};
+    web3.trace.filter(filter, function(err, tx) {
+      if(err || !tx) {
+        console.error("TraceWeb3 error :" + err)
+        res.write(JSON.stringify({"error": true}));
+      } else {
+        res.write(JSON.stringify(filterTrace(tx)));
+      }
+      res.end();
+    })
+
   }
   });
   
