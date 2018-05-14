@@ -11,6 +11,11 @@ var web3;
 
 var BigNumber = require('bignumber.js');
 var etherUnits = require(__lib + "etherUnits.js")
+var async = require('async');
+
+require( '../db.js' );
+var mongoose = require( 'mongoose' );
+var Transaction = mongoose.model( 'Transaction' );
 
 var getLatestBlocks = require('./index').getLatestBlocks;
 var filterBlocks = require('./filters').filterBlocks;
@@ -113,17 +118,47 @@ exports.data = function(req, res){
     // need to filter both to and from
     // from block to end block, paging "toAddress":[addr], 
     // start from creation block to speed things up 
-    // TODO: store creation block
-    var filter = {"fromBlock":"0x1d4c00", "toAddress":[addr]};
-    web3.trace.filter(filter, function(err, tx) {
-      if(err || !tx) {
-        console.error("TraceWeb3 error :" + err)
-        res.write(JSON.stringify({"error": true}));
-      } else {
-        res.write(JSON.stringify(filterTrace(tx)));
+
+    async.waterfall([
+      function(callback) {
+        // get the creation transaction.
+        Transaction.findOne({to: addr}).lean(true).sort("blockNumber").exec(function(err, doc) {
+          if (err || !doc) {
+            callback({error: "true", message: "Contract not found"}, null);
+            return;
+          }
+          callback(null, doc);
+        });
       }
-      res.end();
-    }) 
+    ], function(error, transaction, callback) {
+      if (error) {
+        console.error("TraceWeb3 error :", error)
+        res.write(JSON.stringify(error));
+        return;
+      }
+      var minFromBlock = transaction.blockNumber;
+      var fromBlock;
+
+      if (req.body.fromBlock) {
+        var from = parseInt(req.body.fromBlock);
+        if (from < 0) {
+          fromBlock = minFromBlock;
+        } else {
+          fromBlock = Math.min(from, minFromBlock);
+        }
+      }
+
+      var filter = {"fromBlock": web3.toHex(fromBlock), "toAddress":[addr]};
+      web3.trace.filter(filter, function(err, tx) {
+        if(err || !tx) {
+          console.error("TraceWeb3 error :" + err)
+          res.write(JSON.stringify({"error": true}));
+        } else {
+          res.write(JSON.stringify({transactions: filterTrace(tx), createTransaction: transaction}));
+        }
+        res.end();
+      });
+    });
   } else if ("addr" in req.body) {
     var addr = req.body.addr.toLowerCase();
     var options = req.body.options;

@@ -36,6 +36,11 @@
                         {{ addr.follow_count }}0 
                         <span class="eth-stat-text">WATCHING</span>
                     </div>
+                    <div class="margin-top-20" ng-show="addr.isContract">
+                       <span class="eth-stat-text">Contract Creator</span><br>
+                       <a href="/addr/{{addr.creator}}">{{addr.creator.substr(0,24)}}...</a> at txn
+                       <a href="/tx/{{addr.transaction}}">{{addr.transaction.substr(0,24)}}...</a>
+                    </div>
                 </div>
               </div>
             </div>
