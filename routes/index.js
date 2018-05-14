@@ -23,6 +23,7 @@ module.exports = function(app){
     { "block": "1234" }
   */
   app.post('/addr', getAddr);
+  app.post('/addr_count', getAddrCounter);
   app.post('/tx', getTx);
   app.post('/block', getBlock);
   app.post('/data', getData);
@@ -58,6 +59,25 @@ var getAddr = function(req, res){
     }
   }
 
+  addrFind.lean(true).sort(sortOrder).skip(start).limit(limit)
+    .exec("find", function (err, docs) {
+      if (docs)
+        data.data = filters.filterTX(docs, addr);
+      else
+        data.data = [];
+      res.write(JSON.stringify(data));
+      res.end();
+    });
+
+};
+var getAddrCounter = function(req, res) {
+  var addr = req.body.addr.toLowerCase();
+  var count = parseInt(req.body.count);
+  var data = { recordsFiltered: count, recordsTotal: count, mined: 0 };
+
+  async.waterfall([
+  function(callback) {
+
   Transaction.aggregate([
     {$match: { $or: [{"to": addr}, {"from": addr}] }},
     {$group: { _id: null, count: { $sum: 1 } }}
@@ -67,24 +87,24 @@ var getAddr = function(req, res){
       data.recordsTotal = results[0].count;
       data.recordsFiltered = results[0].count;
     }
+    callback(null);
   });
+
+  }, function(callback) {
 
   Block.aggregate([
     { $match: { "miner": addr } },
-    { $group: { _id: '$miner', count: { $sum: 1 } }
+    { $group: { _id: null, count: { $sum: 1 } }
   }]).exec(function(err, results) {
     if (!err && results && results.length > 0) {
       data.mined = results[0].count;
     }
-  addrFind.lean(true).sort(sortOrder).skip(start).limit(limit)
-          .exec("find", function (err, docs) {
-            if (docs)
-              data.data = filters.filterTX(docs, addr);      
-            else 
-              data.data = [];
-            res.write(JSON.stringify(data));
-            res.end();
-          });
+    callback(null);
+  });
+
+  }], function (err) {
+    res.write(JSON.stringify(data));
+    res.end();
   });
 
 };
