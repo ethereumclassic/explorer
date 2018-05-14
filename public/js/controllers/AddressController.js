@@ -114,7 +114,13 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
         url: '/web3relay',
         data: {"addr_trace": $scope.addrHash}
       }).then(function(resp) {
-        $scope.internal_transactions = resp.data;
+        if (resp.data.transactions) {
+          $scope.internal_transactions = resp.data.transactions;
+          $scope.addr.creator = resp.data.createTransaction.from;
+          $scope.addr.transaction = resp.data.createTransaction.hash;
+        } else {
+          $scope.internal_transactions = resp.data;
+        }
       });      
     }
     
