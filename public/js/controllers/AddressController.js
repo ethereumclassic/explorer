@@ -27,6 +27,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
     });
 
     // fetch ethf balance 
+    if ($scope.settings.useEthFiat)
     $http({
       method: 'POST',
       url: '/fiat',

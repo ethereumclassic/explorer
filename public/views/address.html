@@ -13,7 +13,7 @@
                 <span class="eth-stat-text">
                   {{ settings.symbol }} Balance <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="Note: Balance may not reflect transaction data if you have transactions resulting from Contract Internal Transactions. We are working on adding that functionality."></i>
                   </span><br> 
-                  <div class="margin-top-20">
+                  <div ng-if="settings.useEthFiat" class="margin-top-20">
                   <span class="fade">{{ addr.ethfiat | number: 10 }}</span> <span class="eth-stat-text fade">ETH-F balance
                   </span> <a href="http://etherscan.io/address/{{addrHash}}" target="_blank"><i class="fa fa-external-link"></i></a>
                   </div>
