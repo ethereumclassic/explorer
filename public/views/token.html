@@ -13,6 +13,9 @@
                   <div class="margin-top-20">
                   {{ token.total_supply | number:1 }} <span class="eth-stat-text">Total {{ token.symbol }} Tokens</span>
                   </div>
+                  <div class="margin-top-20">
+                  <span class="eth-stat-text">Decimals</span> {{ token.decimals }}
+                  </div>
                   {{ token.total_holders | number:1 }} <div class="margin-top-20">
                    <span class="eth-stat-text">Token Holders</span>
                   </div>
