@@ -27,6 +27,15 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
         $rootScope.$state.current.data["pageTitle"] = resp.data.name;
     });
 
+    // fetch transactions
+    $http({
+      method: 'POST',
+      url: '/tokenrelay',
+      data: {"action": "transaction", "address": $scope.addrHash}
+    }).then(function(resp) {
+      $scope.contract_transactions = resp.data;
+    });
+
     $scope.form = {};
     $scope.errors = {};
     $scope.showTokens = false;

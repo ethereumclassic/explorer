@@ -102,12 +102,22 @@
                           <th width="8%"> Block </th>
                           <th width="15%"> From </th>
                           <th width="15%"> To </th>
-                          <th width="10%"> {{ settings.symbol }} </th>
-                          <th width="0%"> gas </th>
-                          <th width="12%"> Age </th>
+                          <th style="text-align:right" width="10%"> {{ settings.symbol }} </th>
+                          <th style="text-align:right" width="5%"> gas </th>
+                          <th style="text-align:center" width="12%"> call </th>
                       </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody>
+                    <tr ng-repeat="t in contract_transactions track by $index">
+                        <td class="truncate-txhash"> <a href="/tx/{{t.transactionHash}}">{{t.transactionHash}}</a> </td>
+                        <td><a href="/block/{{t.blockNumber}}">{{t.blockNumber}}</a>
+                        <td class="truncate-addrhash"> <a href="/addr/{{t.from}}">{{t.from}}</a> </td>
+                        <td class="truncate-addrhash"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
+                        <td style="text-align:right"> {{t.value}} </td>
+                        <td style="text-align:right"> {{t.gas}} </td>
+                        <td style="text-align:center"><span class="label label-sm label-info {{t.type}}"> {{t.type}}</span><span class="label label-sm label-danger" ng-show="t.error"> {{t.error}}</span></td>
+                    </tr>
+                  </tbody>
               </table>
             </div><!-- End: Datatable tab -->
 
