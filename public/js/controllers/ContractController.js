@@ -54,10 +54,10 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
           method: 'POST',
           url: '/compile',
           data: contractReq
-        }).success(function(data) {
+        }).then(function(resp) {
           $("#submitCodeBtn").button("reset");
-          console.log(data);
-          $scope.contract = data;
+          console.log(resp.data);
+          $scope.contract = resp.data;
           $scope.contract.compiled = true;
         });
       } else {

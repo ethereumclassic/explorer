@@ -15,8 +15,8 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
       method: 'POST',
       url: '/daorelay',
       data: {"action": "info"}
-    }).success(function(data) {
-      $scope.dao = data;
+    }).then(function(resp) {
+      $scope.dao = resp.data;
     });
 
     $scope.form = {};
@@ -35,10 +35,10 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
             method: 'POST',
             url: '/daorelay',
             data: {"action": "balanceOf", "addr": addr}
-          }).success(function(data) {
-            console.log(data)
+          }).then(function(resp) {
+            console.log(resp.data)
             $scope.showTokens = true;
-            $scope.dao.tokens = data.tokens;
+            $scope.dao.tokens = resp.data.tokens;
           });
         } else 
             $scope.errors.address = "Invalid Address";
@@ -62,8 +62,8 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
           method: 'POST',
           url: '/daorelay',
           data: data
-        }).success(function(data) {
-          scope.created_tokens = data;
+        }).then(function(resp) {
+          scope.created_tokens = resp.data;
         });
       }
 
@@ -88,8 +88,8 @@ angular.module('BlocksApp').controller('DAOController', function($stateParams, $
           method: 'POST',
           url: '/daorelay',
           data: data
-        }).success(function(data) {
-          scope.transfer_tokens = data;
+        }).then(function(resp) {
+          scope.transfer_tokens = resp.data;
         });
       }
 
