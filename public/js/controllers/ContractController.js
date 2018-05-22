@@ -1,15 +1,10 @@
 angular.module('BlocksApp').controller('ContractController', function($stateParams, $rootScope, $scope, $http) {
-    $scope.$on('$viewContentLoaded', function() {   
-        // initialize core components
-        App.initAjax();
-    });
-
     $rootScope.$state.current.data["pageSubTitle"] = $stateParams.addr;
 
     //fetch compiler options
     $scope.compilerVersions = [];
 
-    $.getJSON('https://ethereum.github.io/solc-bin/bin/list.json').done(function (data) {
+    $http.get('https://ethereum.github.io/solc-bin/bin/list.json').then(function (resp) {
       function buildVersion (build) {
         if (build.prerelease && build.prerelease.length > 0) {
           return build.version + '-' + build.prerelease
@@ -19,18 +14,18 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
       }
 
       // populate version dropdown with all available compiler versions (descending order)
-      $.each(data.builds.slice().reverse(), function (i, build) {
+      $.each(resp.data.builds.slice().reverse(), function (i, build) {
         $scope.compilerVersions.push({'name': buildVersion(build), 'value': 'v' + build.longVersion})
       })
 
-    }).fail(function (xhr, text, err) {
+    }).catch(function (resp) {
       // loading failed for some reason, fall back to local compiler
       $scope.compilerVersions.push({'name': 'latest local version', 'value': 'latest'})
 
     })
 
     $scope.form = {};
-    $scope.contract = {"address": $stateParams.addr} 
+    $scope.contract = {"address": $stateParams.addr, "optimization": true};
     $scope.errors = {};
     $scope.settings = $rootScope.setup;
     
@@ -74,14 +69,14 @@ angular.module('BlocksApp').controller('ContractController', function($statePara
     $scope.resetCode = function() {
       $scope.form.contract.$setPristine();
       $scope.form.contract.$setUntouched();
-      $scope.contract = {"address": $stateParams.addr} 
+      $scope.contract = {"address": $stateParams.addr, "optimization": true};
       $scope.errors = {};
     }
     $scope.startOver = function() {
       $scope.contract.compiled = false;
       $scope.form.contract.$setPristine();
       $scope.form.contract.$setUntouched();
-      $scope.contract = {"address": $stateParams.addr} 
+      $scope.contract = {"address": $stateParams.addr, "optimization": true};
       $scope.errors = {};
     }
 
