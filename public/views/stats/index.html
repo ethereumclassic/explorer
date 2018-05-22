@@ -3,11 +3,10 @@
         <!-- BEGIN PORTLET-->
         <div class="portlet light">
           <div class="portlet-body">
-            <svg id="hashrate" width="100%" height="500"></svg>
+            <miners-hashrate ng-if="chart == 'miner_hashrate'"></miners-hashrate>
+            <network-hashrate ng-if="chart == 'hashrate'"></network-hashrate>
+            <etc-the-bomb-chart ng-if="chart == 'The_bomb_chart'"></etc-the-bomb-chart>
           </div>
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    call_hashrate_chart();
-</script>

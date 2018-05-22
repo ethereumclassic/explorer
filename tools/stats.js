@@ -7,20 +7,35 @@ var Web3 = require('web3');
 var mongoose = require( 'mongoose' );
 var BlockStat = require( '../db.js' ).BlockStat;
 
-var updateStats = function() {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545')); 
+var updateStats = function(range, interval, rescan) {
+    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
     mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
     mongoose.set('debug', true);
 
     var latestBlock = web3.eth.blockNumber;
-    getStats(web3, latestBlock, null, latestBlock - 1000);
+
+    interval = Math.abs(parseInt(interval));
+    if (!range) {
+        range = 1000;
+    }
+    range *= interval;
+    if (interval >= 10) {
+        latestBlock -= latestBlock % interval;
+    }
+    getStats(web3, latestBlock, null, latestBlock - range, interval, rescan);
 }
 
 
-var getStats = function(web3, blockNumber, nextBlock, endBlock) {
-    if (blockNumber <= endBlock)
-        process.exit(9);
+var getStats = function(web3, blockNumber, nextBlock, endNumber, interval, rescan) {
+    if (endNumber < 0)
+        endNumber = 0;
+    if (blockNumber <= endNumber) {
+        if (rescan) {
+            process.exit(9);
+        }
+        return;
+    }
 
     if(web3.isConnected()) {
 
@@ -35,9 +50,9 @@ var getStats = function(web3, blockNumber, nextBlock, endBlock) {
             }
             else {
                 if (nextBlock)
-                    checkBlockDBExistsThenWrite(web3, blockData, nextBlock.timestamp);
+                    checkBlockDBExistsThenWrite(web3, blockData, nextBlock, endNumber, interval, rescan);
                 else
-                    checkBlockDBExistsThenWrite(web3, blockData, parseInt(Date.now()/1000));
+                    checkBlockDBExistsThenWrite(web3, blockData, null, endNumber, interval, rescan);
             }
         });
     } else {
@@ -52,9 +67,9 @@ var getStats = function(web3, blockNumber, nextBlock, endBlock) {
   *     if record exists: abort
   *     if record DNE: write a file for the block
   */
-var checkBlockDBExistsThenWrite = function(web3, blockData, nextTime) {
+var checkBlockDBExistsThenWrite = function(web3, blockData, nextBlock, endNumber, interval, rescan) {
     BlockStat.find({number: blockData.number}, function (err, b) {
-        if (!b.length) {
+        if (!b.length && nextBlock) {
             // calc hashrate, txCount, blocktime, uncleCount
             var stat = {
                 "number": blockData.number,
@@ -64,7 +79,7 @@ var checkBlockDBExistsThenWrite = function(web3, blockData, nextTime) {
                 "gasUsed": blockData.gasUsed,
                 "gasLimit": blockData.gasLimit,
                 "miner": blockData.miner,
-                "blockTime": nextTime - blockData.timestamp,
+                "blockTime": (nextBlock.timestamp - blockData.timestamp) / (nextBlock.number - blockData.number),
                 "uncleCount": blockData.uncles.length
             }
             new BlockStat(stat).save( function( err, s, count ){
@@ -77,13 +92,20 @@ var checkBlockDBExistsThenWrite = function(web3, blockData, nextTime) {
                 } else {
                     console.log('DB successfully written for block number ' +
                         blockData.number.toString() );    
-                    getStats(web3, blockData.number - 1, blockData);     
+                    getStats(web3, blockData.number - interval, blockData, endNumber, interval, rescan);
                 }
             });
         } else {
-            console.log('Aborting because block number: ' + blockData.number.toString() + 
-                ' already exists in DB.');
-            return;
+            if (rescan || !nextBlock) {
+                getStats(web3, blockData.number - interval, blockData, endNumber, interval, rescan);
+                if (nextBlock) {
+                    console.log('WARN: block number: ' + blockData.number.toString() + ' already exists in DB.');
+                }
+            } else {
+                console.error('Aborting because block number: ' + blockData.number.toString() +
+                    ' already exists in DB.');
+                return;
+            }
         }
 
     })
@@ -95,6 +117,40 @@ var checkBlockDBExistsThenWrite = function(web3, blockData, nextTime) {
 var minutes = 1;
 statInterval = minutes * 60 * 1000;
 
-setInterval(function() {
-  updateStats();
-}, statInterval);
+var rescan = false; /* rescan: true - rescan range */
+var range = 1000;
+var interval = 100;
+
+/**
+ * RESCAN=1000:100000 means interval;range
+ *
+ * Usage:
+ *   RESCAN=1000:100000 node tools/stats.js
+ */
+if (process.env.RESCAN) {
+    var tmp = process.env.RESCAN.split(/:/);
+    if (tmp.length > 1) {
+        interval = Math.abs(parseInt(tmp[0]));
+        if (tmp[1]) {
+            range = Math.abs(parseInt(tmp[1]));
+        }
+    }
+    var i = interval;
+    var j = 0;
+    for (var j = 0; i >= 10; j++) {
+        i = parseInt(i / 10);
+    }
+    interval = Math.pow(10, j);
+    console.log('Selected interval = ' + interval);
+
+    rescan = true;
+}
+
+// run
+updateStats(range, interval, rescan);
+
+if (!rescan) {
+    setInterval(function() {
+      updateStats(range, interval);
+    }, statInterval);
+}
