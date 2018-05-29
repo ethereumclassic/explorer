@@ -1,8 +1,4 @@
 angular.module('BlocksApp').controller('AddressController', function($stateParams, $rootScope, $scope, $http, $location) {
-    $scope.$on('$viewContentLoaded', function() {   
-        // initialize core components
-        App.initAjax();
-    });
     var activeTab = $location.url().split('#');
     if (activeTab.length > 1)
       $scope.activeTab = activeTab[1];
@@ -17,10 +13,10 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       method: 'POST',
       url: '/web3relay',
       data: {"addr": $scope.addrHash, "options": ["balance", "count", "bytecode"]}
-    }).success(function(data) {
-      $scope.addr = $.extend($scope.addr, data);
-      fetchTxs($scope.addr.count);
-      if (data.isContract) {
+    }).then(function(resp) {
+      $scope.addr = $.extend($scope.addr, resp.data);
+      fetchTxs();
+      if (resp.data.isContract) {
         $rootScope.$state.current.data["pageTitle"] = "Contract Address";
         fetchInternalTxs();
       }
@@ -31,20 +27,48 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       method: 'POST',
       url: '/fiat',
       data: {"addr": $scope.addrHash}
-    }).success(function(data) {
-      $scope.addr.ethfiat = data.balance;
+    }).then(function(resp) {
+      $scope.addr.ethfiat = resp.data.balance;
     });
 
     //fetch transactions
-    var fetchTxs = function(count) {
-      $("#table_txs").DataTable({
+    var fetchTxs = function() {
+      var table = $("#table_txs").DataTable({
         processing: true,
         serverSide: true,
         paging: true,
-        ajax: {
-          url: '/addr',
-          type: 'POST',
-          data: { "addr": $scope.addrHash, "count": count }
+        ajax: function(data, callback, settings) {
+          data.addr = $scope.addrHash;
+          data.count = $scope.addr.count;
+          $http.post('/addr', data).then(function(resp) {
+            // save data
+            $scope.data = resp.data;
+            // check $scope.records* if available.
+            resp.data.recordsTotal = $scope.recordsTotal ? $scope.recordsTotal : resp.data.recordsTotal;
+            resp.data.recordsFiltered = $scope.recordsFiltered ? $scope.recordsFiltered : resp.data.recordsFiltered;
+            callback(resp.data);
+          });
+
+          // get mined, recordsTotal counter only once.
+          if (data.draw > 1)
+            return;
+
+          $http.post('/addr_count', data).then(function(resp) {
+            $scope.addr.count = resp.data.recordsTotal;
+            $scope.addr.mined = parseInt(resp.data.mined);
+
+            data.count = resp.data.recordsTotal;
+
+            // set $scope.records*
+            $scope.recordsTotal = resp.data.recordsTotal;
+            $scope.recordsFiltered = resp.data.recordsFiltered;
+            // draw table if $scope.data available.
+            if ($scope.data) {
+              $scope.data.recordsTotal = resp.data.recordsTotal;
+              $scope.data.recordsFiltered = resp.data.recordsFiltered;
+              callback($scope.data);
+            }
+          });
         },
         "lengthMenu": [
                     [10, 20, 50, 100, 150, -1],
@@ -80,9 +104,6 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
                         return getDuration(data).toString();
                       }, "targets": [6]},
           ]
-      }).on('xhr', function(e, settings, json) {
-        $scope.addr.count = json.recordsTotal;
-        $scope.addr.mined = parseInt(json.mined);
       });
     }
 
@@ -91,8 +112,8 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
         method: 'POST',
         url: '/web3relay',
         data: {"addr_trace": $scope.addrHash}
-      }).success(function(data) {
-        $scope.internal_transactions = data;
+      }).then(function(resp) {
+        $scope.internal_transactions = resp.data;
       });      
     }
     
@@ -108,9 +129,9 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           method: 'POST',
           url: '/compile',
           data: {"addr": scope.addrHash, "action": "find"}
-        }).success(function(data) {
-          console.log(data);
-          scope.contract = data;
+        }).then(function(resp) {
+          console.log(resp.data);
+          scope.contract = resp.data;
         });
       }
   }
