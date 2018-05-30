@@ -16,6 +16,9 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
         "blocktime": {
             "title": "Blocktime chart"
         },
+        "difficulty": {
+            "title": "Difficulty chart"
+        },
         "miner_hashrate": {
             "title": "Miner Hashrate Distribution"
         },
@@ -441,6 +444,190 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
 
 
 
+
+            callback(null, 'three');
+        }
+        function myLastFunction(arg1, callback) {
+            // arg1 now equals 'three'
+            callback(null, 'done');
+        }
+      }
+    }
+  }
+})
+.directive('difficultyChart', function($http) {
+  return {
+    restrict: 'E',
+    template: '<svg id="difficulty" width="100%" height="500px"></svg>',
+    scope: true,
+    link: function(scope, elem, attrs) {
+      $http.post("/stats", {"action": "hashrates"})
+        .then(function(res) {
+          scope.init(res.data, "#difficulty");
+        });
+
+      /**
+       * Created by chenxiangyu on 2016/8/5.
+       * slightly modified to show difficulty chart.
+       */
+      scope.init = function(dataset, chartid) {
+        async.waterfall([
+            myFirstFunction,
+            mySecondFunction,
+            myLastFunction
+        ], function (err, result) {
+            // result now equals 'done'
+            return result;
+        });
+
+        function myFirstFunction(callback) {
+            callback(null, dataset, 'two');
+        }
+
+        function mySecondFunction(arg1, arg2, callback) {
+            var width1 = parseInt(d3.select(chartid).style("width"));
+
+            var margin = {top: 0, right: 10, bottom: 50, left: 65},
+                //var margin = {top: 30, right: 0, bottom: 0, left: 0},
+                // For Responsive web design, get window.innerWidth
+                //width = window.innerWidth - margin.left - margin.right,
+                width = width1 - margin.left - margin.right,
+                //width = window.screen.availWidth - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
+
+            // FIXME
+            if (width < 0) {
+                width = 1000;
+            }
+
+            var x = d3.time.scale().range([0, width]);
+            var y = d3.scale.linear().range([height, 0]);
+
+            // For Responsive web design
+            var tick = window.innerWidth < 800 ? 2:5;
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .tickFormat(d3.time.format("%x"))
+                .ticks(tick);
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .tickFormat(d3.format("s"))
+                .tickFormat(function(d){return d3.format("s")(d) + 'H';})
+                .ticks(5);
+
+            var area = d3.svg.area()
+                .x(function(d) { return x(d.timestamp*1000); })
+                .y0(height)
+                .y1(function(d) { return y(parseInt(d.difficulty)); });
+
+            var valueline = d3.svg.line()
+                .x(function(d) { return x(d.timestamp*1000); })
+                .y(function(d) { return y(parseInt(d.difficulty)); });
+
+            var svg = d3.select(chartid)
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            // fix for mobile layout
+            var tick = window.innerWidth < 800 ? 15:30;
+
+            // function for the x grid lines
+            function make_x_axis() {
+                return d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .ticks(tick)
+            }
+
+            // function for the y grid lines
+            function make_y_axis() {
+                return d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+                    .ticks(8)
+            }
+
+            var data = arg1.hashrates;
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.timestamp*1000; }));
+            y.domain([d3.min(data, function(d) { return parseInt(d.difficulty); }), d3.max(data, function(d) { return parseInt(d.difficulty); })]);
+
+            // Add the filled area
+            svg.append("path")
+                .datum(data)
+                .attr("class", "area")
+                .attr("d", area);
+
+            // Draw the x Grid lines
+            svg.append("g")
+                .attr("class", "grid")
+                .attr("transform", "translate(0," + height + ")")
+                .call(make_x_axis()
+                    .tickSize(-height, 0, 0)
+                    .tickFormat("")
+                );
+
+            // Draw the y Grid lines
+            svg.append("g")
+                .attr("class", "grid")
+                .call(make_y_axis()
+                    .tickSize(-width, 0, 0)
+                    .tickFormat("")
+                );
+
+            // Add the valueline path.
+            svg.append("path")
+                .attr("d", valueline(data));
+
+            // Add the X Axis
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+            // Add the Y Axis
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+            // Add Tooltip
+            var focus = svg.append("g")
+                .attr("class", "focus")
+                .style("display", "none");
+
+            focus.append("circle")
+                .attr("r", 4.5);
+
+            focus.append("text")
+                .attr("x", 9)
+                .attr("dy", ".35em");
+
+            svg.append("rect")
+                .attr("class", "overlay")
+                .attr("width", width)
+                .attr("height", height)
+                .on("mouseover", function() { focus.style("display", null); })
+                .on("mouseout", function() { focus.style("display", "none"); })
+                .on("mousemove", mousemove);
+
+            function mousemove() {
+                var x0 = x.invert(d3.mouse(this)[0]);
+
+                var s1 = _.minBy(data, function(d) {
+                    return Math.abs(moment(x0).unix()-d.unixtime);
+                });
+
+                //focus.attr("transform", "translate(" + x(d.date) + "," + y(d.close) + ")");
+                focus.attr("transform", "translate(" + x(moment(x0).unix()*1000) + "," + y(s1.difficulty) + ")");
+            }
 
             callback(null, 'three');
         }
