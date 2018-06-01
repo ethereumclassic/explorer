@@ -16,12 +16,12 @@ angular.module('BlocksApp').controller('UncleController', function($stateParams,
       method: 'POST',
       url: '/web3relay',
       data: {"uncle": $stateParams.number}
-    }).success(function(data) {
-      if (data.error)
+    }).then(function(resp) {
+      if (resp.data.error)
         $location.path("/err404/uncle/" + $stateParams.number);
       else {
-        $scope.block = data;
-        $scope.block.datetime = new Date(data.timestamp*1000);
+        $scope.block = resp.data;
+        $scope.block.datetime = new Date(resp.data.timestamp*1000);
       }
     });
 })

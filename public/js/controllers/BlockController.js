@@ -14,12 +14,12 @@ angular.module('BlocksApp').controller('BlockController', function($stateParams,
       method: 'POST',
       url: '/web3relay',
       data: {"block": $scope.blockNum}
-    }).success(function(data) {
-      if (data.error)
+    }).then(function(resp) {
+      if (resp.data.error)
         $location.path("/err404/block/" + $scope.blockNum);
       else {
-        $scope.block = data;
-        $scope.block.datetime = new Date(data.timestamp*1000); 
+        $scope.block = resp.data;
+        $scope.block.datetime = new Date(resp.data.timestamp*1000); 
       }
     });
 })
