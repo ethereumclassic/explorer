@@ -14,8 +14,8 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
         method: 'POST',
         url: URL,
         data: {"action": "latest_blocks"}
-      }).success(function(data) {      
-        $scope.latest_blocks = data.blocks;
+      }).then(function(resp) {
+        $scope.latest_blocks = resp.data.blocks;
         $scope.blockLoading = false;
       });
     }
@@ -25,8 +25,8 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
         method: 'POST',
         url: URL,
         data: {"action": "latest_txs"}
-      }).success(function(data) {
-        $scope.latest_txs = data.txs;
+      }).then(function(resp) {
+        $scope.latest_txs = resp.data.txs;
         $scope.txLoading = false;
       });
     }
