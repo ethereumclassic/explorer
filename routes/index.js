@@ -78,26 +78,20 @@ var getAddrCounter = function(req, res) {
   async.waterfall([
   function(callback) {
 
-  Transaction.aggregate([
-    {$match: { $or: [{"to": addr}, {"from": addr}] }},
-    {$group: { _id: null, count: { $sum: 1 } }}
-  ]).exec(function(err, results) {
-    if (!err && results && results.length > 0) {
+  Transaction.count({ $or: [{"to": addr}, {"from": addr}] }, function(err, count) {
+    if (!err && count) {
       // fix recordsTotal
-      data.recordsTotal = results[0].count;
-      data.recordsFiltered = results[0].count;
+      data.recordsTotal = count;
+      data.recordsFiltered = count;
     }
     callback(null);
   });
 
   }, function(callback) {
 
-  Block.aggregate([
-    { $match: { "miner": addr } },
-    { $group: { _id: null, count: { $sum: 1 } }
-  }]).exec(function(err, results) {
-    if (!err && results && results.length > 0) {
-      data.mined = results[0].count;
+  Block.count({ "miner": addr }, function(err, count) {
+    if (!err && count) {
+      data.mined = count;
     }
     callback(null);
   });
