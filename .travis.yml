@@ -13,5 +13,7 @@ before_install:
   - docker run -d --network="container:$varA" mongo
   - docker build -t ethereumclassic/explorer .
   - docker run -d --network="container:$varA" ethereumclassic/explorer app.js
+before_script: npm install -g gulp
 script:
-- npm run test
+  - gulp build
+  - npm run test
