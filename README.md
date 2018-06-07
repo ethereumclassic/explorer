@@ -69,11 +69,14 @@ Basic settings:
 
 
 ### Run:
-If you run
-
-  `npm start app.js`
-
-it will also start sync.js and start syncing the blockchain based on set parameters. NOTE running app.js will always start sync.js keep listening and syncing the latest block.
+The below will start both the web-gui and sync.js (which populates MongoDV with blocks/transactions).
+`npm start`
 
 You can leave sync.js running without app.js and it will sync and grab blocks based on config.json parameters
 `node ./tools/sync.js`
+
+Enabling stats requires running a separate process:
+`node ./tools/stats.js`
+
+You can configure intervals (how often a new data point is pulled) and range (how many blocks to go back) with the following:
+`RESCAN=1000:100000 node tools/stats.js` (New data point every 1,000 blocks. Go back 100,000 blocks).
