@@ -1,43 +1,3 @@
-var getDifficulty = function (hashes) {
-  return roundNumber(hashes, 100) + 'H';
-}
-
-var getHashRate = function (hashes) {
-  return roundNumber(hashes, 100) + 'H/s';
-}
-
-/*
-  Convert unix timestamp to something that doesn't suck
-*/
-var getDuration = function (timestamp) {
-  var millis = Date.now() - timestamp * 1000;
-  var dur = [];
-  var units = [
-    { label: "millis", mod: 1000 },
-    { label: "seconds", mod: 60 },
-    { label: "mins", mod: 60 },
-    { label: "hours", mod: 24 },
-    { label: "days", mod: 365 },
-    { label: "years", mod: 1000 }
-  ];
-  // calculate the individual unit values
-  units.forEach(function (u) {
-    var val = millis % u.mod;
-    millis = (millis - val) / u.mod;
-    if (u.label == "millis")
-      return;
-    if (val > 0)
-      dur.push({ "label": u.label, "val": val });
-  });
-  // convert object to string representation
-  dur.toString = function () {
-    return dur.reverse().slice(0, 2).map(function (d) {
-      return d.val + " " + (d.val == 1 ? d.label.slice(0, -1) : d.label);
-    }).join(', ');
-  };
-  return dur;
-};
-
 /**
  * Source code from ripple charts frontend:
  * https://github.com/ripple/ripplecharts-frontend/blob/fc14de40c1a5b362352d140836ca993bdebf9fb3/src/common/graph.js#L1686
@@ -80,16 +40,19 @@ function magnitude(oom) {
   return { value: value, text: text };
 }
 
-var roundNumber = window.roundNumber = function roundNumber(number, n = 1) {
+function roundNumber(number) {
   number = parseFloat(number);
   var man = Math.abs(number);
 
-  if (number === 0 || (man <= 100000.00 && man >= 0.00001)) {
-    return commas(n === 1 ? number : Math.round(number * n) / n);
+  if (number === 0 || (man < 100000.00 && man > 0.00001)) {
+    return commas(number);
   } else {
     var oom = Math.floor((Math.log(man) + 0.00000000000001) / Math.LN10);
     var mag = magnitude(oom);
-    var rounded = n === 1 ? number / mag.value : Math.round(number / mag.value * n) / n;
-    return commas(rounded) + mag.text;
+    return commas(number / mag.value) + mag.text;
   }
 }
+
+window.roundNumber = roundNumber;
+
+// module.exports = roundNumber;

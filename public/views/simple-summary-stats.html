@@ -38,7 +38,7 @@
                 </div>
                 <div class="number">
                     <h3>
-                        <span data-counter="counterup" data-value="stats.hashrate">{{stats.hashrate | totalDifficulty}}/s</span>
+                        <span data-counter="counterup" data-value="stats.hashrate" ng-bind-html="stats.hashrate | hashRate"></span>
                     </h3>
                     <small>Network Hashrate</small>
                 </div>
@@ -53,7 +53,7 @@
                 </div>
                 <div class="number">
                     <h3>
-                        <span data-counter="counterup" data-value="stats.difficulty">{{stats.difficulty | totalDifficulty}}</span>
+                        <span data-counter="counterup" data-value="stats.difficulty" ng-bind-html="stats.difficulty | totalDifficulty">/s</span>
                     </h3>
                     <small>DIFFICULTY</small>
                 </div>
