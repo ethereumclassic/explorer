@@ -1,9 +1,9 @@
-var mongoose = require( 'mongoose' );
-var Schema   = mongoose.Schema;
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 var Block = new Schema(
-{
-    "number": {type: Number, index: {unique: true}},
+  {
+    "number": { type: Number, index: { unique: true } },
     "hash": String,
     "parentHash": String,
     "nonce": String,
@@ -22,11 +22,11 @@ var Block = new Schema(
     "timestamp": Number,
     "blockTime": Number,
     "uncles": [String]
-});
+  });
 
 var Contract = new Schema(
-{
-    "address": {type: String, index: {unique: true}},
+  {
+    "address": { type: String, index: { unique: true } },
     "creationTransaction": String,
     "contractName": String,
     "compilerVersion": String,
@@ -34,11 +34,11 @@ var Contract = new Schema(
     "sourceCode": String,
     "abi": String,
     "byteCode": String
-}, {collection: "Contract"});
+  }, { collection: "Contract" });
 
 var Transaction = new Schema(
-{
-    "hash": {type: String, index: {unique: true}},
+  {
+    "hash": { type: String, index: { unique: true } },
     "nonce": Number,
     "blockHash": String,
     "blockNumber": Number,
@@ -50,11 +50,11 @@ var Transaction = new Schema(
     "gasPrice": String,
     "timestamp": Number,
     "input": String
-}, {collection: "Transaction"});
+  }, { collection: "Transaction" });
 
 var BlockStat = new Schema(
-{
-    "number": {type: Number, index: {unique: true}},
+  {
+    "number": { type: Number, index: { unique: true } },
     "timestamp": Number,
     "difficulty": String,
     "hashrate": String,
@@ -64,13 +64,13 @@ var BlockStat = new Schema(
     "miner": String,
     "blockTime": Number,
     "uncleCount": Number
-});
+  });
 
 // create indices
-Transaction.index({blockNumber:-1});
-Transaction.index({from:1, blockNumber:-1});
-Transaction.index({to:1, blockNumber:-1});
-Block.index({miner:1});
+Transaction.index({ blockNumber: -1 });
+Transaction.index({ from: 1, blockNumber: -1 });
+Transaction.index({ to: 1, blockNumber: -1 });
+Block.index({ miner: 1 });
 
 mongoose.model('BlockStat', BlockStat);
 mongoose.model('Block', Block);
@@ -82,6 +82,6 @@ module.exports.Contract = mongoose.model('Contract');
 module.exports.Transaction = mongoose.model('Transaction');
 
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
+mongoose.connect(process.env.MONGO_URI || 'mongodb://inmt3v9c5:ipgodfjh8u4rygt@ds261040.mlab.com:61040/eth');
 
 // mongoose.set('debug', true);
