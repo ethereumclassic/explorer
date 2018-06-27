@@ -322,7 +322,9 @@ if (!('bulkSize' in config) || (typeof config.bulkSize) !== 'number') {
 console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
 
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
-var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+//var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+var web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/d4b07356f83202074ce0037e545bd047c932c98db5175ef0cbe453a81c791033'));
+
 
 // patch missing blocks
 if (config.patch === true){
