@@ -55,6 +55,11 @@ if (web3.isConnected())
 else
   throw "No connection, please specify web3host in conf.json";
 
+if (web3.version.node.split('/')[0].toLowerCase().includes('parity')) {
+  // parity extension
+  web3 = require("../lib/trace.js")(web3);
+}
+
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
 
