@@ -109,8 +109,10 @@ var writeTransactionsToDB = function(config, blockData) {
   Patch Missing Blocks
 */
 var patchBlocks = function(config) {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' +
-        config.gethPort.toString()));
+    //var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' +
+    //    config.gethPort.toString()));
+    var web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/d4b07356f83202074ce0037e545bd047c932c98db5175ef0cbe453a81c791033'));
+        
 
     // number of blocks should equal difference in block numbers
     var firstBlock = 0;
