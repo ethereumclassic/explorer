@@ -47,7 +47,8 @@ if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
 } else {
-  web3 = new Web3(new Web3.providers.HttpProvider('http://'+config.nodeAddr+':'+config.gethPort));
+  //web3 = new Web3(new Web3.providers.HttpProvider('http://'+config.nodeAddr+':'+config.gethPort));
+  web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/d4b07356f83202074ce0037e545bd047c932c98db5175ef0cbe453a81c791033'));
 }
 
 if (web3.isConnected())
