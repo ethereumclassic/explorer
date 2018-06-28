@@ -8,8 +8,9 @@ var mongoose = require( 'mongoose' );
 var BlockStat = require( '../db.js' ).BlockStat;
 
 var updateStats = function(range, interval, rescan) {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-
+    //var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+    var web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/d4b07356f83202074ce0037e545bd047c932c98db5175ef0cbe453a81c791033'));
+    
     mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
     mongoose.set('debug', true);
 
