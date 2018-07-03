@@ -113,6 +113,7 @@ const Market = new Schema(
 );
 
 // create indices
+Transaction.index({timestamp:-1});
 Transaction.index({ blockNumber: -1 });
 Transaction.index({ from: 1, blockNumber: -1 });
 Transaction.index({ to: 1, blockNumber: -1 });
