@@ -22,6 +22,9 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
         "miner_hashrate": {
             "title": "Miner distribution"
         },
+        "supply": {
+            "title": "Total Supply"
+        },
         "tx": {
             "title": "Transaction chart"
         }
@@ -169,6 +172,216 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                     div.style("top", d3.event.pageY - 25 + "px");
                     div.style("display", "inline-block");
                     div.html((d.data._id) + "<br>" + (d.data.count) + "<br>(" + d3.format(".2%")(d.data.count / total) + ")");
+                });
+            slice
+                .on("mouseout", function (d) {
+                    div.style("display", "none");
+                });
+
+            slice.exit()
+                .remove();
+
+                //console.log(data.length);
+
+            var legendHeight = Math.min(maxMiners, color.domain().length);
+            var legend = svg.selectAll('.legend')
+                //.data(color.domain())
+                .data(data)
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
+                .attr('transform', function (d, i) {
+                    if (data.length - i >= maxMiners) {
+                        // show maxMiners, hide remains
+                        return 'translate(2000,0)';
+                    }
+                    var height = legendRectSize + legendSpacing;
+                    var offset = height * legendHeight / 2;
+                    var horz = -3 * legendRectSize;
+                    var vert = (data.length - i) * height;
+                    var tx, ty;
+                    if (window.innerWidth > 800) {
+                       tx = 250;
+                       ty = vert - offset;
+                    } else {
+                       tx = - radius * 0.8;
+                       ty = vert + radius;
+                    }
+                    return 'translate(' + tx + ',' + ty + ')';
+                });
+
+            legend.append('rect')
+                .attr('width', legendRectSize)
+                .attr('height', legendRectSize)
+                .style('fill', function (d,i) {
+                    //console.log(i);
+                    return color(d._id);
+                });
+
+            legend.append('text')
+
+                .attr('x', legendRectSize + legendSpacing)
+                .attr('y', legendRectSize - legendSpacing)
+                .text(function (d) {
+                    //console.log(d);
+                    return d._id;
+                });
+
+
+        }
+      }
+    }
+  };
+})
+.directive('totalSupply', function($http) {
+  return {
+    restrict: 'E',
+    template: '<svg id="totalSupply" width="100%" height="500px"></svg>',
+    scope: true,
+    link: function(scope, elem, attrs) {
+      scope.stats = {};
+      var statsURL = "/supply";
+
+      $http.post(statsURL)
+        .then(function(res) {
+          var dataset = [];
+          var total = 0;
+          Object.keys(res.data).forEach(function(k) {
+            if (k === 'totalSupply') {
+              total = res.data[k];
+            } else if (k === 'genesisAlloc' && typeof res.data[k] === 'object') {
+              Object.keys(res.data[k]).forEach(function(kk) {
+                if (kk !== 'total') {
+                  var d = { _id: kk, amount: res.data[k][kk] };
+                  dataset.push(d);
+                }
+              });
+            } else if (k !== 'height') {
+              var d = { _id: k, amount: res.data[k] };
+              dataset.push(d);
+            }
+          });
+
+          var data = _.sortBy(dataset, function(d) {
+            return d.amount * 1.0;
+          });
+          scope.init(data, total, "#totalSupply");
+        });
+
+      /**
+       * Created by chenxiangyu on 2016/8/5.
+       * slightly modified to show total supply pie chart.
+       */
+      scope.init = function(dataset, total, chartid) {
+        var svg = d3.select(chartid)
+          .append("g");
+
+
+        svg.append("g")
+            .attr("class", "slices");
+        svg.append("g")
+            .attr("class", "labelName");
+        svg.append("g")
+            .attr("class", "labelValue");
+        svg.append("g")
+            .attr("class", "lines");
+
+        var width = parseInt(d3.select(chartid).style("width"));
+        var height = parseInt(d3.select(chartid).style("height"));
+
+        // fix for mobile layout
+        var radius;
+        if (window.innerWidth < 800) {
+            radius = Math.min(width, 450) * 0.6;
+        } else {
+            radius = 450 * 0.5;
+        }
+
+        var pie = d3.layout.pie()
+            .sort(null)
+            .value(function (d) {
+                //return d.value;
+                //console.log(d);
+                return d.amount;
+            });
+
+        var arc = d3.svg.arc()
+            .outerRadius(radius * 0.8)
+            .innerRadius(radius * 0.4);
+
+        var outerArc = d3.svg.arc()
+            .innerRadius(radius * 0.9)
+            .outerRadius(radius * 0.9);
+
+        var legendRectSize = (radius * 0.05);
+        var legendSpacing = radius * 0.02;
+
+        var maxMiners = 23;
+        if (window.innerWidth < 800) {
+            var legendHeight = legendRectSize + legendSpacing;
+            var fixHeight = Math.min(maxMiners, dataset.length) * legendHeight;
+            fixHeight = height + parseInt(fixHeight) + 50;
+            d3.select(chartid).attr("height", fixHeight + 'px');
+        }
+
+        var div = d3.select("body").append("div").attr("class", "toolTip");
+
+        // fix for mobile layout
+        if (window.innerWidth < 800) {
+            svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        } else {
+            svg.attr("transform", "translate(" + 200 + "," + 200 + ")");
+        }
+
+        var colorRange = d3.scale.category10();
+        var color = d3.scale.ordinal()
+            .range(colorRange.range());
+
+        change(dataset);
+
+
+        d3.selectAll("input")
+            .on("change", selectDataset);
+
+        function selectDataset() {
+            var value = this.value;
+            if (value == "total") {
+                change(datasetTotal);
+            }
+        }
+
+        function change(data) {
+            /* ------- PIE SLICES -------*/
+            var slice = svg.select(".slices").selectAll("path.slice")
+                .data(pie(dataset), function (d) {
+                    //return d.data.label
+                    //console.log(d);
+                    return d.data._id;
+                });
+
+            slice.enter()
+                .insert("path")
+                .style("fill", function (d) {
+                    return color(d.data._id);
+                })
+                .attr("class", "slice");
+
+            slice
+                .transition().duration(1000)
+                .attrTween("d", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        return arc(interpolate(t));
+                    };
+                })
+            slice
+                .on("mousemove", function (d) {
+                    div.style("left", d3.event.pageX + 10 + "px");
+                    div.style("top", d3.event.pageY - 25 + "px");
+                    div.style("display", "inline-block");
+                    div.html((d.data._id) + "<br>" + (d.data.amount) + "<br>(" + d3.format(".2%")(d.data.amount / total) + ")");
                 });
             slice
                 .on("mouseout", function (d) {
