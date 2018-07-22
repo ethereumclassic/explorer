@@ -231,10 +231,19 @@ exports.data = function(req, res){
     // from block to end block, paging "toAddress":[addr], 
     // start from creation block to speed things up 
 
+    var txncount;
+    try {
+      txncount = web3.eth.getTransactionCount(addr);
+    } catch (e) {
+      console.log("No transaction found. ignore.");
+      res.write(JSON.stringify({"error": true}));
+      res.end();
+      return;
+    }
     async.waterfall([
       function(callback) {
         // get the creation transaction.
-        Transaction.findOne({to: addr}).lean(true).sort("blockNumber").exec(function(err, doc) {
+        Transaction.findOne({creates: addr}).lean(true).exec(function(err, doc) {
           if (err || !doc) {
             callback({error: "true", message: "Contract not found"}, null);
             return;
@@ -248,19 +257,8 @@ exports.data = function(req, res){
         res.write(JSON.stringify(error));
         return;
       }
-      var minFromBlock = transaction.blockNumber;
-      var fromBlock;
 
-      if (req.body.fromBlock) {
-        var from = parseInt(req.body.fromBlock);
-        if (from < 0) {
-          fromBlock = minFromBlock;
-        } else {
-          fromBlock = Math.min(from, minFromBlock);
-        }
-      }
-
-      var filter = {"fromBlock": web3.toHex(fromBlock), "toAddress":[addr]};
+      var filter = {"fromBlock": web3.toHex(transaction.blockNumber), "toAddress":[addr]};
       web3.trace.filter(filter, function(err, tx) {
         if(err || !tx) {
           console.error("TraceWeb3 error :" + err)
