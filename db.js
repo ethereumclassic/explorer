@@ -53,6 +53,7 @@ var Transaction = new Schema(
     "transactionIndex": Number,
     "from": {type: String, lowercase: true},
     "to": {type: String, lowercase: true},
+    "creates": {type: String, lowercase: true},
     "value": String,
     "gas": Number,
     "gasPrice": String,
@@ -78,6 +79,7 @@ var BlockStat = new Schema(
 Transaction.index({blockNumber:-1});
 Transaction.index({from:1, blockNumber:-1});
 Transaction.index({to:1, blockNumber:-1});
+Transaction.index({creates:1, blockNumber:-1});
 Account.index({balance:-1});
 Account.index({balance:-1, blockNumber:-1});
 Account.index({type:-1, balance:-1});

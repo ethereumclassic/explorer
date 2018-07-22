@@ -90,6 +90,10 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           {"type": "date", "targets": 6},
           {"orderable": false, "targets": [0,2,3,4]},
           { "render": function(data, type, row) {
+                        if (data == null) {
+                          return '<i class="fa fa-file-text-o" title="Contract"></i> ' +
+                            '<a href="/addr/'+row[7]+'">'+row[7]+'</a>';
+                        }
                         if (data != $scope.addrHash)
                           return '<a href="/addr/'+data+'">'+data+'</a>'
                         else
@@ -114,7 +118,13 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
         url: '/web3relay',
         data: {"addr_trace": $scope.addrHash}
       }).then(function(resp) {
-        $scope.internal_transactions = resp.data;
+        if (resp.data.transactions) {
+          $scope.internal_transactions = resp.data.transactions;
+          $scope.addr.creator = resp.data.createTransaction.from;
+          $scope.addr.transaction = resp.data.createTransaction.hash;
+        } else {
+          $scope.internal_transactions = resp.data;
+        }
       });      
     }
     

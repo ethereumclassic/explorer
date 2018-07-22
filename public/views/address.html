@@ -26,6 +26,18 @@
               </div>
             </div>
 
+            <div class="col-md-6 center">
+                <div class="portlet">
+                  <div class="portlet-body">
+                    <div class="margin-top-20" ng-show="addr.isContract">
+                       <span class="eth-stat-text">Contract Creator</span><br>
+                       <a href="/addr/{{addr.creator}}">{{addr.creator.substr(0,24)}}...</a> at txn
+                       <a href="/tx/{{addr.transaction}}">{{addr.transaction.substr(0,24)}}...</a>
+                    </div>
+                </div>
+              </div>
+            </div>
+
       </div><!--end row-->
     </div><!--end portlet-body-->
   </div><!--end portlet-->
