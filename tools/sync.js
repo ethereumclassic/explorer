@@ -17,6 +17,42 @@ var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 var Account         = mongoose.model( 'Account' );
 
+function normalizeTX(txData, blockData) {
+  var tx = {
+    blockHash: txData.blockHash,
+    blockNumber: txData.blockNumber,
+    from: txData.from,
+    to: txData.to,
+    hash: txData.hash,
+    value: etherUnits.toEther(new BigNumber(txData.value), 'wei'),
+    nonce: txData.nonce,
+    r: txData.r,
+    s: txData.s,
+    v: txData.v,
+    gas: txData.gas,
+    gasPrice: txData.gasPrice,
+    input: txData.input,
+    transactionIndex: txData.transactionIndex,
+    timestamp: blockData.timestamp
+  };
+  if (txData.to == null) {
+    // parity support `creates` field
+    if (txData.creates) {
+      tx.creates = txData.creates;
+      return tx;
+    } else {
+      // getTransactionReceipt to get contract address
+      var receipt = web3.eth.getTransactionReceipt(tx.hash);
+      if (receipt && receipt.contractAddress) {
+        tx.creates = receipt.contractAddress;
+      }
+      return tx;
+    }
+  } else {
+    return tx;
+  }
+}
+
 /**
   //Just listen for latest blocks and sync from the start of the app.
 **/
@@ -163,9 +199,9 @@ var writeTransactionsToDB = function(config, blockData, flush) {
   if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
       var txData = blockData.transactions[d];
-      txData.timestamp = blockData.timestamp;
-      txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
-      self.bulkOps.push(txData);
+
+      var tx = normalizeTX(txData, blockData);
+      self.bulkOps.push(tx);
     }
     console.log('\t- block #' + blockData.number.toString() + ': ' + blockData.transactions.length.toString() + ' transactions recorded.');
   }
