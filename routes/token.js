@@ -28,14 +28,15 @@ module.exports = function(req, res){
     return;
   }
 
-  var contractAddress = req.body.address;
+  var contractAddress = req.body.address.toLowerCase();
 
   async.waterfall([
     function(callback) {
       // get the creation transaction.
-      Transaction.findOne({to: contractAddress}).lean(true).sort("blockNumber").exec(function(err, doc) {
+      Transaction.findOne({creates: contractAddress}).lean(true).exec(function(err, doc) {
         if (err || !doc) {
-          callback({error: "true", message: "Token not found"}, null);
+          // no transaction found.
+          callback({error: "true", message: "no transaction found"}, null);
           return;
         }
         callback(null, doc);
@@ -68,11 +69,16 @@ module.exports = function(req, res){
       return;
     }
   if (req.body.action=="info") {
+    var decimals = 0;
+    try {
+      decimals = token.decimals ? token.decimals() : 0;
+    } catch (e) {
+      decimals = 0;
+    }
     try {
       var actualBalance = eth.getBalance(contractAddress);
       actualBalance = etherUnits.toEther(actualBalance, 'wei');
       var totalSupply = token.totalSupply();
-      var decimals = token.decimals ? token.decimals() : 0;
       var name = token.name();
       var symbol = token.symbol();
       var count = eth.getTransactionCount(contractAddress);
@@ -101,18 +107,36 @@ module.exports = function(req, res){
     }
   } else if (req.body.action=="balanceOf") {
     var addr = req.body.user.toLowerCase();
+    var decimals = 0;
+    try {
+      decimals = token.decimals ? token.decimals() : 0;
+    } catch (e) {
+      decimals = 0;
+    }
     try {
       var tokens = token.balanceOf(addr);
-      var decimals = token.decimals ? token.decimals() : 0;
       var decimalsBN = new BigNumber(decimals);
       var divisor = new BigNumber(10).pow(decimalsBN);
       tokens = tokens.dividedBy(divisor);
       res.write(JSON.stringify({"tokens": tokens}));
       res.end();
     } catch (e) {
-      console.error(e);
+      var tokens = token.balanceOf(addr);
+      var decimalsBN = new BigNumber(decimals);
+      var divisor = new BigNumber(10).pow(decimalsBN);
+      tokens = tokens.dividedBy(divisor);
+      res.write(JSON.stringify({"tokens": tokens}));
+      res.end();
     }
   } else if (req.body.action == "transfer") {
+    var after = 0;
+    if (req.body.after) {
+      after = parseInt(req.body.after);
+      if (after < 0) {
+        after = 0;
+      }
+    }
+
     var addr = req.body.address.toLowerCase();
     abiDecoder.addABI(contract.abi);
 
@@ -121,7 +145,7 @@ module.exports = function(req, res){
     try {
       decimals = token.decimals ? token.decimals() : 0;
     } catch (e) {
-      console.log('Not a valid ERC20 token. ignored');
+      decimals = 0;
     }
     var decimalsBN = new BigNumber(decimals);
     var divisor = new BigNumber(10).pow(decimalsBN);
@@ -129,6 +153,10 @@ module.exports = function(req, res){
     var fromBlock = transaction.blockNumber;
     fromBlock = web3.toHex(fromBlock);
     var filter = {"fromBlock": fromBlock, "toAddress":[addr]};
+    filter.count = MAX_ENTRIES;
+    if (after) {
+      filter.after = after;
+    }
     web3.trace.filter(filter, function(err, tx) {
       if(err || !tx) {
         console.error("TraceWeb3 error :" + err)
@@ -150,17 +178,39 @@ module.exports = function(req, res){
             }
           }
         });
-        res.write(JSON.stringify(transfers));
+        res.write(JSON.stringify({transfer:transfers, after:after, count:filter.count}));
       }
       res.end();
     })
   } else if (req.body.action == "transaction") {
     var addr = req.body.address.toLowerCase();
+
+    var after = 0;
+    if (req.body.after) {
+      after = parseInt(req.body.after);
+      if (after < 0) {
+        after = 0;
+      }
+    }
+
     abiDecoder.addABI(contract.abi);
+
+    var decimals = 0;
+    try {
+      decimals = token.decimals ? token.decimals() : 0;
+    } catch (e) {
+      decimals = 0;
+    }
+    var divisor = new BigNumber(10).pow(decimals);
 
     var fromBlock = transaction.blockNumber;
     fromBlock = web3.toHex(fromBlock);
     var filter = {"fromBlock": fromBlock, "toAddress":[addr]};
+    filter.count = MAX_ENTRIES;
+    if (after) {
+      filter.after = after;
+    }
+
     web3.trace.filter(filter, function(err, tx) {
       if(err || !tx) {
         console.error("TraceWeb3 error :" + err)
@@ -169,11 +219,20 @@ module.exports = function(req, res){
         var txns = filterTrace(tx);
         txns = txns.map(function(t) {
           if (t.type == "call") {
-            t.callInfo = abiDecoder.decodeMethod(t.action.input);
+            var callInfo = abiDecoder.decodeMethod(t.action.input);
+            if (callInfo && callInfo.name && callInfo.name == 'transfer') {
+              // convert amount
+              var amount = new BigNumber(callInfo.params[1].value);
+              t.amount = amount.dividedBy(divisor).toString(10);
+              // replace to address with _to address arg
+              t.to = callInfo.params[0].value;
+              t.type = 'transfer';
+            }
+            t.callInfo = callInfo;
           }
           return t;
         });
-        res.write(JSON.stringify(filterTrace(txns)));
+        res.write(JSON.stringify({transaction:txns, after: after, count: filter.count}));
       }
       res.end();
     })
@@ -183,4 +242,4 @@ module.exports = function(req, res){
   
 };  
 
-const MAX_ENTRIES = 50;
+const MAX_ENTRIES = 20;

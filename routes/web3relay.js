@@ -49,6 +49,20 @@ try {
     }
 }
 
+// load token list
+var KnownTokenDecimalDivisors = {};
+var KnownTokenInfo = {};
+const KnownTokenList = require('../public/' + (config.settings.tokenList || 'tokens.json'));
+
+// prepare token information
+const KnownTokens = KnownTokenList.map((token)=> {
+  var key = token.address.toLowerCase();
+  KnownTokenInfo[key] = token;
+  // decimals divisors
+  KnownTokenDecimalDivisors[key] = new BigNumber(10).pow(token.decimal);
+  return token.address;
+});
+
 //Create Web3 connection
 console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
 if (typeof web3 !== "undefined") {
@@ -140,14 +154,8 @@ exports.data = function(req, res){
             var contract = web3.eth.contract(ERC20ABI);
             var token = contract.at(tx.to);
 
-            try {
-              // is it a valid ERC20 token?
-              token.decimals();
-              callback(null, tx, traces, contract, token);
-              return;
-            } catch(e) {
-              console.log('WARN: invalid ERC20 token. fail to call decimals() :' + e);
-            }
+            callback(null, tx, traces, contract, token);
+            return;
           }
         }
         Contract.findOne({address: tx.to}).lean(true)
@@ -190,7 +198,12 @@ exports.data = function(req, res){
           var contract = web3.eth.contract(abi);
           tokenContract = contract.at(tx.to);
         }
-        decimals = tokenContract.decimals ? tokenContract.decimals() : 0;
+
+        try {
+          decimals = tokenContract.decimals ? tokenContract.decimals() : 0;
+        } catch (e) {
+          decimals = 0;
+        }
         abiDecoder.addABI(tokenContract.abi);
 
         // prepare to convert transfer unit
@@ -222,6 +235,14 @@ exports.data = function(req, res){
     // from block to end block, paging "toAddress":[addr], 
     // start from creation block to speed things up 
 
+    var after = 0;
+    if (req.body.after) {
+      after = parseInt(req.body.after);
+      if (after < 0) {
+        after = 0;
+      }
+    }
+
     var txncount;
     try {
       txncount = web3.eth.getTransactionCount(addr);
@@ -236,26 +257,158 @@ exports.data = function(req, res){
         // get the creation transaction.
         Transaction.findOne({creates: addr}).lean(true).exec(function(err, doc) {
           if (err || !doc) {
-            callback({error: "true", message: "Contract not found"}, null);
+            // no creation transaction found
+            // this is normal address
+            callback(null, null);
             return;
           }
           callback(null, doc);
         });
+      },
+      function(transaction, callback) {
+        // detect Token contract
+        if (transaction) {
+          var bytecode = web3.eth.getCode(addr);
+          if (bytecode.length > 2) {
+            var contract = web3.eth.contract(ERC20ABI);
+            var token = contract.at(addr);
+
+            try {
+              var supply = token.totalSupply();
+            } catch (e) {
+              // not a valid token
+              callback(null, transaction);
+              return;
+            }
+
+            // try to get decimals
+            var decimals;
+            try {
+              decimals = token.decimals ? token.decimals() : 0;
+            } catch (e) {
+              decimals = 0;
+            }
+
+            callback(null, transaction, token, decimals);
+          }
+        } else {
+          callback(null, transaction, null, null);
+        }
+      },
+      function(transaction, token, decimals, callback) {
+        if (!transaction) {
+          web3.eth.getBlock('latest', function(err, block) {
+            if(err || !block) {
+              console.error("addr_trace error :" + err)
+              callback({"error": true}, null);
+            } else {
+              callback(null, null, null, null, block.number);
+            }
+          });
+        } else {
+          callback(null, transaction, token, decimals, null);
+        }
       }
-    ], function(error, transaction, callback) {
+    ], function(error, transaction, token, decimals, lastBlockNumber, callback) {
+      // check divisor
+      if (transaction && token && !KnownTokenDecimalDivisors[addr]) {
+        KnownTokenDecimalDivisors[addr] = new BigNumber(10).pow(decimals);
+      }
+      // prepare abiDecoder
+      abiDecoder.addABI(ERC20ABI);
+
       if (error) {
         console.error("TraceWeb3 error :", error)
         res.write(JSON.stringify(error));
         return;
       }
+      // 100000 blocks ~ scan 14 days
+      var fromBlock = transaction && transaction.blockNumber || lastBlockNumber - 100000;
+      fromBlock = fromBlock < 0 ? 0 : fromBlock;
 
-      var filter = {"fromBlock": web3.toHex(transaction.blockNumber), "toAddress":[addr]};
+      //
+      var toAddr;
+      if (!transaction) {
+        // search all known tokens
+        toAddr = KnownTokens;
+      } else {
+        // search selected token contract only
+        toAddr = [addr];
+      }
+      var filter = {"fromBlock": web3.toHex(fromBlock), "toAddress":toAddr};
+      filter.count = MAX_ENTRIES;
+      if (after) {
+        filter.after = after;
+      }
       web3.trace.filter(filter, function(err, tx) {
         if(err || !tx) {
           console.error("TraceWeb3 error :" + err)
           res.write(JSON.stringify({"error": true}));
         } else {
-          res.write(JSON.stringify({transactions: filterTrace(tx), createTransaction: transaction}));
+          var txns = filterTrace(tx);
+          if (!transaction) {
+            // normal address cases.
+            // show only transfer transactions
+            var transfers = [];
+            txns.forEach(function(t) {
+              if (t.type == "call") {
+                // is it transfer action?
+                var methodSig = t.action.input ? t.action.input.substr(0, 10) : null;
+                var callInfo = {};
+                if (methodSig && KnownMethodIDs[methodSig] && KnownMethodIDs[methodSig].method == 'transfer') {
+                  callInfo = abiDecoder.decodeMethod(t.action.input);
+                } else {
+                  return;
+                }
+                // check from or to address
+                var toAddr = callInfo && callInfo.params && callInfo.params[0].value;
+                if (t.from !== addr && toAddr !== addr) {
+                  return;
+                }
+                if (callInfo && callInfo.name && callInfo.name == 'transfer') {
+                  var tokenAddr = t.to.toLowerCase();
+                  // convert amount
+                  var amount = new BigNumber(callInfo.params[1].value);
+                  t.amount = amount.dividedBy(KnownTokenDecimalDivisors[tokenAddr]).toString(10);
+                  // replace to address with _to address arg
+                  t.to = callInfo.params[0].value;
+                  t.tokenInfo = KnownTokenInfo[tokenAddr];
+                  t.callInfo = callInfo;
+                  t.type = 'transfer';
+                  transfers.push(t);
+                }
+              }
+            });
+            res.write(JSON.stringify({transactions: transfers, createTransaction: transaction, after: after, count: filter.count}));
+          } else {
+            // show all contract transactions
+            var transactions = [];
+            txns.forEach(function(t) {
+              if (t.type == "call") {
+                var methodSig = t.action.input ? t.action.input.substr(0, 10) : null;
+                var callInfo = {};
+                if (methodSig && KnownMethodIDs[methodSig] && KnownMethodIDs[methodSig].method == 'transfer') {
+                  // decode transfer action only
+                  callInfo = abiDecoder.decodeMethod(t.action.input);
+                }
+                if (callInfo && callInfo.name && callInfo.name == 'transfer') {
+                  // convert amount
+                  var amount = new BigNumber(callInfo.params[1].value);
+                  t.amount = amount.dividedBy(KnownTokenDecimalDivisors[addr]).toString(10);
+                  // replace to address with _to address arg
+                  t.to = callInfo.params[0].value;
+                  t.callInfo = callInfo;
+                  t.type = 'transfer';
+                  transactions.push(t);
+                } else {
+                  transactions.push(t);
+                }
+              } else {
+                transactions.push(t);
+              }
+            });
+            res.write(JSON.stringify({transactions, createTransaction: transaction, after: after, count: filter.count}));
+          }
         }
         res.end();
       });
@@ -293,6 +446,21 @@ exports.data = function(req, res){
       } catch (err) {
         console.error("AddrWeb3 error :" + err);
         addrData = {"error": true};
+      }
+
+      // is it a ERC20 compatible token?
+      if (addrData["isContract"]) {
+        var contract = web3.eth.contract(ERC20ABI);
+        var token = contract.at(addr);
+
+        try {
+          // FIXME
+          var supply = token.totalSupply();
+          addrData["isTokenContract"] = true;
+        } catch (e) {
+          // not a valid token
+          addrData["isTokenContract"] = false;
+        }
       }
     }
    
@@ -390,5 +558,6 @@ exports.data = function(req, res){
 
 };
 
+const MAX_ENTRIES = 20;
 exports.web3 = web3;
 exports.eth = web3.eth;

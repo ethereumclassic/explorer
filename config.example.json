@@ -26,6 +26,7 @@
         "poweredbyCustom": false,
         "poweredbyEtcImage": "/img/powered-by-etcexplorer-w.png",
         "poweredbyEtc": true,
+        "tokenList": "tokens.json",
         "miners": {
             "0xdf7d7e053933b5cc24372f878c90e62dadad5d42": "EtherMine",
             "0xc91716199ccde49dc4fafaeb68925127ac80443f": "F2Pool",
