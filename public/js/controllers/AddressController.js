@@ -99,6 +99,10 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           {"type": "date", "targets": 6},
           {"orderable": false, "targets": [0,2,3,4]},
           { "render": function(data, type, row) {
+                        if (data == null) {
+                          return '<i class="fa fa-file-text-o" title="Contract"></i> ' +
+                            '<a href="/addr/'+row[7]+'">'+row[7]+'</a>';
+                        }
                         if (data != $scope.addrHash)
                           return '<a href="/addr/'+data+'">'+data+'</a>'
                         else
