@@ -18,8 +18,17 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       fetchTxs();
       if (resp.data.isContract) {
         $rootScope.$state.current.data["pageTitle"] = "Contract Address";
-        fetchInternalTxs();
+        $scope.isContract = true;
+      } else {
+        $rootScope.$state.current.data["pageTitle"] = "Address";
+        $scope.isContract = false;
       }
+      if (resp.data.isTokenContract) {
+        $scope.isTokenContract = true;
+      } else {
+        $scope.isTokenContract = false;
+      }
+      fetchInternalTxs();
     });
 
     // fetch ethf balance 
@@ -108,21 +117,34 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
       });
     }
 
-    var fetchInternalTxs = function() {
+    var fetchInternalTxs = function(after) {
+      var data = {"addr_trace": $scope.addrHash};
+      if (after && after > 0) {
+        data.after = after;
+      }
       $http({
         method: 'POST',
         url: '/web3relay',
-        data: {"addr_trace": $scope.addrHash}
+        data
       }).then(function(resp) {
         if (resp.data.transactions) {
           $scope.internal_transactions = resp.data.transactions;
-          $scope.addr.creator = resp.data.createTransaction.from;
-          $scope.addr.transaction = resp.data.createTransaction.hash;
+          if ($scope.isContract) {
+            $scope.addr.creator = resp.data.createTransaction.from;
+            $scope.addr.transaction = resp.data.createTransaction.hash;
+            $scope.page = { count: resp.data.count, after: resp.data.after, next: resp.data.after + resp.data.count};
+            if (resp.data.after > 0) {
+              $scope.page.prev = resp.data.after - resp.data.count;
+            } else {
+              $scope.page.prev = 0;
+            }
+          }
         } else {
           $scope.internal_transactions = resp.data;
         }
       });      
-    }
+    };
+    $scope.fetchInternalTxs = fetchInternalTxs;
     
 })
 .directive('contractSource', function($http) {
