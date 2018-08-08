@@ -136,12 +136,12 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           if ($scope.isContract) {
             $scope.addr.creator = resp.data.createTransaction.from;
             $scope.addr.transaction = resp.data.createTransaction.hash;
-            $scope.page = { count: resp.data.count, after: resp.data.after, next: resp.data.after + resp.data.count};
-            if (resp.data.after > 0) {
-              $scope.page.prev = resp.data.after - resp.data.count;
-            } else {
-              $scope.page.prev = 0;
-            }
+          }
+          $scope.page = { count: resp.data.count, after: resp.data.after, next: resp.data.after + resp.data.count};
+          if (resp.data.after > 0) {
+            $scope.page.prev = resp.data.after - resp.data.count;
+          } else {
+            $scope.page.prev = 0;
           }
         } else {
           $scope.internal_transactions = resp.data;
