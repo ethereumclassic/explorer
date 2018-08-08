@@ -558,6 +558,6 @@ exports.data = function(req, res){
 
 };
 
-const MAX_ENTRIES = 20;
+const MAX_ENTRIES = 50;
 exports.web3 = web3;
 exports.eth = web3.eth;
