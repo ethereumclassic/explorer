@@ -24,12 +24,22 @@
             </tr>
         </tbody>
     </table>
-    <ul class="pager" ng-if="transfer_tokens[0]._id">
-        <li class="previous">
-            <a ng-click="getTransferTokens(transfer_tokens[0]._id)"> ← Newer </a>
+</div>
+<div class="row">
+    <ul class="pagination" style="float:right" ng-if="transfer_tokens[0]._id">
+        <li class="prev" ng-class="{disabled: page.after == 0}">
+            <a ng-click="getTransferTokens(transfer_tokens[0]._id)"><i class="fa fa-angle-left"></i>Prev</a>
         </li>
         <li class="next">
-            <a ng-click="getTransferTokens(transfer_tokens[transfer_tokens.length-1]._id)"> Older → </a>
+            <a ng-click="getTransferTokens(transfer_tokens[transfer_tokens.length-1]._id)">Next<i class="fa fa-angle-right"></i></a>
+        </li>
+    </ul>
+    <ul class="pagination" style="float:right" ng-if="!transfer_tokens[0]._id">
+        <li class="prev" ng-class="{disabled: page.after == 0}">
+            <a ng-click="getTransferTokens(page.prev)"><i class="fa fa-angle-left"></i>Prev</a>
+        </li>
+        <li class="next">
+            <a ng-click="getTransferTokens(page.next)">Next<i class="fa fa-angle-right"></i></a>
         </li>
     </ul>
 </div>

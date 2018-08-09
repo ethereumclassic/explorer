@@ -102,14 +102,28 @@ angular.module('BlocksApp').controller('TokenController', function($stateParams,
     scope: false,
     link: function(scope, elem, attrs) {
       //fetch transfer
+      var getTransferTokens = function(after) {
+      var data = {"action": "transfer", "address": scope.addrHash};
+      if (after && after > 0) {
+        data.after = after;
+      }
       $http({
         method: 'POST',
         url: '/tokenrelay',
-        data: {"action": "transfer", "address": scope.addrHash}
+        data
       }).then(function(resp) {
         scope.transfer_tokens = resp.data.transfer;
         scope.page = {after: resp.data.after, count: resp.data.count};
+        scope.page.next = resp.data.after + resp.data.count;
+        if (resp.data.after > 0) {
+          scope.page.prev = resp.data.after - resp.data.count;
+        } else {
+          scope.page.prev = 0;
+        }
       });
+      };
+      scope.getTransferTokens = getTransferTokens;
+      getTransferTokens();
     }
   }
 })
