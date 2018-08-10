@@ -8,12 +8,14 @@ require( '../db.js' );
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
 
+var async = require('async');
 var fs = require('fs');
 var Web3 = require('web3');
 
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
+var Account         = mongoose.model( 'Account' );
 
 /**
   //Just listen for latest blocks and sync from the start of the app.
@@ -137,6 +139,13 @@ var writeTransactionsToDB = function(config, blockData, flush) {
     self.bulkOps = [];
     self.blocks = 0;
   }
+  // save miner addresses
+  if (!self.miners) {
+    self.miners = [];
+  }
+  if (blockData) {
+    self.miners.push({ address: blockData.miner, blockNumber: blockData.blockNumber, type: 0 });
+  }
   if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
       var txData = blockData.transactions[d];
@@ -152,8 +161,73 @@ var writeTransactionsToDB = function(config, blockData, flush) {
     var bulk = self.bulkOps;
     self.bulkOps = [];
     self.blocks = 0;
-    if(bulk.length == 0) return;
+    var miners = self.miners;
+    self.miners = [];
 
+    // setup accounts
+    var data = {};
+    bulk.forEach(function(tx) {
+      data[tx.from] = { address: tx.from, blockNumber: tx.blockNumber, type: 0 };
+      if (tx.to) {
+        data[tx.to] = { address: tx.to, blockNumber: tx.blockNumber, type: 0 };
+      }
+    });
+
+    // setup miners
+    miners.forEach(function(miner) {
+      data[miner.address] = miner;
+    });
+
+    var accounts = Object.keys(data);
+
+    if (bulk.length == 0 && accounts.length == 0) return;
+
+    // update balances
+    if (accounts.length > 0)
+    async.eachSeries(accounts, function(account, eachCallback) {
+      var blockNumber = data[account].blockNumber;
+      // get contract account type
+      web3.eth.getCode(account, function(err, code) {
+        if (err) {
+          console.log("ERROR: fail to getCode(" + account + ")");
+          return eachCallback(err);
+        }
+        if (code.length > 2) {
+          data[account].type = 1; // contract type
+        }
+
+        web3.eth.getBalance(account, blockNumber, function(err, balance) {
+          if (err) {
+            console.log("ERROR: fail to getBalance(" + account + ")");
+            return eachCallback(err);
+          }
+
+          //data[account].balance = web3.fromWei(balance, 'ether');
+          let ether;
+          if (typeof balance === 'object') {
+            ether = parseFloat(balance.div(1e18).toString());
+          } else {
+            ether /= 1e18;
+          }
+          data[account].balance = ether;
+          eachCallback();
+        });
+      });
+    }, function(err) {
+      var n = 0;
+      accounts.forEach(function(account) {
+        n++;
+        if (n <= 5) {
+          console.log(' - upsert ' + account + ' / balance = ' + data[account].balance);
+        } else if (n == 6) {
+          console.log('   (...) total ' + accounts.length + ' accounts updated.');
+        }
+        // upsert account
+        Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
+      });
+    });
+
+    if (bulk.length > 0)
     Transaction.collection.insert(bulk, function( err, tx ){
       if ( typeof err !== 'undefined' && err ) {
         if (err.code == 11000) {
