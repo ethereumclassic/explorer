@@ -2,8 +2,6 @@ require( '../db.js' );
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
 
-var fs = require('fs');
-
 var Web3 = require('web3');
 
 var mongoose        = require( 'mongoose' );
@@ -11,9 +9,6 @@ var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
 var grabBlocks = function(config) {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' +
-        config.gethPort.toString()));
-
     if('listenOnly' in config && config.listenOnly === true)
         listenBlocks(config, web3);
     else
@@ -179,31 +174,26 @@ var writeTransactionsToDB = function(config, blockData) {
     }
 }
 
-var config = {};
-
+// load config.json
+var config = { nodeAddr: 'localhost', gethPort: 8545, bulkSize: 100 };
 try {
-    var configContents = fs.readFileSync('grabberConfig.json');
-    config = JSON.parse(configContents);
-}
-catch (error) {
-    if (error.code === 'ENOENT') {
-        console.log('No config file found. Using default configuration (will ' +
-            'download all blocks starting from latest)');
-    }
-    else {
+    var local = require('../config.json');
+    _.extend(config, local);
+    console.log('config.json found.');
+} catch (error) {
+    if (error.code === 'MODULE_NOT_FOUND') {
+        var local = require('../config.example.json');
+        _.extend(config, local);
+        console.log('No config file found. Using default configuration... (config.example.json)');
+    } else {
         throw error;
         process.exit(1);
     }
 }
-// set the default geth port if it's not provided
-if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
-    config.gethPort = 8545; // default
-}
 
-// set the default output directory if it's not provided
-if (!('output' in config) || (typeof config.output) !== 'string') {
-    config.output = '.'; // default this directory
-}
+console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
+
+var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 
 // set the default blocks if it's not provided
 if (!('blocks' in config) || !(Array.isArray(config.blocks))) {

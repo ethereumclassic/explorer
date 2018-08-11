@@ -2,17 +2,13 @@
   Tool for calculating block stats
 */
 
+var _ = require('lodash');
 var Web3 = require('web3');
 
 var mongoose = require( 'mongoose' );
 var BlockStat = require( '../db.js' ).BlockStat;
 
 var updateStats = function(range, interval, rescan) {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-
-    mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
-    mongoose.set('debug', true);
-
     var latestBlock = web3.eth.blockNumber;
 
     interval = Math.abs(parseInt(interval));
@@ -145,6 +141,27 @@ if (process.env.RESCAN) {
 
     rescan = true;
 }
+
+// load config.json
+var config = { nodeAddr: 'localhost', gethPort: 8545, bulkSize: 100 };
+try {
+    var local = require('../config.json');
+    _.extend(config, local);
+    console.log('config.json found.');
+} catch (error) {
+    if (error.code === 'MODULE_NOT_FOUND') {
+        var local = require('../config.example.json');
+        _.extend(config, local);
+        console.log('No config file found. Using default configuration... (config.example.json)');
+    } else {
+        throw error;
+        process.exit(1);
+    }
+}
+
+console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
+
+var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 
 // run
 updateStats(range, interval, rescan);
