@@ -329,6 +329,7 @@ var bulkInsert = function(bulk) {
       }
     } else {
       console.log('* ' + data.insertedCount + ' accounts successfully inserted.');
+      bulkInsert(bulk);
     }
   });
 }
@@ -359,6 +360,36 @@ function prepareJsonAddress(json, type) {
     });
   }
   return accounts;
+}
+
+function readJsonAccounts(json, blockNumber, callback) {
+  var data = prepareJsonAddress(json);
+  console.log("* update genesis accounts...");
+  var accounts = Object.keys(data);
+  async.eachSeries(accounts, function(account, eachCallback) {
+    web3.eth.getBalance(account, blockNumber, function(err, balance) {
+      if (err) {
+        console.log("ERROR: fail to getBalance(" + account + ")");
+        return eachCallback(err);
+      }
+
+      //data[account].balance = web3.fromWei(balance, 'ether');
+      let ether;
+      if (typeof balance === 'object') {
+        ether = parseFloat(balance.div(1e18).toString());
+      } else {
+        ether /= 1e18;
+      }
+      data[account].balance = ether;
+      eachCallback();
+    });
+  }, function(err) {
+    if (err) {
+      console.log("ERROR: fail to getBalance()" + err);
+      return;
+    }
+    callback(data, blockNumber);
+  });
 }
 
 /**
@@ -403,9 +434,7 @@ if (useParity) {
   if (config.settings && config.settings.genesisAddress) {
     try {
       var genesis = require('../' + config.settings.genesisAddress);
-      var accounts = prepareJsonAddress(genesis);
-      console.log("* update genesis accounts...");
-      updateAccounts(accounts, latestBlock);
+      readJsonAccounts(genesis, latestBlock, updateAccounts);
     } catch (e) {
       console.log("Error: Fail to load genesis address (ignore)");
     }
