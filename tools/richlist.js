@@ -10,8 +10,184 @@ var BigNumber = require('bignumber.js');
 var mongoose = require('mongoose');
 
 var Account = require('../db.js').Account;
+var Transaction = require('../db.js').Transaction;
+var Block = require('../db.js').Block;
 
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
+
+const ADDRESS_CACHE_MAX = 10000; // address cache threshold
+
+function makeRichList(toBlock, blocks, updateCallback) {
+  var self = makeRichList;
+  if (!self.cached) {
+    self.cached = {};
+    self.index = 0;
+  }
+  if (!self.accounts) {
+    self.accounts = {};
+  }
+  var fromBlock = toBlock - blocks;
+  if (fromBlock < 0) {
+    fromBlock = 0;
+  }
+
+  console.log('Scan accounts from ' + fromBlock + ' to ' + toBlock + ' ...');
+  if (fromBlock == toBlock) {
+    // scan ended
+    if (self.accounts && updateCallback) {
+      var data = self.accounts;
+      updateCallback(data, toBlock);
+      self.accounts = {};
+    }
+    console.log("**DONE**");
+    return;
+  }
+
+  async.waterfall([
+    function(callback) {
+      // Transaction.distinct("from", { blockNumber: { $lte: toBlock, $gt: fromBlock } }, function(err, docs) ...
+      // faster
+      // dictint("from")
+      Transaction.aggregate([
+        { $match: { blockNumber: { $lte: toBlock, $gt: fromBlock } } },
+        { $group: { _id: '$from' }},
+        { $project: { "_id": 1 }}
+      ]).exec(function(err, docs) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        docs.forEach(function(doc) {
+          // check address cache
+          if (!self.cached[doc._id]) {
+            self.accounts[doc._id] = { address: doc._id, type: 0 };
+            // increase cache counter
+            self.cached[doc._id] = 1;
+          } else {
+            self.cached[doc._id]++;
+          }
+        });
+        callback(null);
+      });
+    }, function(callback) {
+      // dictint("to")
+      Transaction.aggregate([
+        { $match: { blockNumber: { $lte: toBlock, $gt: fromBlock } } },
+        { $group: { _id: '$to' }},
+        { $project: { "_id": 1 }}
+      ]).exec(function(err, docs) {
+        if (err) {
+           console.log(err);
+           return;
+        }
+        docs.forEach(function(doc) {
+          // to == null case
+          if (!doc._id) {
+            return;
+          }
+          if (!self.cached[doc._id]) {
+            self.accounts[doc._id] = { address: doc._id, type: 0 };
+            self.cached[doc._id] = 1;
+          } else {
+            self.cached[doc._id]++;
+          }
+        });
+        callback(null);
+      });
+    }, function(callback) {
+      // aggregate miner's addresses
+      Block.aggregate([
+        { $match: { blockNumber: { $lte: toBlock, $gt: fromBlock } } },
+        { $group: { _id: '$miner' }},
+        { $project: { "_id": 1 }}
+      ]).exec(function(err, docs) {
+        if (err) {
+           console.log(err);
+           return;
+        }
+        docs.forEach(function(doc) {
+          if (!self.cached[doc._id]) {
+            self.accounts[doc._id] = { address: doc._id, type: 0 };
+            self.cached[doc._id] = 1;
+          } else {
+            self.cached[doc._id]++;
+          }
+        });
+        callback(null);
+      });
+    }, function(callback) {
+      let len = Object.keys(self.accounts).length;
+      console.info('* ' + len + ' / ' + (self.index + len) + ' total accounts.');
+      if (updateCallback && len >= 100) {
+        self.index += len;
+        console.log("* update " + len + " accounts ...");
+
+        var accounts = Object.keys(self.accounts);
+        var data = self.accounts;
+        async.eachSeries(accounts, function(account, eachCallback) {
+          web3.eth.getCode(account, function(err, code) {
+            if (err) {
+              return eachCallback(err);
+            }
+            if (code.length > 2) {
+              data[account].type = 1; // contract type
+            }
+
+            web3.eth.getBalance(account, toBlock, function(err, balance) {
+              if (err) {
+                return eachCallback(err);
+              }
+
+              //data[account].balance = web3.fromWei(balance, 'ether');
+              let ether;
+              if (typeof balance === 'object') {
+                ether = parseFloat(balance.div(1e18).toString());
+              } else {
+                ether /= 1e18;
+              }
+              data[account].balance = ether;
+              eachCallback();
+            });
+          });
+        }, function(err) {
+          if (err) {
+            console.log("FATAL: fail to call getBalance() " + err);
+            process.exit(1);
+          }
+          updateCallback(data, toBlock);
+          self.accounts = {};
+
+          // check the size of the cached accounts
+          if (Object.keys(self.cached).length > ADDRESS_CACHE_MAX) {
+            console.info("** reduce cached accounts ...");
+            var sorted = Object.keys(self.cached).sort(function(a, b) {
+              return self.cached[b] - self.cached[a]; // descend order
+            });
+            var newcached = {};
+            var reduce = parseInt(ADDRESS_CACHE_MAX * 0.6);
+            for (var j = 0; j < reduce; j++) {
+              newcached[sorted[j]] = self.cached[sorted[j]];
+            }
+            self.cached = newcached;
+          }
+
+          callback(null);
+        });
+      } else {
+        callback(null);
+      }
+    }
+  ], function(error) {
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    setTimeout(function() {
+      makeRichList(fromBlock, blocks, updateCallback);
+    }, 300);
+  });
+}
 
 function makeParityRichList(number, offset, blockNumber, updateCallback) {
   var self = makeParityRichList;
@@ -101,13 +277,28 @@ function makeParityRichList(number, offset, blockNumber, updateCallback) {
  * Write accounts to DB
  */
 var updateAccounts = function(accounts, blockNumber) {
+  // prepare
   var bulk = Object.keys(accounts).map(function(j) {
     let account = accounts[j];
     account.blockNumber = blockNumber;
     return account;
   });
 
-  Account.collection.insert(bulk, function(error, data) {
+  bulkInsert(bulk);
+}
+
+var bulkInsert = function(bulk) {
+  if (!bulk.length) {
+    return;
+  }
+
+  var localbulk;
+  if (bulk.length > 200) {
+    localbulk = bulk.splice(0, 100);
+  } else {
+    localbulk = bulk.splice(0, 200);
+  }
+  Account.collection.insert(localbulk, function(error, data) {
     if (error) {
       if (error.code == 11000) {
         async.eachSeries(bulk, function(item, eachCallback) {
@@ -129,7 +320,8 @@ var updateAccounts = function(accounts, blockNumber) {
             process.exit(9);
             return;
           }
-          console.log('* ' + bulk.length + ' accounts successfully updated.');
+          console.log('* ' + localbulk.length + ' accounts successfully updated.');
+          bulkInsert(bulk);
         });
       } else {
         console.log('Error: Aborted due to error on DB: ' + error);
@@ -139,6 +331,34 @@ var updateAccounts = function(accounts, blockNumber) {
       console.log('* ' + data.insertedCount + ' accounts successfully inserted.');
     }
   });
+}
+
+function prepareJsonAddress(json, type) {
+  if (!type) {
+    type = 0;
+  }
+  var accounts = {};
+  if (json.accounts) {
+    // genesis.json style
+    Object.keys(json.accounts).forEach(function(account) {
+      var key = account.toLowerCase();
+      key = '0x' + key.replace(/^0x/, '');
+      accounts[key] = { address: key, type: type };
+    });
+  } else if (typeof json === 'object') {
+    Object.keys(json).forEach(function(account) {
+      var key = account.toLowerCase();
+      key = '0x' + key.replace(/^0x/, '');
+      accounts[key] = { address: key, type: type };
+    });
+  } else { // normal array
+    json.forEach(function(account) {
+      var key = account.toLowerCase();
+      key = '0x' + key.replace(/^0x/, '');
+      accounts[key] = { address: key, type: type };
+    });
+  }
+  return accounts;
 }
 
 /**
@@ -179,6 +399,16 @@ console.log("* latestBlock = " + latestBlock);
 if (useParity) {
   makeParityRichList(100, null, latestBlock, updateAccounts);
 } else {
-  console.log("Sorry, currently only Parity is supported.");
-  process.exit(1);
+  // load genesis account
+  if (config.settings && config.settings.genesisAddress) {
+    try {
+      var genesis = require('../' + config.settings.genesisAddress);
+      var accounts = prepareJsonAddress(genesis);
+      console.log("* update genesis accounts...");
+      updateAccounts(accounts, latestBlock);
+    } catch (e) {
+      console.log("Error: Fail to load genesis address (ignore)");
+    }
+  }
+  makeRichList(latestBlock, 500, updateAccounts);
 }
