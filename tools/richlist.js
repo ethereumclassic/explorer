@@ -32,15 +32,10 @@ function makeRichList(toBlock, blocks, updateCallback) {
   }
 
   console.log('Scan accounts from ' + fromBlock + ' to ' + toBlock + ' ...');
+
+  var ended = false;
   if (fromBlock == toBlock) {
-    // scan ended
-    if (self.accounts && updateCallback) {
-      var data = self.accounts;
-      updateCallback(data, toBlock);
-      self.accounts = {};
-    }
-    console.log("**DONE**");
-    return;
+    ended = true;
   }
 
   async.waterfall([
@@ -118,43 +113,65 @@ function makeRichList(toBlock, blocks, updateCallback) {
     }, function(callback) {
       let len = Object.keys(self.accounts).length;
       console.info('* ' + len + ' / ' + (self.index + len) + ' total accounts.');
-      if (updateCallback && len >= 100) {
+      if (updateCallback && (len >= 100 || ended)) {
         self.index += len;
         console.log("* update " + len + " accounts ...");
 
         var accounts = Object.keys(self.accounts);
-        var data = self.accounts;
-        async.eachSeries(accounts, function(account, eachCallback) {
-          web3.eth.getCode(account, function(err, code) {
-            if (err) {
-              return eachCallback(err);
-            }
-            if (code.length > 2) {
-              data[account].type = 1; // contract type
-            }
+        var chunks = [];
+        while (accounts.length > 200) {
+          var chunk = accounts.splice(0, 100);
+          chunks.push(chunk);
+        }
+        if (accounts.length > 0) {
+          chunks.push(accounts);
+        }
 
-            web3.eth.getBalance(account, toBlock, function(err, balance) {
+        async.eachSeries(chunks, function(chunk, outerCallback) {
+          var data = {};
+          async.eachSeries(chunk, function(account, eachCallback) {
+            web3.eth.getCode(account, function(err, code) {
               if (err) {
                 return eachCallback(err);
               }
-
-              //data[account].balance = web3.fromWei(balance, 'ether');
-              let ether;
-              if (typeof balance === 'object') {
-                ether = parseFloat(balance.div(1e18).toString());
+              data[account] = { address: account };
+              if (code.length > 2) {
+                data[account].type = 1; // contract type
               } else {
-                ether /= 1e18;
+                data[account].type = self.accounts[account].type;
               }
-              data[account].balance = ether;
-              eachCallback();
+
+              web3.eth.getBalance(account, function(err, balance) {
+                if (err) {
+                  return eachCallback(err);
+                }
+
+                //data[account].balance = web3.fromWei(balance, 'ether');
+                let ether;
+                if (typeof balance === 'object') {
+                  ether = parseFloat(balance.div(1e18).toString());
+                } else {
+                  ether = balance / 1e18;
+                }
+                data[account].balance = ether;
+                eachCallback();
+              });
             });
+          }, function(err) {
+            if (err) {
+              return outerCallback(err);
+            }
+            if (data) {
+              updateCallback(data, toBlock);
+            }
+
+            outerCallback();
           });
-        }, function(err) {
-          if (err) {
-            console.log("FATAL: fail to call getBalance() " + err);
-            process.exit(1);
+        }, function(error) {
+          if (error) {
+            console.log("WARN: fail to call getBalance() " + error);
           }
-          updateCallback(data, toBlock);
+          // reset accounts
           self.accounts = {};
 
           // check the size of the cached accounts
@@ -183,9 +200,13 @@ function makeRichList(toBlock, blocks, updateCallback) {
       return;
     }
 
-    setTimeout(function() {
-      makeRichList(fromBlock, blocks, updateCallback);
-    }, 300);
+    if (ended) {
+      console.log("**DONE**");
+    } else {
+      setTimeout(function() {
+        makeRichList(fromBlock, blocks, updateCallback);
+      }, 300);
+    }
   });
 }
 
@@ -231,7 +252,7 @@ function makeParityRichList(number, offset, blockNumber, updateCallback) {
           data[account].address = account;
           data[account].type = code.length > 2 ? 1 : 0; // 0: address, 1: contract
 
-          web3.eth.getBalance(account, blockNumber, function(err, balance) {
+          web3.eth.getBalance(account, function(err, balance) {
             if (err) {
               console.log("ERROR: fail to getBalance(" + account + ")");
               return eachCallback(err);
@@ -242,7 +263,7 @@ function makeParityRichList(number, offset, blockNumber, updateCallback) {
             if (typeof balance === 'object') {
               ether = parseFloat(balance.div(1e18).toString());
             } else {
-              ether /= 1e18;
+              ether = balance / 1e18;
             }
             data[account].balance = ether;
             eachCallback();
@@ -301,7 +322,7 @@ var bulkInsert = function(bulk) {
   Account.collection.insert(localbulk, function(error, data) {
     if (error) {
       if (error.code == 11000) {
-        async.eachSeries(bulk, function(item, eachCallback) {
+        async.eachSeries(localbulk, function(item, eachCallback) {
           // upsert accounts
           delete item._id; // remove _id field
           Account.collection.update({ "address": item.address }, { $set: item }, { upsert: true }, function(err, updated) {
@@ -316,12 +337,20 @@ var bulkInsert = function(bulk) {
           });
         }, function(err) {
           if (err) {
-            console.log('ERROR: Aborted due to error: ' + err);
-            process.exit(9);
-            return;
+            if (err.code != 11000) {
+              console.log('ERROR: Aborted due to error: ' + err);
+              process.exit(9);
+              return;
+            } else {
+              console.log('WARN: Fail to upsert (ignore) ' + err);
+            }
           }
           console.log('* ' + localbulk.length + ' accounts successfully updated.');
-          bulkInsert(bulk);
+          if (bulk.length > 0) {
+            setTimeout(function() {
+              bulkInsert(bulk);
+            }, 200);
+          }
         });
       } else {
         console.log('Error: Aborted due to error on DB: ' + error);
@@ -329,7 +358,11 @@ var bulkInsert = function(bulk) {
       }
     } else {
       console.log('* ' + data.insertedCount + ' accounts successfully inserted.');
-      bulkInsert(bulk);
+      if (bulk.length > 0) {
+        setTimeout(function() {
+          bulkInsert(bulk);
+        }, 200);
+      }
     }
   });
 }
@@ -364,10 +397,10 @@ function prepareJsonAddress(json, type) {
 
 function readJsonAccounts(json, blockNumber, callback) {
   var data = prepareJsonAddress(json);
-  console.log("* update genesis accounts...");
   var accounts = Object.keys(data);
+  console.log("* update " + accounts.length + " genesis accounts...");
   async.eachSeries(accounts, function(account, eachCallback) {
-    web3.eth.getBalance(account, blockNumber, function(err, balance) {
+    web3.eth.getBalance(account, function(err, balance) {
       if (err) {
         console.log("ERROR: fail to getBalance(" + account + ")");
         return eachCallback(err);
@@ -378,7 +411,7 @@ function readJsonAccounts(json, blockNumber, callback) {
       if (typeof balance === 'object') {
         ether = parseFloat(balance.div(1e18).toString());
       } else {
-        ether /= 1e18;
+        ether = balance / 1e18;
       }
       data[account].balance = ether;
       eachCallback();
