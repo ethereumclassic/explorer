@@ -99,6 +99,13 @@ exports.data = function(req, res){
   } else if ("tx_trace" in req.body) {
     var txHash = req.body.tx_trace.toLowerCase();
 
+    if (typeof web3.trace.transaction == 'undefined') {
+      console.error("TraceWeb3 error : Too low gasPrice");
+      res.write(JSON.stringify({"error": true}));
+      res.end();
+      return;
+    }
+
     web3.trace.transaction(txHash, function(err, tx) {
       if(err || !tx) {
         console.error("TraceWeb3 error :" + err)
