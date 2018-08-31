@@ -92,7 +92,7 @@ function makeRichList(toBlock, blocks, updateCallback) {
     }, function(callback) {
       // aggregate miner's addresses
       Block.aggregate([
-        { $match: { blockNumber: { $lte: toBlock, $gt: fromBlock } } },
+        { $match: { number: { $lte: toBlock, $gt: fromBlock } } },
         { $group: { _id: '$miner' }},
         { $project: { "_id": 1 }}
       ]).exec(function(err, docs) {
