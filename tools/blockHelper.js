@@ -4,16 +4,13 @@ var BigNumber = require('bignumber.js');
 
 var fs = require('fs');
 
-var Web3 = require('web3');
-
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
-var grabBlocks = function(config) {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' +
-        config.gethPort.toString()));
+var web3 = require('ethernode.js');
 
+var grabBlocks = function(config) {
     if('listenOnly' in config && config.listenOnly === true)
         listenBlocks(config, web3);
     else
@@ -110,6 +107,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
 }
 
 var writeBlockToDB = function(config, blockData) {
+    blockData.transactionCount = blockData.transactions.length;
     return new Block(blockData).save( function( err, block, count ){
         if ( typeof err !== 'undefined' && err ) {
             if (err.code == 11000) {

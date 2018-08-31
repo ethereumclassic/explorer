@@ -9,11 +9,14 @@ var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
 
 var fs = require('fs');
-var Web3 = require('web3');
 
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
+
+// Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
+var web3 = require('../tools/ethernode.js');
+
 
 /**
   //Just listen for latest blocks and sync from the start of the app.
@@ -284,6 +287,7 @@ var checkBlockDBExistsThenWrite = function(config, patchData, flush) {
     }
   });
 };
+
 /**
   Start config for node connection and sync
 **/
@@ -303,14 +307,7 @@ catch (error) {
       process.exit(1);
   }
 }
-// set the default NODE address to localhost if it's not provided
-if (!('nodeAddr' in config) || !(config.nodeAddr)) {
-  config.nodeAddr = 'localhost'; // default
-}
-// set the default geth port if it's not provided
-if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
-  config.gethPort = 8545; // default
-}
+
 // set the default output directory if it's not provided
 if (!('output' in config) || (typeof config.output) !== 'string') {
   config.output = '.'; // default this directory
@@ -319,10 +316,6 @@ if (!('output' in config) || (typeof config.output) !== 'string') {
 if (!('bulkSize' in config) || (typeof config.bulkSize) !== 'number') {
   config.bulkSize = 100;
 }
-console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
-
-// Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
-var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 
 // patch missing blocks
 if (config.patch === true){

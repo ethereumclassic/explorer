@@ -21,7 +21,8 @@ var Block = new Schema(
     "gasUsed": Number,
     "timestamp": Number,
     "blockTime": Number,
-    "uncles": [String]
+    "uncles": [String],
+    "transactionCount" : Number
 });
 
 var Contract = new Schema(
@@ -66,6 +67,35 @@ var BlockStat = new Schema(
     "uncleCount": Number
 });
 
+var Logs = new Schema(
+  {
+    "transactionHash" : {type: String, index: {unique: true}},
+    "address" : String,
+    "data" : String,
+    "topics" : String,
+    "logIndex" : Number,
+    "blockHash" : String,
+    "blockNumber" : Number
+  }
+);
+
+var transactionReceipt = new Schema(
+  {
+    "status" : Boolean,
+    "blockHash" : String,
+    "blockNumber" : Number,
+    "transactionHash" : {type: String, index: {unique: true}},
+    "transactionIndex" : Number,
+    "from" : String,
+    "to" : String,
+    "contractAddress" : String,
+    "cumulativeGasUsed" : Number,
+    "gasUsed" : Number,
+    "logs" : String
+  }
+)
+
+
 // create indices
 Transaction.index({blockNumber:-1});
 Transaction.index({from:1, blockNumber:-1});
@@ -76,11 +106,15 @@ mongoose.model('BlockStat', BlockStat);
 mongoose.model('Block', Block);
 mongoose.model('Contract', Contract);
 mongoose.model('Transaction', Transaction);
+mongoose.model('Logs', Logs);
+mongoose.model('transactionReceipt', transactionReceipt);
+
 module.exports.BlockStat = mongoose.model('BlockStat');
 module.exports.Block = mongoose.model('Block');
 module.exports.Contract = mongoose.model('Contract');
 module.exports.Transaction = mongoose.model('Transaction');
-
+module.exports.Logs = mongoose.model('Logs');
+module.exports.transactionReceipt = mongoose.model('transactionReceipt');
 
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
 
