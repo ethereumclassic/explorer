@@ -1,10 +1,8 @@
 {
     "nodeAddr":     "localhost",
     "gethPort":     8545,
-    "isSSL" :       true,
-    "unsafeTLS" :   true,
-    "userName" :    "" ,
-    "password" :    "" ,
+    "isSSL" :       false,
+    "unsafeTLS" :   false,
     "timeout" :     0,
     "startBlock":   0,
     "quiet":        true,
