@@ -8,15 +8,13 @@ require( '../db.js' );
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
 
-var fs = require('fs');
-
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
 var web3 = require('../tools/ethernode.js');
-
+var config = require('../tools/config.js');
 
 /**
   //Just listen for latest blocks and sync from the start of the app.
@@ -288,34 +286,6 @@ var checkBlockDBExistsThenWrite = function(config, patchData, flush) {
   });
 };
 
-/**
-  Start config for node connection and sync
-**/
-var config = {};
-//Look for config.json file if not
-try {
-    var configContents = fs.readFileSync('config.json');
-    config = JSON.parse(configContents);
-    console.log('config.json found.');
-}
-catch (error) {
-  if (error.code === 'ENOENT') {
-      console.log('No config file found.');
-  }
-  else {
-      throw error;
-      process.exit(1);
-  }
-}
-
-// set the default output directory if it's not provided
-if (!('output' in config) || (typeof config.output) !== 'string') {
-  config.output = '.'; // default this directory
-}
-// set the default size of array in block to use bulk operation.
-if (!('bulkSize' in config) || (typeof config.bulkSize) !== 'number') {
-  config.bulkSize = 100;
-}
 
 // patch missing blocks
 if (config.patch === true){

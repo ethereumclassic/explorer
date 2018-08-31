@@ -7,34 +7,22 @@ var https = require('https');
 var async = require('async');
 
 var etherUnits = require(__lib + "etherUnits.js")
-
-var config = {};
-try {
-  config = require('../config.json');
-} catch(e) {
-  if (e.code == 'MODULE_NOT_FOUND') {
-    console.log('No config file found. Using default configuration... (tools/config.json)');
-    config = require('../tools/config.json');
-  } else {
-    throw e;
-    process.exit(1);
-  }
-}
+var config = require('../tools/config.js');
 
 module.exports = function(req, res) {
 
   if (!("action" in req.body))
     res.status(400).send();
-  
-  else if (req.body.action=="miners") 
+
+  else if (req.body.action=="miners")
     getMinerStats(req, res)
-  
-  else if (req.body.action=="hashrate") 
+
+  else if (req.body.action=="hashrate")
     getHashrate(res);
 
   else if (req.body.action=="hashrates")
     getHashrates(req, res);
-  
+
 }
 /**
   Aggregate miner stats
@@ -194,9 +182,9 @@ var getEtcEth = function(res) {
     method: 'GET',
     data: 'eth'
   }];
-  
+
   async.map(options, function(opt, callback) {
-    
+
     https.request(opt, function(mg) {
       mg.on('data', function (data) {
         try {
@@ -233,7 +221,7 @@ var getEtcEth = function(res) {
           "etcEthDiff": etcEthDiff
         }));
         res.end();
-      } 
+      }
     }
 
   });

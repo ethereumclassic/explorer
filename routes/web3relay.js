@@ -4,7 +4,7 @@
     Endpoint for client to talk to etc node
 */
 
-var fs = require('fs');
+var _ = require('lodash');
 
 var web3 = require('../tools/ethernode.js');
 
@@ -16,28 +16,7 @@ var filterBlocks = require('./filters').filterBlocks;
 var filterTrace = require('./filters').filterTrace;
 
 /*Start config for node connection and sync*/
-var config = {};
-//Look for config.json file if not
-try {
-    var configContents = fs.readFileSync('config.json');
-    config = JSON.parse(configContents);
-    console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
-}
-catch (error) {
-    if (error.code === 'ENOENT') {
-        console.log('No config file found. Using default configuration: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
-    }
-    else {
-        throw error;
-        process.exit(1);
-    }
-}
-
-
-if (web3.isConnected())
-  console.log("Web3 connection established");
-else
-  throw "No connection, please check web3host in conf.json";
+var config = require('../tools/config.js');
 
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");

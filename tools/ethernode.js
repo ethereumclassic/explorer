@@ -1,26 +1,7 @@
 //* Web3 information *//
 var Web3 = require('zsl-web3.js');
-var fs = require('fs');
+var config = require('../tools/config.js');
 
-/**
-  Start config for node connection
-**/
-var config = {};
-//Look for config.json file if not
-try {
-    var configContents = fs.readFileSync('config.json');
-    config = JSON.parse(configContents);
-    console.log('config.json found.');
-}
-catch (error) {
-  if (error.code === 'ENOENT') {
-      console.log('No config file found.');
-  }
-  else {
-      throw error;
-      process.exit(1);
-  }
-}
 
 function buildURI(config) {
   // set the default NODE address to localhost if it's not provided

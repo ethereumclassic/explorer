@@ -16,9 +16,9 @@ module.exports = function(app){
   var fiat = require('./fiat');
   var stats = require('./stats');
 
-  /* 
+  /*
     Local DB: data request format
-    { "address": "0x1234blah", "txin": true } 
+    { "address": "0x1234blah", "txin": true }
     { "tx": "0x1234blah" }
     { "block": "1234" }
   */
@@ -29,7 +29,7 @@ module.exports = function(app){
   app.post('/data', getData);
 
   app.post('/daorelay', DAO);
-  app.post('/tokenrelay', Token);  
+  app.post('/tokenrelay', Token);
   app.post('/web3relay', web3relay.data);
   app.post('/compile', compile);
 
@@ -47,7 +47,7 @@ var getAddr = function(req, res){
 
   var data = { draw: parseInt(req.body.draw), recordsFiltered: count, recordsTotal: count, mined: 0 };
 
-  var addrFind = Transaction.find( { $or: [{"to": addr}, {"from": addr}] })  
+  var addrFind = Transaction.find( { $or: [{"to": addr}, {"from": addr}] })
 
   var sortOrder = '-blockNumber';
   if (req.body.order && req.body.order[0] && req.body.order[0].column) {
@@ -149,15 +149,15 @@ var getData = function(req, res){
     if (isNaN(limit))
       var lim = MAX_ENTRIES;
     else
-      var lim = parseInt(limit);  
+      var lim = parseInt(limit);
     DATA_ACTIONS[action](lim, res);
-  } else { 
+  } else {
     console.error("Invalid Request: " + action)
     res.status(400).send();
   }
 };
 
-/* 
+/*
   temporary blockstats here
 */
 var latestBlock = function(req, res) {
@@ -167,7 +167,7 @@ var latestBlock = function(req, res) {
     res.write(JSON.stringify(doc));
     res.end();
   });
-} 
+}
 
 
 var getLatest = function(lim, res, callback) {
@@ -225,4 +225,3 @@ const DATA_ACTIONS = {
   "latest_blocks": sendBlocks,
   "latest_txs": sendTxs
 }
-
