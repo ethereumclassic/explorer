@@ -28,8 +28,8 @@ angular.module('BlocksApp').controller('AccountsController', function($statePara
         });
       },
       lengthMenu: [
-        [20, 50, 100, 150, -1],
-        [20, 50, 100, 150, "All"] // change per page values here
+        [20, 50, 100, 150, 200, 500],
+        [20, 50, 100, 150, 200, 500] // change per page values here
       ],
       pageLength: 20,
       order: [
