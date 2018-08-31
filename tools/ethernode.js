@@ -50,12 +50,12 @@ function buildURI(config) {
   if (!('userName' in config)) {
     var uri = protocol
               + config.nodeAddr + ":" + config.gethPort.toString()
-              + "," + config.timeout.toString();
+              + "," + config.timeout;
     //console.log('Connecting ' + protocol  + config.nodeAddr + ':' + config.gethPort + '...');
   } else {
     var uri = {"url" : protocol
             + config.nodeAddr + ":" + config.gethPort.toString()
-            , "timeout" : config.timeout.toString()
+            , "timeout" : config.timeout
             , "userName" : config.userName
             , "password" : config.password};
    //console.log('Connecting ' + protocol + config.nodeAddr + ':' + config.gethPort + ' with user: ' + config.userName + ' ...');

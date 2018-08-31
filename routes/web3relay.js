@@ -37,7 +37,7 @@ catch (error) {
 if (web3.isConnected())
   console.log("Web3 connection established");
 else
-  throw "No connection, please specify web3host in conf.json";
+  throw "No connection, please check web3host in conf.json";
 
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
