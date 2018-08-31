@@ -81,6 +81,7 @@ Transaction.index({to:1, blockNumber:-1});
 Account.index({balance:-1});
 Account.index({balance:-1, blockNumber:-1});
 Block.index({miner:1});
+Block.index({miner:1, blockNumber:-1});
 
 mongoose.model('BlockStat', BlockStat);
 mongoose.model('Block', Block);
