@@ -1,35 +1,45 @@
 
 <div class="table-scrollable">
-    <table class="table table-condensed">
+    <table class="table table table-striped table-hover">
         <thead>
             <tr>
                 <th> TxHash </th>
-                <th> Age </th>
+                <th ng-show="transfer_tokens[0].timestamp"> Age </th>
                 <th> Block </th>
                 <th> From </th>
                 <th> To </th>
-                <th style="text-align:right"> Amount </th>
+                <th style="text-align:right"> Amount ({{token.symbol}}) </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="t in transfer_tokens track by $index">
                 <td class="truncate-txhash"> <a href="/tx/{{t.transactionHash}}">{{t.transactionHash}}</a> </td>
-                <td>{{t.timestamp | timeDuration}} ago</td>
+                <td ng-show="transfer_tokens[0].timestamp">{{t.timestamp | timeDuration}} ago</td>
                 <td> <a href="/block/{{t.blockNumber}}">{{t.blockNumber}}</a> </td>
                 <td class="truncate-addrhash"> <a href="/addr/{{t.from}}">{{t.from}}</a> </td>
                 <td class="truncate-addrhash"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
                 <td style="text-align:right"> {{t.amount | number}} </td>
-                <td style="text-align:center"><span class="label label-sm label-info"> Transfer </span></td>
+                <td style="text-align:center"><span class="label label-sm label-info"> transfer </span><span class="label label-sm label-danger" ng-show="t.error"> {{t.error}}</span></td>
             </tr>
         </tbody>
     </table>
-    <ul class="pager">
-        <li class="previous">
-            <a ng-click="getTransferTokens(transfer_tokens[0]._id)"> ← Newer </a>
+</div>
+<div class="row">
+    <ul class="pagination" style="float:right" ng-if="transfer_tokens[0]._id">
+        <li class="prev" ng-class="{disabled: page.after == 0}">
+            <a ng-click="getTransferTokens(transfer_tokens[0]._id)"><i class="fa fa-angle-left"></i>Prev</a>
         </li>
         <li class="next">
-            <a ng-click="getTransferTokens(transfer_tokens[transfer_tokens.length-1]._id)"> Older → </a>
+            <a ng-click="getTransferTokens(transfer_tokens[transfer_tokens.length-1]._id)">Next<i class="fa fa-angle-right"></i></a>
+        </li>
+    </ul>
+    <ul class="pagination" style="float:right" ng-if="!transfer_tokens[0]._id">
+        <li class="prev" ng-class="{disabled: page.after == 0}">
+            <a ng-click="getTransferTokens(page.prev)"><i class="fa fa-angle-left"></i>Prev</a>
+        </li>
+        <li class="next">
+            <a ng-click="getTransferTokens(page.next)">Next<i class="fa fa-angle-right"></i></a>
         </li>
     </ul>
 </div>
