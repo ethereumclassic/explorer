@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require( './db' );
+require( './database/db.js' );
 
 var express = require('express');
 var path = require('path');
@@ -9,19 +9,7 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 
 //load config files
-var config = {};
-try {
-  config = require('./config.json');
-} catch(e) {
-  if (e.code == 'MODULE_NOT_FOUND') {
-    console.log('No config file found. Using default configuration... (config.example.json)');
-    config = require('./config.example.json');
-  } else {
-    throw e;
-    process.exit(1);
-  }
-}
-
+var config = require('./tools/config.js');
 //load express
 var app = express();
 app.set('port', process.env.PORT || 3000);

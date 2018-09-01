@@ -1,16 +1,16 @@
 /*
-  Stuff to deal with verified contracts in DB 
+  Stuff to deal with verified contracts in DB
 */
 
-require( '../db.js' );
+var db = require( '../database/db.js' );
 var mongoose = require( 'mongoose' );
-var Contract     = mongoose.model( 'Contract' );
+var Contract     = db.Contract;
 
 exports.addContract = function(contract) {
   Contract.update(
-    {address: contract.address}, 
-    {$setOnInsert: contract}, 
-    {upsert: true}, 
+    {address: contract.address},
+    {$setOnInsert: contract},
+    {upsert: true},
     function (err, data) {
       console.log(data);
     }

@@ -8,6 +8,7 @@ var async = require('async');
 
 var etherUnits = require(__lib + "etherUnits.js")
 var config = require('../tools/config.js');
+var miners = require('../miner.json')
 
 module.exports = function(req, res) {
 
@@ -60,10 +61,10 @@ var getMinerStats = function(req, res) {
           console.error(err);
           res.status(500).send();
         } else {
-          if (config.settings.miners) {
+          if (miners.miners) {
             result.forEach(function(m) {
-              if (config.settings.miners[m._id]) {
-                m._id = config.settings.miners[m._id];
+              if (miners.miners[m._id]) {
+                m._id = miners.miners[m._id];
               }
             });
           }

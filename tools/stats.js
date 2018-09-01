@@ -5,7 +5,7 @@
 var web3 = require('ethernode.js');
 
 var mongoose = require( 'mongoose' );
-var BlockStat = require( '../db.js' ).BlockStat;
+var BlockStat = require( '../database/db.js' ).BlockStat;
 
 var updateStats = function(range, interval, rescan) {
 

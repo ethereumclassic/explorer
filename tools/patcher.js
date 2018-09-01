@@ -1,153 +1,92 @@
-require( '../db.js' );
-var etherUnits = require("../lib/etherUnits.js");
-var BigNumber = require('bignumber.js');
+// db
+var db              = require( '../database/db.js' );
+var Block           = db.Block;
+var Transaction     = db.Transaction;
 
-var web3 = require('ethernode.js');
+//tools
+var web3 = require('../tools/ethernode.js');
 var config = require('../tools/config.js');
 
-var mongoose        = require( 'mongoose' );
-var Block           = mongoose.model( 'Block' );
-var Transaction     = mongoose.model( 'Transaction' );
+//lib
+var blockLib = require('../lib/blockLib.js');
 
-var grabBlock = function(config, web3, blockHashOrNumber) {
-    var desiredBlockHashOrNumber;
-    // check if done
-    if(blockHashOrNumber == undefined) {
+
+/**
+  Block Patcher(experimental)
+**/
+
+var runPatcher = function(config, startBlock, endBlock) {
+  if(!web3 || !web3.isConnected()) {
+    console.log('Error: Web3 is not connected. Retrying connection shortly...');
+    setTimeout(function() { runPatcher(config); }, 3000);
+    return;
+  }
+
+  if(typeof startBlock === 'undefined' || typeof endBlock === 'undefined') {
+    // get the last saved block
+    var blockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
+    blockFind.exec(function (err, docs) {
+      if(err || !docs || docs.length < 1) {
+        // no blocks found. terminate runPatcher()
+        console.log('No need to patch blocks.');
         return;
-    }
-    desiredBlockHashOrNumber = blockHashOrNumber;
-    if(web3.isConnected()) {
-        web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
-            if(error) {
-                console.log('Warning: error on getting block with hash/number: ' +
-                    desiredBlockHashOrNumber + ': ' + error);
-            }
-            else if(blockData == null) {
-                console.log('Warning: null block data received from the block with hash/number: ' +
-                    desiredBlockHashOrNumber);
-            }
-            else {
-                checkBlockDBExistsThenWrite(config, blockData);
-            }
-        });
-    }
-    else {
-        console.log('Error: Aborted due to web3 is not connected when trying to ' +
-            'get block ' + desiredBlockHashOrNumber);
-        process.exit(9);
-    }
-}
-var writeBlockToDB = function(config, blockData) {
-    return new Block(blockData).save( function( err, block, count ){
-        if ( typeof err !== 'undefined' && err ) {
-            if (err.code == 11000) {
-                console.log('Skip: Duplicate DB on #' + blockData.number.toString());
-            } else {
-               console.log('Error: Aborted due to error on ' +
-                    'block number ' + blockData.number.toString() + ': ' +
-                    err);
-               process.exit(9);
-           }
+      }
+
+      var lastMissingBlock = docs[0].number + 1;
+      var currentBlock = web3.eth.blockNumber;
+      runPatcher(config, lastMissingBlock, currentBlock - 1);
+    });
+    return;
+  }
+
+  var missingBlocks = endBlock - startBlock + 1;
+  if (missingBlocks > 0) {
+    console.log('Patching from #' + startBlock + ' to #' + endBlock);
+    var patchBlock = startBlock;
+    var count = 0;
+    while(count < config.patchBlocks && patchBlock <= endBlock) {
+      if(!('quiet' in config && config.quiet === true)) {
+        console.log('Patching Block: ' + patchBlock)
+      }
+      web3.eth.getBlock(patchBlock, true, function(error, patchData) {
+        if(error) {
+          console.log('Warning: error on getting block with hash/number: ' + patchBlock + ': ' + error);
+        } else if(patchData == null) {
+          console.log('Warning: null block data received from the block with hash/number: ' + patchBlock);
         } else {
-            if(!('quiet' in config && config.quiet === true)) {
-                console.log('DB successfully written for block #' +
-                    blockData.number.toString() );
-            }
+          checkBlockDBExistsThenWrite(config, patchData)
         }
       });
+      patchBlock++;
+      count++;
+    }
+    // flush
+    blockLib.writeBlockToDB(config, null, true);
+    blockLib.writeTransactionsToDB(config, null, true);
+
+    setTimeout(function() { runPatcher(config, patchBlock, endBlock); }, 1000);
+  } else {
+    // flush
+    blockLib.writeBlockToDB(config, null, true);
+    blockLib.writeTransactionsToDB(config, null, true);
+
+    console.log('*** Block Patching Completed ***');
+  }
 }
 
 /**
-  * Checks if the a record exists for the block number then ->
-  *     if record exists: abort
-  *     if record DNE: write a file for the block
-  */
-var checkBlockDBExistsThenWrite = function(config, blockData) {
-    Block.find({number: blockData.number}, function (err, b) {
-        if (!b.length) {
-            writeBlockToDB(config, blockData);
-            writeTransactionsToDB(config, blockData);
-        } else {
-            console.log('Block #' + blockData.number.toString() + ' already exists in DB.');
-        }
-
-    })
-}
-
-/**
-    Break transactions out of blocks and write to DB
+  This will be used for the patcher(experimental)
 **/
-var writeTransactionsToDB = function(config, blockData) {
-    var bulkOps = [];
-    if (blockData.transactions.length > 0) {
-        for (d in blockData.transactions) {
-            var txData = blockData.transactions[d];
-            txData.timestamp = blockData.timestamp;
-            txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
-            bulkOps.push(txData);
-        }
-        Transaction.collection.insert(bulkOps, function( err, tx ){
-            if ( typeof err !== 'undefined' && err ) {
-                if (err.code == 11000) {
-                    console.log('Skip: Duplicate transaction on #' + blockData.number.toString());
-                } else {
-                   console.log('Error: Aborted due to error: ' +
-                        err);
-                   process.exit(9);
-               }
-            } else if(!('quiet' in config && config.quiet === true)) {
-                console.log('DB successfully written for block ' +
-                    blockData.transactions.length.toString() );
 
-            }
-        });
+var checkBlockDBExistsThenWrite = function(config, patchData, flush) {
+  Block.find({number: patchData.number}, function (err, b) {
+    if (!b.length){
+      blockLib.writeBlockToDB(config, patchData, flush);
+      blockLib.writeTransactionsToDB(config, patchData, flush);
+    }else if(!('quiet' in config && config.quiet === true)) {
+      console.log('Block number: ' +patchData.number.toString() + ' already exists in DB.');
     }
-}
+  });
+};
 
-/*
-  Patch Missing Blocks
-*/
-var patchBlocks = function(config) {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' +
-        config.gethPort.toString()));
-
-    // number of blocks should equal difference in block numbers
-    var firstBlock = 0;
-    var lastBlock = web3.eth.blockNumber - 1;
-    blockIter(web3, firstBlock, lastBlock, config);
-}
-
-var blockIter = function(web3, firstBlock, lastBlock, config) {
-    // if consecutive, deal with it
-    if (lastBlock < firstBlock)
-        return;
-    if (lastBlock - firstBlock === 1) {
-        [lastBlock, firstBlock].forEach(function(blockNumber) {
-            Block.find({number: blockNumber}, function (err, b) {
-                if (!b.length)
-                    grabBlock(config, web3, blockNumber);
-            });
-        });
-    } else if (lastBlock === firstBlock) {
-        Block.find({number: firstBlock}, function (err, b) {
-            if (!b.length)
-                grabBlock(config, web3, firstBlock);
-        });
-    } else {
-        Block.count({number: {$gte: firstBlock, $lte: lastBlock}}, function(err, c) {
-          var expectedBlocks = lastBlock - firstBlock + 1;
-          console.log(" - expectedBlocks = " + expectedBlocks + ", real counting = " + c);
-          if (c === 0) {
-            console.log("INFO: No blocks found.")
-          } else if (expectedBlocks > c) {
-            console.log("* " + JSON.stringify(expectedBlocks - c) + " missing blocks found, between #" + firstBlock + " and #" + lastBlock);
-            var midBlock = firstBlock + parseInt((lastBlock - firstBlock)/2);
-            blockIter(web3, firstBlock, midBlock, config);
-            blockIter(web3, midBlock + 1, lastBlock, config);
-          } else
-            return;
-        })
-    }
-}
-
-patchBlocks(config);
+module.exports = runPatcher;

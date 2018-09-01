@@ -9,7 +9,7 @@ var async = require('async');
 module.exports = function(app){
   var web3relay = require('./web3relay');
 
-  var DAO = require('./dao');
+  //var DAO = require('./dao');
   var Token = require('./token');
 
   var compile = require('./compiler');
@@ -28,7 +28,7 @@ module.exports = function(app){
   app.post('/block', getBlock);
   app.post('/data', getData);
 
-  app.post('/daorelay', DAO);
+  //app.post('/daorelay', DAO);
   app.post('/tokenrelay', Token);
   app.post('/web3relay', web3relay.data);
   app.post('/compile', compile);
@@ -38,7 +38,7 @@ module.exports = function(app){
 }
 
 var getAddr = function(req, res){
-  // TODO: validate addr and tx
+ // TODO: validate addr and tx
   var addr = req.body.addr.toLowerCase();
   var count = parseInt(req.body.count);
 
