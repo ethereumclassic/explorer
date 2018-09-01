@@ -13,6 +13,9 @@
                   <div class="margin-top-20">
                   {{ token.total_supply | number:1 }} <span class="eth-stat-text">Total {{ token.symbol }} Tokens</span>
                   </div>
+                  <div class="margin-top-20">
+                  <span class="eth-stat-text">Decimals</span> {{ token.decimals }}
+                  </div>
                   {{ token.total_holders | number:1 }} <div class="margin-top-20">
                    <span class="eth-stat-text">Token Holders</span>
                   </div>
@@ -86,14 +89,14 @@
                 </div><!--end row-->
                 <div class="row" ng-show="showTokens"><!-- balance results -->
                   <div class="col-md-10">
-                    <h4>You have <span class="eth-stat-title font-blue-madison">0{{userTokens | number}}</span> {{ token.symbol }}  tokens.</h4>
+                    <h4>You have <span class="eth-stat-title font-blue-madison">{{userTokens | number}}</span> {{ token.symbol }}  tokens.</h4>
                   </div>
                 </div>
             </div><!-- end get Token Balance Tab -->
             <div class="tab-pane" id="tab_token_2" ng-class="{active: activeTab == 'tab_token_2'}">
               <transfer-tokens></transfer-tokens>
             </div><!-- end Internal txs Tab -->
-            <div class="tab-pane table-container" ng-class="{active: activeTab == 'tab_token_3'}" id="tab_token_3"><!-- Datatable tab -->
+            <div class="tab-pane table-container" ng-class="{active: activeTab == 'tab_token_3'}" id="tab_token_3">
 
               <table class="table table-striped table-hover" id="table_txs" style="table-layout:fixed;width: 98% !important;">
                   <thead>
@@ -102,14 +105,35 @@
                           <th width="8%"> Block </th>
                           <th width="15%"> From </th>
                           <th width="15%"> To </th>
-                          <th width="10%"> {{ settings.symbol }} </th>
-                          <th width="0%"> gas </th>
-                          <th width="12%"> Age </th>
+                          <th style="text-align:right" width="10%"> Amount </th>
+                          <th style="text-align:right" width="5%"> gas </th>
+                          <th style="text-align:center" width="12%"> call </th>
                       </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody>
+                    <tr ng-show="contract_transactions.length == 0">
+                        <td span="7"> No more transactions</td>
+                    </tr>
+                    <tr ng-repeat="t in contract_transactions track by $index">
+                        <td class="truncate-txhash"> <a href="/tx/{{t.transactionHash}}">{{t.transactionHash}}</a> </td>
+                        <td><a href="/block/{{t.blockNumber}}">{{t.blockNumber}}</a>
+                        <td class="truncate-addrhash"> <a href="/addr/{{t.from}}">{{t.from}}</a> </td>
+                        <td class="truncate-addrhash"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
+                        <td style="text-align:right"> {{t.amount | number: 4}} </td>
+                        <td style="text-align:right"> {{t.gas}} </td>
+                        <td style="text-align:center"><span class="label label-sm label-info {{t.type}}"> {{t.type}}</span><span class="label label-sm label-danger" ng-show="t.error"> {{t.error}}</span></td>
+                    </tr>
+                  </tbody>
               </table>
-            </div><!-- End: Datatable tab -->
+              <ul class="pagination" style="float:right">
+                <li class="prev" ng-class="{disabled: page.after == 0}">
+                  <a href="#" title="Prev" ng-click="fetchTxs(page.prev)"><i class="fa fa-angle-left"></i>Prev</a>
+                </li>
+                <li class="next">
+                  <a href="#" title="Next" ng-click="fetchTxs(page.next)">Next<i class="fa fa-angle-right"></i></a>
+                </li>
+              </ul>
+            </div>
 
             <div class="tab-pane" id="tab_token_4" ng-class="{active: activeTab == 'tab_token_4'}">
               <contract-source></contract-source>

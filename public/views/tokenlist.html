@@ -2,11 +2,23 @@
     <div class="col-md-12 portlet light">
         <div class="portlet-body">
 
-            <table class="col-md-6 table">
-                <tr ng-repeat="t in tokens track by $index">
-                    <td> <a class="font-green" href="/token/{{t.address}}">{{t.name}} ({{t.symbol}})</a> </td>
-                    <td > <a href="/token/{{t.address}}">{{t.address}}</a> </td>
+            <table class="col-md-6 table table-striped">
+              <thead>
+                <tr ng-show="tokens.length">
+                    <th> # </th>
+                    <th> Token (Symbol) </th>
+                    <th> Address </th>
+                    <th> Decimals </th>
                 </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="t in tokens track by $index">
+                    <td> {{$index + 1}} </td>
+                    <td> <a href="/token/{{t.address}}">{{t.name}} ({{t.symbol}})</a> </td>
+                    <td> <a href="/token/{{t.address}}">{{t.address}}</a> </td>
+                    <td> {{t.decimal}} </td>
+                </tr>
+              </tbody>
             </table>
         </div>
     </div>

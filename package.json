@@ -11,6 +11,7 @@
     "test": "./node_modules/.bin/mocha --reporter spec  "
   },
   "dependencies": {
+    "abi-decoder": "^1.1.0",
     "bignumber.js": "^5.0.0",
     "body-parser": "^1.12.2",
     "concurrently": "^3.5.1",
