@@ -42,13 +42,31 @@ angular.module('BlocksApp').controller('AccountsController', function($statePara
         infoFiltered: "(filtered from _MAX_ total accounts)"
       },
       columnDefs: [
-        { orderable: false, "targets": [0,1,2,4] },
+        { orderable: false, "targets": [0,1,4] },
         {
           render:
             function(data, type, row) {
               return '<a href="/addr/' + data +'">' + data + '</a>'
             },
           targets: [1]
+        },
+        {
+          render:
+            function(data, type, row) {
+              if (data & 0x1) {
+                return "Contract";
+              }
+              if (data & 0x4) { // user defined account type
+                var accountType = data >> 3;
+                accountType = accountType.toString();
+                if ($scope.settings.accountTypes && $scope.settings.accountTypes[accountType]) {
+                  return $scope.settings.accountTypes[accountType];
+                }
+                return "Genesis Alloc";
+              }
+              return "Account";
+            },
+          targets: [2]
         },
         {
           render:
