@@ -29,7 +29,7 @@ var Account = new Schema(
     "address": {type: String, index: {unique: true}},
     "balance": Number,
     "blockNumber": Number,
-    "type": Number // address: 0x0, contract: 0x1
+    "type": {type: Number, default: 0} // address: 0x0, contract: 0x1
 });
 
 var Contract = new Schema(
@@ -83,6 +83,7 @@ Transaction.index({to:1, blockNumber:-1});
 Transaction.index({creates:1, blockNumber:-1});
 Account.index({balance:-1});
 Account.index({balance:-1, blockNumber:-1});
+Account.index({type:-1, balance:-1});
 Block.index({miner:1});
 Block.index({miner:1, blockNumber:-1});
 

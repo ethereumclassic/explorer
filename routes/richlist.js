@@ -62,12 +62,18 @@ var getAccounts = function(req, res) {
     }
 
     // check sort order
-    var sortOrder = '-balance';
+    var sortOrder = { balance: -1 };
     if (req.body.order && req.body.order[0] && req.body.order[0].column) {
       // balance column
       if (req.body.order[0].column == 3) {
         if (req.body.order[0].dir == 'asc') {
-          sortOrder = 'balance';
+          sortOrder = { balance: 1 };
+        }
+      }
+      if (req.body.order[0].column == 2) {
+        // sort by account type and balance
+        if (req.body.order[0].dir == 'asc') {
+          sortOrder = { type: -1, balance: -1 };
         }
       }
     }
@@ -90,7 +96,7 @@ var getAccounts = function(req, res) {
         }
 
         data.data = accounts.map(function(account, i) {
-          return [i + 1 + start, account.address, account.type == 0 ? "Account" : "Contract", account.balance, account.blockNumber];
+          return [i + 1 + start, account.address, account.type, account.balance, account.blockNumber];
         });
         res.write(JSON.stringify(data));
         res.end();
