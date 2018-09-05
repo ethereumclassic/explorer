@@ -136,6 +136,12 @@ exports.data = function(req, res){
         }
       });
     }, function(tx, callback) {
+      if (!web3.trace) {
+        // geth case. simply copy itself and and some attributes
+        var trace = eval('(' + JSON.stringify(tx) + ')');
+        trace.action = { input: tx.input, value: tx.value, from: tx.from, to: tx.to };
+        return callback(null, tx, [trace]);
+      }
       web3.trace.transaction(txHash, function(err, traces) {
         if(err || !traces) {
           console.error("TraceWeb3 error :" + err)
@@ -225,6 +231,15 @@ exports.data = function(req, res){
         });
         res.write(JSON.stringify(txns));
       } else {
+        if (!tx.to && !tx.creates) {
+          // geth case. contract create cases (tx.to == null and undefined tx.creates)
+          var receipt = web3.eth.getTransactionReceipt(txHash);
+          if (receipt && receipt.contractAddress) {
+            traces[0].creates = receipt.contractAddress;
+            traces[0].to = receipt.contractAddress;
+            traces[0].type = 'create';
+          }
+        }
         res.write(JSON.stringify(filterTrace(traces)));
       }
       res.end();
@@ -325,6 +340,87 @@ exports.data = function(req, res){
       // 100000 blocks ~ scan 14 days
       var fromBlock = transaction && transaction.blockNumber || lastBlockNumber - 100000;
       fromBlock = fromBlock < 0 ? 0 : fromBlock;
+      toBlock = lastBlockNumber;
+
+      // geth case
+      if (typeof web3.trace == 'undefined') {
+        var getEthFilter = function(filter, transfers, cb) {
+          var ethFilter = web3.eth.filter(filter);
+          ethFilter.get(function(err, logs) {
+            if (err || !logs) {
+              return cb(err);
+            } else {
+              logs.forEach(function(log) {
+                let txn = {};
+                var tokenAddr = log.address;
+                if (!KnownTokenInfo[tokenAddr]) {
+                  // not known tokens
+                  return;
+                }
+                txn.from = '0x' + log.topics[1].substring(26);
+                txn.to = '0x' + log.topics[2].substring(26);
+                txn.transactionHash = log.transactionHash;
+                txn.blockNumber = log.blockNumber;
+                var amount = web3.toBigNumber(log.data);
+                txn.amount = amount.dividedBy(KnownTokenDecimalDivisors[tokenAddr]).toString(10);
+                txn.tokenInfo = KnownTokenInfo[tokenAddr];
+                txn.type = 'transfer';
+                transfers[txn.transactionHash] = txn;
+              });
+              return cb(null, transfers);
+            }
+          });
+        };
+
+        async.waterfall([
+        function(innerCallback) {
+          var topics = [ web3.sha3('Transfer(address,address,uint256)') ];
+          var account;
+          if (transaction) {
+            // selected token only
+            account = addr;
+          } else {
+            // get all token events
+            account = null;
+            // get incoming transfer transactions
+            // set from address
+            topics.push('0x000000000000000000000000' + addr.replace('0x', ''));
+          }
+          var filter = { fromBlock: web3.toHex(fromBlock), toBlock, address: account, topics };
+
+          getEthFilter(filter, [], innerCallback);
+        }, function(transfers, innerCallback) {
+          // outgoing transfer transactions
+          var topics = [ web3.sha3('Transfer(address,address,uint256)') ];
+          var account;
+          if (transaction) {
+            // skip
+            return innerCallback(null, transfers);
+          } else {
+            // all tokens
+            account = null;
+            // set to address
+            topics.push(null);
+            topics.push('0x000000000000000000000000' + addr.replace('0x', ''));
+          }
+          var filter = { fromBlock: web3.toHex(fromBlock), toBlock, address: account, topics };
+
+          getEthFilter(filter, transfers, innerCallback);
+        }], function(error, transfers) {
+          if (error) {
+            console.error("getLogs Web3 error :" + err)
+            res.write(JSON.stringify({"error": true}));
+          } else {
+            var transactions = Object.values(transfers);
+            transactions = transactions.sort(function(a, b) {
+              return a.blockNumber - b.blockNumber;
+            });
+            res.write(JSON.stringify({transactions, createTransaction: transaction}));
+          }
+          res.end();
+        });
+        return;
+      }
 
       //
       var toAddr;

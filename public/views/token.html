@@ -125,7 +125,7 @@
                     </tr>
                   </tbody>
               </table>
-              <ul class="pagination" style="float:right">
+              <ul class="pagination" ng-show="page.next" style="float:right">
                 <li class="prev" ng-class="{disabled: page.after == 0}">
                   <a href="#" title="Prev" ng-click="fetchTxs(page.prev)"><i class="fa fa-angle-left"></i>Prev</a>
                 </li>
