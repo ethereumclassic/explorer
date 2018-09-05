@@ -21,6 +21,23 @@ var filterTrace = require('./filters').filterTrace;
 
 const ABI = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}];
 
+const KnownMethodIDs = {
+  "0xa9059cbb": { type: "ERC20", method: "transfer" },
+  "0x23b872dd": { type: "ERC20", method: "transferFrom" },
+  "0x095ea7b3": { type: "ERC20", method: "approve" },
+  "0xf2fde38b": { type: "ERC20", method: "transferOwnership" },
+  "0xddf252ad": { type: "ERC20", method: "Transfer" }
+};
+
+ABI.map(function(abi) {
+  if (abi.name) {
+    const signature = web3.sha3(abi.name + "(" + abi.inputs.map(function(input) {return input.type;}).join(",") + ")");
+    if (abi.type == "function") {
+      KnownMethodIDs[signature.substring(0, 10)] = { type: 'ERC20', method: abi.name };
+    }
+  }
+});
+
 module.exports = function(req, res){
   console.log(req.body)
   if (!("action" in req.body)) {
@@ -152,6 +169,37 @@ module.exports = function(req, res){
 
     var fromBlock = transaction.blockNumber;
     fromBlock = web3.toHex(fromBlock);
+
+    // geth case
+    if (typeof web3.trace == 'undefined') {
+      var topics = [ web3.sha3('Transfer(address,address,uint256)') ];
+
+      var filter = { fromBlock: fromBlock, toBlock: 'latest', address: addr, topics };
+      var ethFilter = web3.eth.filter(filter);
+      ethFilter.get(function(err, logs) {
+        if (err || !logs) {
+          console.error("LogWeb3 error :" + err)
+          res.write(JSON.stringify({"error": true}));
+        } else {
+          var transfers = [];
+          logs.forEach(function(log) {
+            let txn = {};
+            txn.from = '0x' + log.topics[1].substring(26);
+            txn.to = '0x' + log.topics[2].substring(26);
+            txn.transactionHash = log.transactionHash;
+            txn.blockNumber = log.blockNumber;
+            var amount = web3.toBigNumber(log.data);
+            txn.amount = amount.dividedBy(divisor).toString(10);
+            txn.type = 'transfer';
+            transfers.push(txn);
+          });
+          res.write(JSON.stringify({transfer: transfers}));
+        }
+        res.end();
+      });
+      return;
+    }
+
     var filter = {"fromBlock": fromBlock, "toAddress":[addr]};
     filter.count = MAX_ENTRIES;
     if (after) {
@@ -205,6 +253,41 @@ module.exports = function(req, res){
 
     var fromBlock = transaction.blockNumber;
     fromBlock = web3.toHex(fromBlock);
+
+    // geth case
+    if (typeof web3.trace == 'undefined') {
+      var topics = [ null ]; // all transactions
+
+      var filter = { fromBlock: fromBlock, toBlock: 'latest', address: addr, topics };
+      var ethFilter = web3.eth.filter(filter);
+      ethFilter.get(function(err, logs) {
+        if (err || !logs) {
+          console.error("LogWeb3 error :" + err)
+          res.write(JSON.stringify({"error": true}));
+        } else {
+          var transactions = [];
+          logs.forEach(function(log) {
+            let txn = {};
+            txn.type = log.topics[0].substring(0, 10);
+            if (KnownMethodIDs[txn.type] && KnownMethodIDs[txn.type].method === 'Transfer')  {
+              // show only Transfer events FIXME
+              txn.from = '0x' + log.topics[1].substring(26);
+              txn.to = '0x' + log.topics[2].substring(26);
+              var amount = web3.toBigNumber(log.data);
+              txn.amount = amount.dividedBy(divisor).toString(10);
+              txn.type = 'Transfer';
+              txn.transactionHash = log.transactionHash;
+              txn.blockNumber = log.blockNumber;
+              transactions.push(txn);
+            }
+          });
+          res.write(JSON.stringify({transaction: transactions}));
+        }
+        res.end();
+      });
+      return;
+    }
+
     var filter = {"fromBlock": fromBlock, "toAddress":[addr]};
     filter.count = MAX_ENTRIES;
     if (after) {
