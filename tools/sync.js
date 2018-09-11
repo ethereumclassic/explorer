@@ -220,48 +220,77 @@ var writeTransactionsToDB = function(config, blockData, flush) {
 
     // update balances
     if (accounts.length > 0)
-    async.eachSeries(accounts, function(account, eachCallback) {
-      var blockNumber = data[account].blockNumber;
+    async.waterfall([
       // get contract account type
-      web3.eth.getCode(account, function(err, code) {
-        if (err) {
-          console.log("ERROR: fail to getCode(" + account + ")");
-          return eachCallback(err);
-        }
-        if (code.length > 2) {
-          data[account].type = 1; // contract type
+      function(callback) {
+        var batch = web3.createBatch();
+
+        for (var i = 0; i < accounts.length; i++) {
+          var account = accounts[i];
+          batch.add(web3.eth.getCode.request(account));
         }
 
-        web3.eth.getBalance(account, blockNumber, function(err, balance) {
+        batch.requestManager.sendBatch(batch.requests, function(err, results) {
           if (err) {
-            console.log("ERROR: fail to getBalance(" + account + ")");
-            return eachCallback(err);
+            console.log("ERROR: fail to getCode batch job:", err);
+            callback(err);
+            return;
           }
+          results = results || [];
+          batch.requests.map(function (request, index) {
+            return results[index] || {};
+          }).forEach(function (result, i) {
+            var code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+            if (code.length > 2) {
+              data[batch.requests[i].params[0]].type = 1; // contract type
+            }
 
-          //data[account].balance = web3.fromWei(balance, 'ether');
-          let ether;
-          if (typeof balance === 'object') {
-            ether = parseFloat(balance.div(1e18).toString());
-          } else {
-            ether /= 1e18;
+          });
+          callback(null, data);
+        });
+      }, function(data, callback) {
+        // batch rpc job
+        var batch = web3.createBatch();
+        for (var i = 0; i < accounts.length; i++) {
+          var account = accounts[i];
+          batch.add(web3.eth.getBalance.request(account));
+        }
+
+        batch.requestManager.sendBatch(batch.requests, function(err, results) {
+          if (err) {
+            console.log("ERROR: fail to getBalance batch job:", err);
+            callback(err);
+            return;
           }
-          data[account].balance = ether;
-          eachCallback();
+          results = results || [];
+          batch.requests.map(function (request, index) {
+            return results[index] || {};
+          }).forEach(function (result, i) {
+            var balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+
+            let ether;
+            if (typeof balance === 'object') {
+              ether = parseFloat(balance.div(1e18).toString());
+            } else {
+              ether = balance / 1e18;
+            }
+            data[batch.requests[i].params[0]].balance = ether;
+          });
+          callback(null, data);
+        });
+      }], function(error, data) {
+        var n = 0;
+        accounts.forEach(function(account) {
+          n++;
+          if (n <= 5) {
+            console.log(' - upsert ' + account + ' / balance = ' + data[account].balance);
+          } else if (n == 6) {
+            console.log('   (...) total ' + accounts.length + ' accounts updated.');
+          }
+          // upsert account
+          Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
         });
       });
-    }, function(err) {
-      var n = 0;
-      accounts.forEach(function(account) {
-        n++;
-        if (n <= 5) {
-          console.log(' - upsert ' + account + ' / balance = ' + data[account].balance);
-        } else if (n == 6) {
-          console.log('   (...) total ' + accounts.length + ' accounts updated.');
-        }
-        // upsert account
-        Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
-      });
-    });
 
     if (bulk.length > 0)
     Transaction.collection.insert(bulk, function( err, tx ){
