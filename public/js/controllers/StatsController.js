@@ -400,7 +400,17 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("class", "y axis")
                 .call(yAxis);
 
-
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .direction('s')
+                .html(function(d) {
+                    return '<div class="tooltip-arrow"></div>' +
+                        '<div class="tooltip-inner"><div class="small"><b>' +
+                        'Hashrate: <b>' + d3.format(".5s")(d.instantHashrate) + 'H/s </b><br />' +
+                        '<b>' + d3.time.format("%x %H:%M")(new Date(d.unixtime * 1000)) + '</b>' +
+                        '</div></div>';
+                });
 
             // Add Tooltip
             var focus = svg.append("g")
@@ -414,17 +424,27 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("x", 9)
                 .attr("dy", ".35em");
 
+            svg.call(tip);
 
             svg.append("rect")
                 .attr("class", "overlay")
                 .attr("width", width)
                 .attr("height", height)
-                .on("mouseover", function() { focus.style("display", null); })
-                .on("mouseout", function() { focus.style("display", "none"); })
+                .on("mouseover", function(d) {
+                    var x0 = x.invert(d3.mouse(this)[0]);
+                    var s1 = _.minBy(data, function(d) {
+                        return Math.abs(moment(x0).unix()-d.unixtime);
+                    });
+                    tip.show(s1, this);
+                    tip.style("left", d3.event.pageX + 10 + "px");
+                    tip.style("top", d3.event.pageY + 25 + "px");
+                    focus.style("display", null);
+                 })
+                .on("mouseout", function() { tip.hide(); focus.style("display", "none"); })
                 .on("mousemove", mousemove);
 
 
-            function mousemove() {
+            function mousemove(d) {
                 var x0 = x.invert(d3.mouse(this)[0]);
                 //console.log(moment(x0).unix());
 
@@ -436,7 +456,9 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 //console.log(moment(s1.unixtime*1000).format());
                 //console.log(s1.instantHashrate);
 
-
+                tip.show(s1, this);
+                tip.style("left", d3.event.pageX + 10 + "px");
+                tip.style("top", d3.event.pageY + 25 + "px");
 
                 //focus.attr("transform", "translate(" + x(d.date) + "," + y(d.close) + ")");
                 focus.attr("transform", "translate(" + x(moment(x0).unix()*1000) + "," + y(s1.instantHashrate) + ")");
@@ -598,6 +620,18 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("class", "y axis")
                 .call(yAxis);
 
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .direction('s')
+                .html(function(d) {
+                    return '<div class="tooltip-arrow"></div>' +
+                        '<div class="tooltip-inner"><div class="small"><b>' +
+                        'Difficulty: <b>' + d3.format(".5s")(d.difficulty) + 'H </b><br />' +
+                        '<b>' + d3.time.format("%x %H:%M")(new Date(d.unixtime * 1000)) + '</b>' +
+                        '</div></div>';
+                });
+
             // Add Tooltip
             var focus = svg.append("g")
                 .attr("class", "focus")
@@ -610,20 +644,35 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("x", 9)
                 .attr("dy", ".35em");
 
+            svg.call(tip);
+
             svg.append("rect")
                 .attr("class", "overlay")
                 .attr("width", width)
                 .attr("height", height)
-                .on("mouseover", function() { focus.style("display", null); })
-                .on("mouseout", function() { focus.style("display", "none"); })
+                .on("mouseover", function(d) {
+                    var x0 = x.invert(d3.mouse(this)[0]);
+                    var s1 = _.minBy(data, function(d) {
+                        return Math.abs(moment(x0).unix()-d.unixtime);
+                    });
+                    tip.show(s1, this);
+                    tip.style("left", d3.event.pageX + 10 + "px");
+                    tip.style("top", d3.event.pageY + 25 + "px");
+                    focus.style("display", null);
+                 })
+                .on("mouseout", function() { tip.hide(); focus.style("display", "none"); })
                 .on("mousemove", mousemove);
 
-            function mousemove() {
+            function mousemove(d) {
                 var x0 = x.invert(d3.mouse(this)[0]);
 
                 var s1 = _.minBy(data, function(d) {
                     return Math.abs(moment(x0).unix()-d.unixtime);
                 });
+
+                tip.show(s1, this);
+                tip.style("left", d3.event.pageX + 10 + "px");
+                tip.style("top", d3.event.pageY + 25 + "px");
 
                 //focus.attr("transform", "translate(" + x(d.date) + "," + y(d.close) + ")");
                 focus.attr("transform", "translate(" + x(moment(x0).unix()*1000) + "," + y(s1.difficulty) + ")");
@@ -783,6 +832,18 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("class", "y axis")
                 .call(yAxis);
 
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .direction('s')
+                .html(function(d) {
+                    return '<div class="tooltip-arrow"></div>' +
+                        '<div class="tooltip-inner"><div class="small"><b>' +
+                        'Blocktime: <b>' + d3.format(".4s")(d.blockTime) + ' sec </b><br />' +
+                        '<b>' + d3.time.format("%x %H:%M")(new Date(d.unixtime * 1000)) + '</b>' +
+                        '</div></div>';
+                });
+
             // Add Tooltip
             var focus = svg.append("g")
                 .attr("class", "focus")
@@ -795,20 +856,35 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("x", 9)
                 .attr("dy", ".35em");
 
+            svg.call(tip);
+
             svg.append("rect")
                 .attr("class", "overlay")
                 .attr("width", width)
                 .attr("height", height)
-                .on("mouseover", function() { focus.style("display", null); })
-                .on("mouseout", function() { focus.style("display", "none"); })
+                .on("mouseover", function(d) {
+                    var x0 = x.invert(d3.mouse(this)[0]);
+                    var s1 = _.minBy(data, function(d) {
+                        return Math.abs(moment(x0).unix()-d.unixtime);
+                    });
+                    tip.show(s1, this);
+                    tip.style("left", d3.event.pageX + 10 + "px");
+                    tip.style("top", d3.event.pageY + 25 + "px");
+                    focus.style("display", null);
+                 })
+                .on("mouseout", function() { tip.hide(); focus.style("display", "none"); })
                 .on("mousemove", mousemove);
 
-            function mousemove() {
+            function mousemove(d) {
                 var x0 = x.invert(d3.mouse(this)[0]);
 
                 var s1 = _.minBy(data, function(d) {
                     return Math.abs(moment(x0).unix()-d.unixtime);
                 });
+
+                tip.show(s1, this);
+                tip.style("left", d3.event.pageX + 10 + "px");
+                tip.style("top", d3.event.pageY + 25 + "px");
 
                 focus.attr("transform", "translate(" + x(moment(x0).unix()*1000) + "," + y(s1.blockTime) + ")");
             }

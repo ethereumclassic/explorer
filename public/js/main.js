@@ -222,7 +222,6 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         files: [
                              '/js/controllers/StatsController.js',
                              '/css/stats.css',
-                             "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.10/d3.js",
                              "/plugins/async.min.js",
                              "/plugins/moment/moment.min.js"
                         ]
