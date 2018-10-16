@@ -21,6 +21,11 @@ var Account         = mongoose.model( 'Account' );
   //Just listen for latest blocks and sync from the start of the app.
 **/
 var listenBlocks = function(config) {
+  if (web3.eth.syncing) {
+    console.log('Info: waiting until syncing finished... (currentBlock is #' + web3.eth.syncing.currentBlock + ')');
+    setTimeout(function() { listenBlocks(config); }, 10000);
+    return;
+  }
     var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error,latestBlock) {
     if(error) {
@@ -52,6 +57,12 @@ var listenBlocks = function(config) {
 **/
 var syncChain = function(config, nextBlock){
   if(web3.isConnected()) {
+    if (web3.eth.syncing) {
+      console.log('Info: waiting until syncing finished... (currentBlock is #' + web3.eth.syncing.currentBlock + ')');
+      setTimeout(function() { syncChain(config, nextBlock); }, 10000);
+      return;
+    }
+
     if (typeof nextBlock === 'undefined') {
       prepareSync(config, function(error, startBlock) {
         if(error) {
@@ -144,7 +155,7 @@ var writeTransactionsToDB = function(config, blockData, flush) {
     self.miners = [];
   }
   if (blockData) {
-    self.miners.push({ address: blockData.miner, blockNumber: blockData.blockNumber, type: 0 });
+    self.miners.push({ address: blockData.miner, blockNumber: blockData.number, type: 0 });
   }
   if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
@@ -183,78 +194,92 @@ var writeTransactionsToDB = function(config, blockData, flush) {
     if (bulk.length == 0 && accounts.length == 0) return;
 
     // update balances
-    if (accounts.length > 0)
-    async.waterfall([
-      // get contract account type
-      function(callback) {
-        var batch = web3.createBatch();
+    if (accounts.length > 0) {
+      var n = 0;
+      var chunks = [];
+      while (accounts.length > 800) {
+        var chunk = accounts.splice(0, 500);
+        chunks.push(chunk);
+      }
+      if (accounts.length > 0) {
+        chunks.push(accounts);
+      }
+      async.eachSeries(chunks, function(chunk, outerCallback) {
+        async.waterfall([
+          // get contract account type
+          function(callback) {
+            var batch = web3.createBatch();
 
-        for (var i = 0; i < accounts.length; i++) {
-          var account = accounts[i];
-          batch.add(web3.eth.getCode.request(account));
-        }
-
-        batch.requestManager.sendBatch(batch.requests, function(err, results) {
-          if (err) {
-            console.log("ERROR: fail to getCode batch job:", err);
-            callback(err);
-            return;
-          }
-          results = results || [];
-          batch.requests.map(function (request, index) {
-            return results[index] || {};
-          }).forEach(function (result, i) {
-            var code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
-            if (code.length > 2) {
-              data[batch.requests[i].params[0]].type = 1; // contract type
+            for (var i = 0; i < chunk.length; i++) {
+              var account = chunk[i];
+              batch.add(web3.eth.getCode.request(account));
             }
 
-          });
-          callback(null, data);
-        });
-      }, function(data, callback) {
-        // batch rpc job
-        var batch = web3.createBatch();
-        for (var i = 0; i < accounts.length; i++) {
-          var account = accounts[i];
-          batch.add(web3.eth.getBalance.request(account));
-        }
+            batch.requestManager.sendBatch(batch.requests, function(err, results) {
+              if (err) {
+                console.log("ERROR: fail to getCode batch job:", err);
+                callback(err);
+                return;
+              }
+              results = results || [];
+              batch.requests.map(function (request, index) {
+                return results[index] || {};
+              }).forEach(function (result, i) {
+                var code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+                if (code.length > 2) {
+                  data[batch.requests[i].params[0]].type = 1; // contract type
+                }
 
-        batch.requestManager.sendBatch(batch.requests, function(err, results) {
-          if (err) {
-            console.log("ERROR: fail to getBalance batch job:", err);
-            callback(err);
-            return;
-          }
-          results = results || [];
-          batch.requests.map(function (request, index) {
-            return results[index] || {};
-          }).forEach(function (result, i) {
-            var balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
-
-            let ether;
-            if (typeof balance === 'object') {
-              ether = parseFloat(balance.div(1e18).toString());
-            } else {
-              ether = balance / 1e18;
+              });
+              callback(null);
+            });
+          }, function(callback) {
+            // batch rpc job
+            var batch = web3.createBatch();
+            for (var i = 0; i < chunk.length; i++) {
+              var account = chunk[i];
+              if (account) {
+                batch.add(web3.eth.getBalance.request(account));
+              }
             }
-            data[batch.requests[i].params[0]].balance = ether;
-          });
-          callback(null, data);
+
+            batch.requestManager.sendBatch(batch.requests, function(err, results) {
+              if (err) {
+                console.log("ERROR: fail to getBalance batch job:", err);
+                callback(err);
+                return;
+              }
+              results = results || [];
+              batch.requests.map(function (request, index) {
+                return results[index] || {};
+              }).forEach(function (result, i) {
+                var balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+
+                let ether;
+                if (typeof balance === 'object') {
+                  ether = parseFloat(balance.div(1e18).toString());
+                } else {
+                  ether = balance / 1e18;
+                }
+                var account = batch.requests[i].params[0];
+                data[account].balance = ether;
+
+                if (n <= 5) {
+                  console.log(' - upsert ' + account + ' / balance = ' + data[account].balance);
+                } else if (n == 6) {
+                  console.log('   (...) total ' + accounts.length + ' accounts updated.');
+                }
+                n++;
+                // upsert account
+                Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
+              });
+            });
+            callback(null);
+          }], function(error) {
         });
-      }], function(error, data) {
-        var n = 0;
-        accounts.forEach(function(account) {
-          n++;
-          if (n <= 5) {
-            console.log(' - upsert ' + account + ' / balance = ' + data[account].balance);
-          } else if (n == 6) {
-            console.log('   (...) total ' + accounts.length + ' accounts updated.');
-          }
-          // upsert account
-          Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
-        });
+      }, function(error) {
       });
+    }
 
     if (bulk.length > 0)
     Transaction.collection.insert(bulk, function( err, tx ){
