@@ -194,7 +194,7 @@ var writeTransactionsToDB = function(config, blockData, flush) {
     if (bulk.length == 0 && accounts.length == 0) return;
 
     // update balances
-    if (accounts.length > 0) {
+    if (config.useRichList && accounts.length > 0) {
       var n = 0;
       var chunks = [];
       while (accounts.length > 800) {
@@ -446,6 +446,11 @@ var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr 
 if (config.patch === true){
   console.log('Checking for missing blocks');
   runPatcher(config);
+}
+
+// check NORICHLIST env
+if (process.env.NORICHLIST) {
+  config.useRichList = false;
 }
 
 // Start listening for latest blocks

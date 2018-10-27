@@ -531,7 +531,8 @@ console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
 var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 
 var useParity = false;
-if (web3.version.node.split('/')[0].toLowerCase().includes('parity')) {
+if (!process.env.NOPARITY
+    && web3.version.node.split('/')[0].toLowerCase().includes('parity')) {
   // load parity extension
   web3 = require("../lib/trace.js")(web3);
   useParity = true;
