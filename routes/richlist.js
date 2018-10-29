@@ -10,6 +10,18 @@ require( '../db.js' );
 var Account = mongoose.model('Account');
 
 var getAccounts = function(req, res) {
+  var self = getAccounts;
+  if (!self.totalSupply) {
+    self.totalSupply = -1;
+    self.timestamp = 0;
+  }
+
+  // check cached totalSupply
+  if (new Date() - self.timestamp > 30*60*1000) {
+    self.totalSupply = -1;
+    self.timestamp = 0;
+  }
+
   // count accounts only once
   var count = req.body.recordsTotal || 0;
   count = parseInt(count);
@@ -18,7 +30,7 @@ var getAccounts = function(req, res) {
   }
 
   // get totalSupply only once
-  var queryTotalSupply = req.body.totalSupply || null;
+  var queryTotalSupply = self.totalSupply || req.body.totalSupply || null;
 
   async.waterfall([
     function(callback) {
@@ -32,10 +44,13 @@ var getAccounts = function(req, res) {
           }
 
           var totalSupply = docs[0].totalSupply;
+          // update cache
+          self.timestamp = new Date();
+          self.totalSupply = totalSupply;
           callback(null, totalSupply);
         });
       } else {
-        callback(null, null);
+        callback(null, queryTotalSupply > 0 ? queryTotalSupply : null);
       }
     },
     function(totalSupply, callback) {
