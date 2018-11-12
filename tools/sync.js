@@ -29,7 +29,10 @@ var listenBlocks = function(config) {
     var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error,latestBlock) {
     if(error) {
-        console.log('Error: ' + error);
+      console.log('Error: ' + error);
+      newBlocks.stopWatching();
+      console.log('Retry to listen...');
+      listenBlocks(config);
     } else if (latestBlock == null) {
         console.log('Warning: null block hash');
     } else {
