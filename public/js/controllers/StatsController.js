@@ -430,7 +430,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("class", "overlay")
                 .attr("width", width)
                 .attr("height", height)
-                .on("mouseover", function(d) {
+                .on("mouseover", function() {
                     var x0 = x.invert(d3.mouse(this)[0]);
                     var s1 = _.minBy(data, function(d) {
                         return Math.abs(moment(x0).unix()-d.unixtime);
@@ -444,7 +444,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .on("mousemove", mousemove);
 
 
-            function mousemove(d) {
+            function mousemove() {
                 var x0 = x.invert(d3.mouse(this)[0]);
                 //console.log(moment(x0).unix());
 
@@ -650,7 +650,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("class", "overlay")
                 .attr("width", width)
                 .attr("height", height)
-                .on("mouseover", function(d) {
+                .on("mouseover", function() {
                     var x0 = x.invert(d3.mouse(this)[0]);
                     var s1 = _.minBy(data, function(d) {
                         return Math.abs(moment(x0).unix()-d.unixtime);
@@ -663,7 +663,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .on("mouseout", function() { tip.hide(); focus.style("display", "none"); })
                 .on("mousemove", mousemove);
 
-            function mousemove(d) {
+            function mousemove() {
                 var x0 = x.invert(d3.mouse(this)[0]);
 
                 var s1 = _.minBy(data, function(d) {
@@ -862,7 +862,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .attr("class", "overlay")
                 .attr("width", width)
                 .attr("height", height)
-                .on("mouseover", function(d) {
+                .on("mouseover", function() {
                     var x0 = x.invert(d3.mouse(this)[0]);
                     var s1 = _.minBy(data, function(d) {
                         return Math.abs(moment(x0).unix()-d.unixtime);
@@ -875,7 +875,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 .on("mouseout", function() { tip.hide(); focus.style("display", "none"); })
                 .on("mousemove", mousemove);
 
-            function mousemove(d) {
+            function mousemove() {
                 var x0 = x.invert(d3.mouse(this)[0]);
 
                 var s1 = _.minBy(data, function(d) {
