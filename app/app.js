@@ -8,6 +8,19 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 
+var config = {};
+try {
+  config = require('./config.json');
+} catch(e) {
+  if (e.code == 'MODULE_NOT_FOUND') {
+    console.log('No config file found. Using default configuration... (tools/config.json)');
+    config = require('./tools/config.json');
+  } else {
+    throw e;
+    process.exit(1);
+  }
+}
+
 var app = express();
 app.set('port', process.env.PORT || 3000);
 
@@ -28,14 +41,18 @@ global.__lib = __dirname + '/lib/';
 // client
 
 app.get('/', function(req, res) {
-  res.render('index');
+  res.render('index', config);
+});
+
+app.get('/config', function(req, res) {
+  res.json(config.settings);
 });
 
 require('./routes')(app);
 
 // let angular catch them
 app.use(function(req, res) {
-  res.render('index');
+  res.render('index', config);
 });
 
 // error handlers
