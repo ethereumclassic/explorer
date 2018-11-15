@@ -3,7 +3,7 @@ var assert = require('assert');
 
 //* load unit tests *//
 
-var app = require('./units/app');
+var app = require('./units/apps');
 
 //* end unit tests *//
 
