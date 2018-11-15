@@ -12,27 +12,39 @@ var app  = require('../../app.js');
 
 module.exports =
 
-describe("Classic Explorer Server Tests", function() {
+describe("Explorer Server Tests", function() {
 
  //ping the index page to ensure it is running
 
   describe("Test index page", function() {
-    var url = "http://localhost:3000/";
+    let url = "http://localhost:3000/";
     it("returns status 200", function(done) {
       request(url, function(error, response, body) {
+        expect(error).to.be.null;
         expect(response.statusCode).to.equal(200);
         done();
       });
     });
 
   // return the 404 on a bad page request
-
-    var badurl = "http://localhost:3000/ethereum_classic_is_best_classic";
+    let badurl = "http://localhost:3000/ethereum_classic_is_best_classic";
     it("bad pages go to index", function(done) {
       request(badurl, function(error, response, body) {
+        expect(error).to.be.null;
         expect(response.statusCode).to.equal(200);
         done();
       });
+    });
+  });
+  describe("Test config page", function(){
+    it("returns a string", function(done){
+      let configurl = "http://localhost:3000/config";
+      request(configurl, function(){
+        expect(error).to.be.null;
+        expect(response.statusCode).to.equal(200);
+        expect(body).to.be.a('string');
+        done();
+      });_
     });
   });
 });
