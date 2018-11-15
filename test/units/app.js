@@ -37,14 +37,14 @@ describe("Explorer Server Tests", function() {
     });
   });
   describe("Test config page", function(){
+    let configurl = "http://localhost:3000/config";
     it("returns a string", function(done){
-      let configurl = "http://localhost:3000/config";
-      request(configurl, function(){
+      request(configurl, function(error, response, body){
         expect(error).to.be.null;
         expect(response.statusCode).to.equal(200);
         expect(body).to.be.a('string');
         done();
-      });_
+      });
     });
   });
 });
