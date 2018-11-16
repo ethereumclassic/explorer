@@ -21,7 +21,12 @@ angular.module('BlocksApp').controller('AccountsController', function($statePara
 
           // fixup data to show percentages
           var newdata = resp.data.data.map(function(item) {
-            return [item[0], item[1], item[2], item[3], (item[3] / $scope.totalSupply) * 100, item[4]];
+            var num = item[0];
+            var addr = item[1];
+            var type = item[2];
+            var balance = item[3];
+            var lastmod = item[4];
+            return [num, addr, type, balance, (balance / $scope.totalSupply) * 100, lastmod];
           });
           resp.data.data = newdata;
           callback(resp.data);

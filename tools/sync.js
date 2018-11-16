@@ -449,6 +449,7 @@ if (config.patch === true){
 }
 
 // check NORICHLIST env
+// you can use it like as 'NORICHLIST=1 node tools/sync.js' to disable balance updater temporary.
 if (process.env.NORICHLIST) {
   config.useRichList = false;
 }

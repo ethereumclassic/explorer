@@ -13,10 +13,9 @@ var Account = require('../db.js').Account;
 var Transaction = require('../db.js').Transaction;
 var Block = require('../db.js').Block;
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB');
-
 const ADDRESS_CACHE_MAX = 10000; // address cache threshold
 
+// RichList for Geth Classic, Geth
 function makeRichList(toBlock, blocks, updateCallback) {
   var self = makeRichList;
   if (!self.cached) {
@@ -117,8 +116,11 @@ function makeRichList(toBlock, blocks, updateCallback) {
         self.index += len;
         console.log("* update " + len + " accounts ...");
 
+        // split accounts into chunks to make proper sized json-rpc batch job.
         var accounts = Object.keys(self.accounts);
         var chunks = [];
+
+        // about ~1000 `eth_getBalance` json rpc calls are possible in one json-rpc batchjob.
         while (accounts.length > 800) {
           var chunk = accounts.splice(0, 500);
           chunks.push(chunk);
@@ -390,6 +392,7 @@ var bulkInsert = function(bulk) {
   Account.collection.insert(localbulk, function(error, data) {
     if (error) {
       if (error.code == 11000) {
+        // For already exists case, try upsert method.
         async.eachSeries(localbulk, function(item, eachCallback) {
           // upsert accounts
           item._id = undefined;
