@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col-md-12 portlet light">
+    <div class="portlet-title">
+      <div class="caption">Overview</div>
+    </div>
+    <div class="portlet-body">
+      <div class="row">
+        <div class="col-md-6 center">
+          <div>
+            <span class="eth-stat-title">Total supply: {{ totalSupply | number: 2 }} {{ settings.symbol }} </span>
+            <div class="margin-top-20">
+              Total {{ totalAccounts | number }} <span class="eth-stat-text"> accounts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 portlet light">
+    <div class="portlet-body">
+      <table id="table_accounts" class="table table-striped table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Address</th>
+            <th>Type</th>
+            <th>Balance</th>
+            <th>Percent</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -8,7 +8,7 @@
   "scripts": {
     "start": "concurrently \"node tools/sync.js \" \"node app.js\" ",
     "pretest": "copyfiles app.js app/  ",
-    "test": "./node_modules/.bin/mocha --reporter spec  "
+    "test": "mocha --exit"
   },
   "dependencies": {
     "bignumber.js": "^5.0.0",

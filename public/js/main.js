@@ -139,6 +139,27 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                 }]
             }
         })
+        .state('accounts', {
+            url: "/accounts",
+            templateUrl: "views/accounts.html",
+            data: {pageTitle: 'Accounts'},
+            controller: "AccountsController",
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                            '/js/controllers/AccountsController.js',
+                            '/plugins/datatables/datatables.min.css',
+                            '/plugins/datatables/datatables.bootstrap.css',
+                            '/plugins/datatables/datatables.all.min.js',
+                            '/plugins/datatables/datatable.min.js'
+                        ]
+                    });
+                }]
+            }
+        })
         .state('block', {
             url: "/block/{number}",
             templateUrl: "views/block.html",
@@ -222,7 +243,6 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         files: [
                              '/js/controllers/StatsController.js',
                              '/css/stats.css',
-                             "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.10/d3.js",
                              "/plugins/async.min.js",
                              "/plugins/moment/moment.min.js"
                         ]

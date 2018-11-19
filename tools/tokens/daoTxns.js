@@ -17,10 +17,29 @@ var DAOCreatedToken = mongoose.model('DAOCreatedToken');
 var DAOTransferToken = mongoose.model('DAOTransferToken');
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 
+// load config.json
+var config = { nodeAddr: 'localhost', gethPort: 8545 };
+try {
+    var local = require('../../config.json');
+    _.extend(config, local);
+    console.log('config.json found.');
+} catch (error) {
+    if (error.code === 'MODULE_NOT_FOUND') {
+        var local = require('../../config.example.json');
+        _.extend(config, local);
+        console.log('No config file found. Using default configuration... (config.example.json)');
+    } else {
+        throw error;
+        process.exit(1);
+    }
+}
+
+console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
+
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
 } else {
-  web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 }
 
 if (web3.isConnected()) 

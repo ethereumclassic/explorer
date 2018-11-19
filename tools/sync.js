@@ -7,18 +7,25 @@ Please read the README in the root directory that explains the parameters of thi
 require( '../db.js' );
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
+var _ = require('lodash');
 
-var fs = require('fs');
+var async = require('async');
 var Web3 = require('web3');
 
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
+var Account         = mongoose.model( 'Account' );
 
 /**
   //Just listen for latest blocks and sync from the start of the app.
 **/
 var listenBlocks = function(config) {
+  if (web3.eth.syncing) {
+    console.log('Info: waiting until syncing finished... (currentBlock is #' + web3.eth.syncing.currentBlock + ')');
+    setTimeout(function() { listenBlocks(config); }, 10000);
+    return;
+  }
     var newBlocks = web3.eth.filter("latest");
     newBlocks.watch(function (error,latestBlock) {
     if(error) {
@@ -50,6 +57,12 @@ var listenBlocks = function(config) {
 **/
 var syncChain = function(config, nextBlock){
   if(web3.isConnected()) {
+    if (web3.eth.syncing) {
+      console.log('Info: waiting until syncing finished... (currentBlock is #' + web3.eth.syncing.currentBlock + ')');
+      setTimeout(function() { syncChain(config, nextBlock); }, 10000);
+      return;
+    }
+
     if (typeof nextBlock === 'undefined') {
       prepareSync(config, function(error, startBlock) {
         if(error) {
@@ -137,6 +150,13 @@ var writeTransactionsToDB = function(config, blockData, flush) {
     self.bulkOps = [];
     self.blocks = 0;
   }
+  // save miner addresses
+  if (!self.miners) {
+    self.miners = [];
+  }
+  if (blockData) {
+    self.miners.push({ address: blockData.miner, blockNumber: blockData.number, type: 0 });
+  }
   if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
       var txData = blockData.transactions[d];
@@ -152,8 +172,116 @@ var writeTransactionsToDB = function(config, blockData, flush) {
     var bulk = self.bulkOps;
     self.bulkOps = [];
     self.blocks = 0;
-    if(bulk.length == 0) return;
+    var miners = self.miners;
+    self.miners = [];
 
+    // setup accounts
+    var data = {};
+    bulk.forEach(function(tx) {
+      data[tx.from] = { address: tx.from, blockNumber: tx.blockNumber, type: 0 };
+      if (tx.to) {
+        data[tx.to] = { address: tx.to, blockNumber: tx.blockNumber, type: 0 };
+      }
+    });
+
+    // setup miners
+    miners.forEach(function(miner) {
+      data[miner.address] = miner;
+    });
+
+    var accounts = Object.keys(data);
+
+    if (bulk.length == 0 && accounts.length == 0) return;
+
+    // update balances
+    if (config.useRichList && accounts.length > 0) {
+      var n = 0;
+      var chunks = [];
+      while (accounts.length > 800) {
+        var chunk = accounts.splice(0, 500);
+        chunks.push(chunk);
+      }
+      if (accounts.length > 0) {
+        chunks.push(accounts);
+      }
+      async.eachSeries(chunks, function(chunk, outerCallback) {
+        async.waterfall([
+          // get contract account type
+          function(callback) {
+            var batch = web3.createBatch();
+
+            for (var i = 0; i < chunk.length; i++) {
+              var account = chunk[i];
+              batch.add(web3.eth.getCode.request(account));
+            }
+
+            batch.requestManager.sendBatch(batch.requests, function(err, results) {
+              if (err) {
+                console.log("ERROR: fail to getCode batch job:", err);
+                callback(err);
+                return;
+              }
+              results = results || [];
+              batch.requests.map(function (request, index) {
+                return results[index] || {};
+              }).forEach(function (result, i) {
+                var code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+                if (code.length > 2) {
+                  data[batch.requests[i].params[0]].type = 1; // contract type
+                }
+
+              });
+              callback(null);
+            });
+          }, function(callback) {
+            // batch rpc job
+            var batch = web3.createBatch();
+            for (var i = 0; i < chunk.length; i++) {
+              var account = chunk[i];
+              if (account) {
+                batch.add(web3.eth.getBalance.request(account));
+              }
+            }
+
+            batch.requestManager.sendBatch(batch.requests, function(err, results) {
+              if (err) {
+                console.log("ERROR: fail to getBalance batch job:", err);
+                callback(err);
+                return;
+              }
+              results = results || [];
+              batch.requests.map(function (request, index) {
+                return results[index] || {};
+              }).forEach(function (result, i) {
+                var balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+
+                let ether;
+                if (typeof balance === 'object') {
+                  ether = parseFloat(balance.div(1e18).toString());
+                } else {
+                  ether = balance / 1e18;
+                }
+                var account = batch.requests[i].params[0];
+                data[account].balance = ether;
+
+                if (n <= 5) {
+                  console.log(' - upsert ' + account + ' / balance = ' + data[account].balance);
+                } else if (n == 6) {
+                  console.log('   (...) total ' + accounts.length + ' accounts updated.');
+                }
+                n++;
+                // upsert account
+                Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
+              });
+            });
+            callback(null);
+          }], function(error) {
+        });
+      }, function(error) {
+      });
+    }
+
+    if (bulk.length > 0)
     Transaction.collection.insert(bulk, function( err, tx ){
       if ( typeof err !== 'undefined' && err ) {
         if (err.code == 11000) {
@@ -287,38 +415,28 @@ var checkBlockDBExistsThenWrite = function(config, patchData, flush) {
 /**
   Start config for node connection and sync
 **/
-var config = {};
-//Look for config.json file if not
+/**
+ * nodeAddr: node address
+ * gethPort: geth port
+ * bulkSize: size of array in block to use bulk operation
+ */
+// load config.json
+var config = { nodeAddr: 'localhost', gethPort: 8545, bulkSize: 100 };
 try {
-    var configContents = fs.readFileSync('config.json');
-    config = JSON.parse(configContents);
+    var local = require('../config.json');
+    _.extend(config, local);
     console.log('config.json found.');
+} catch (error) {
+    if (error.code === 'MODULE_NOT_FOUND') {
+        var local = require('../config.example.json');
+        _.extend(config, local);
+        console.log('No config file found. Using default configuration... (config.example.json)');
+    } else {
+        throw error;
+        process.exit(1);
+    }
 }
-catch (error) {
-  if (error.code === 'ENOENT') {
-      console.log('No config file found.');
-  }
-  else {
-      throw error;
-      process.exit(1);
-  }
-}
-// set the default NODE address to localhost if it's not provided
-if (!('nodeAddr' in config) || !(config.nodeAddr)) {
-  config.nodeAddr = 'localhost'; // default
-}
-// set the default geth port if it's not provided
-if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
-  config.gethPort = 8545; // default
-}
-// set the default output directory if it's not provided
-if (!('output' in config) || (typeof config.output) !== 'string') {
-  config.output = '.'; // default this directory
-}
-// set the default size of array in block to use bulk operation.
-if (!('bulkSize' in config) || (typeof config.bulkSize) !== 'number') {
-  config.bulkSize = 100;
-}
+
 console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
 
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
@@ -328,6 +446,12 @@ var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr 
 if (config.patch === true){
   console.log('Checking for missing blocks');
   runPatcher(config);
+}
+
+// check NORICHLIST env
+// you can use it like as 'NORICHLIST=1 node tools/sync.js' to disable balance updater temporary.
+if (process.env.NORICHLIST) {
+  config.useRichList = false;
 }
 
 // Start listening for latest blocks
