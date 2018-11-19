@@ -7,8 +7,8 @@ Please read the README in the root directory that explains the parameters of thi
 require( '../db.js' );
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
+var _ = require('lodash');
 
-var fs = require('fs');
 var Web3 = require('web3');
 
 var mongoose        = require( 'mongoose' );
@@ -287,38 +287,28 @@ var checkBlockDBExistsThenWrite = function(config, patchData, flush) {
 /**
   Start config for node connection and sync
 **/
-var config = {};
-//Look for config.json file if not
+/**
+ * nodeAddr: node address
+ * gethPort: geth port
+ * bulkSize: size of array in block to use bulk operation
+ */
+// load config.json
+var config = { nodeAddr: 'localhost', gethPort: 8545, bulkSize: 100 };
 try {
-    var configContents = fs.readFileSync('config.json');
-    config = JSON.parse(configContents);
+    var local = require('../config.json');
+    _.extend(config, local);
     console.log('config.json found.');
+} catch (error) {
+    if (error.code === 'MODULE_NOT_FOUND') {
+        var local = require('../config.example.json');
+        _.extend(config, local);
+        console.log('No config file found. Using default configuration... (config.example.json)');
+    } else {
+        throw error;
+        process.exit(1);
+    }
 }
-catch (error) {
-  if (error.code === 'ENOENT') {
-      console.log('No config file found.');
-  }
-  else {
-      throw error;
-      process.exit(1);
-  }
-}
-// set the default NODE address to localhost if it's not provided
-if (!('nodeAddr' in config) || !(config.nodeAddr)) {
-  config.nodeAddr = 'localhost'; // default
-}
-// set the default geth port if it's not provided
-if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
-  config.gethPort = 8545; // default
-}
-// set the default output directory if it's not provided
-if (!('output' in config) || (typeof config.output) !== 'string') {
-  config.output = '.'; // default this directory
-}
-// set the default size of array in block to use bulk operation.
-if (!('bulkSize' in config) || (typeof config.bulkSize) !== 'number') {
-  config.bulkSize = 100;
-}
+
 console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
 
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
