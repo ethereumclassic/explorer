@@ -81,6 +81,16 @@ exports.data = function(req, res){
       } else {
         var ttx = tx;
         ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
+        ttx.gasPrice = etherUnits.toEther( new BigNumber(tx.gasPrice), "wei");
+        //get TxReceipt status & gasUsed
+        var receipt = web3.eth.getTransactionReceipt(txHash);
+        if (receipt.status != "0x0"){
+          ttx.status = "Success";
+        }
+        else{
+          ttx.status = "Failure";
+        }
+        ttx.gasUsed = receipt.gasUsed;
         //get timestamp from block
         var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
           if (!err && block)
