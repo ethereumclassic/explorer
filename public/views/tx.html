@@ -24,7 +24,15 @@
           <tr ><td width="25%">Gas Used</td><td>{{tx.gasUsed | number}}</td></tr>
           <tr ><td width="25%">Gas Price</td><td>{{tx.gasPrice}} {{ settings.symbol }} ({{tx.gasPriceGwei}} Gwei)</td></tr>
           <tr ><td width="25%">Nonce</td><td>{{tx.nonce}}</td></tr>
-          <tr ><td width="25%">Input Data</td><td><pre class="code">{{tx.input}}</pre></td></tr>
+          <tr>
+            <td width="25%">Input Data</td>
+            <td>
+              <pre class="code">{{tx.input}}</pre>
+              <div ng-show="tx.inputString">
+                UTF-8: <pre class="code">{{tx.inputString}}</pre>
+              <div>
+            </td>
+          </tr>
         </table>
 
         <table class="table table-condensed" ng-show="tx.isTrace">
