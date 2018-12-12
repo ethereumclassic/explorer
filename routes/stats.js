@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const Block = mongoose.model('Block');
 const BlockStat = mongoose.model('BlockStat');
+const TxStat = mongoose.model('TxStat');
 const Transaction = mongoose.model( 'Transaction' );
 
 const https = require('https');
@@ -101,58 +102,20 @@ var getTxStats = function(req, res) {
     }
   }
 
-  // select mod
-  var rngs = [    60*60,    2*60*60,     4*60*60,     6*60*60,    12*60*60,
-               24*60*60, 7*24*60*60, 14*24*60*60, 30*24*60*60, 60*24*60*60
-             ];
-  var mods = [    30*60,      30*60,       60*60,       60*60,       60*60,
-                  60*60,   24*60*60,    24*60*60,    24*60*60,    24*60*60,
-               24*60*60
-             ];
-  var i = 0;
-  rngs.forEach(function(r) {
-    if (range > r) {
-      i++;
-    }
-    return;
-  });
-  var mod = mods[i];
-
   var timebefore = parseInt((new Date()).getTime() / 1000) - range;
-  timebefore -= timebefore % mod;
-  Transaction.aggregate([{
-    $match: {
-      timestamp: {
-        $gte: timebefore
+
+  TxStat.find({ timestamp: { $gte: timebefore } }, "timestamp txns")
+    .lean(true).sort('-timestamp').limit(100)
+    .exec(function (err, docs) {
+      if (err || !docs) {
+        console.error(err);
+        res.status(500).send();
+        res.end();
+        return;
       }
-    }
-  }, {
-    $group: {
-      _id: {
-        timestamp: {
-          $subtract: [ '$timestamp', { $mod: [ '$timestamp', mod ] } ]
-        }
-      },
-      timestamp: { $min: '$timestamp' },
-      txns: { $sum: 1 },
-      amount: { $sum: '$value' }
-    }
-  }, {
-    $project: {
-      "_id": 0,
-      "timestamp": 1,
-      "txns": 1,
-      "amount": 1
-    }
-  }]).sort('timestamp').exec(function(err, result) {
-    if (err || !result) {
-      console.error(err);
-      res.status(500).send();
-    } else {
-      res.write(JSON.stringify(result));
+      res.write(JSON.stringify(docs));
       res.end();
-    }
-  });
+    });
 }
 
 /**

@@ -6,7 +6,7 @@ const _ = require('lodash');
 const Web3 = require('web3');
 
 const mongoose = require('mongoose');
-const { BlockStat } = require('../db.js');
+const { BlockStat, TxStat, Transaction } = require('../db.js');
 
 // load config.json
 const config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
@@ -77,7 +77,81 @@ var getStats = function (web3, blockNumber, nextBlock, endNumber, interval, resc
 };
 
 /**
-  * Checks if the a record exists for the block number
+ * Aggregate transaction stats
+ */
+var updateTxStats = function(settings, days) {
+    var txnDays = settings.stats && settings.stats.txnDays || 3;
+
+    var defaultRange =  24*txnDays*60*60;
+    // check validity of range
+    var range = 24*days*60*60;
+    if (range && range < 60 * 60 * 24 * 7) {
+        if (range < 3600) { // minimal 1 hour
+            range = 3600;
+        }
+    } else {
+        range = defaultRange;
+    }
+
+    // select mod
+    var rngs = [    60*60,    2*60*60,     4*60*60,     6*60*60,    12*60*60,
+                 24*60*60, 7*24*60*60, 14*24*60*60, 30*24*60*60, 60*24*60*60
+               ];
+    var mods = [    30*60,      30*60,       60*60,       60*60,       60*60,
+                    60*60,   24*60*60,    24*60*60,    24*60*60,    24*60*60,
+                 24*60*60
+               ];
+    var i = 0;
+    rngs.forEach(function(r) {
+        if (range > r) {
+            i++;
+        }
+        return;
+    });
+    var mod = mods[i];
+
+    var timebefore = parseInt((new Date()).getTime() / 1000) - range;
+    timebefore -= timebefore % mod;
+    Transaction.aggregate([{
+        $match: {
+            timestamp: {
+                $gte: timebefore
+            }
+        }
+    }, {
+        $group: {
+            _id: {
+                timestamp: {
+                    $subtract: [ '$timestamp', { $mod: [ '$timestamp', mod ] } ]
+                }
+            },
+            timestamp: { $min: '$timestamp' },
+            txns: { $sum: 1 }
+        }
+    }, {
+        $project: {
+            "_id": 0,
+            "timestamp": 1,
+            "txns": 1
+        }
+    }]).sort('timestamp').exec(function(err, results) {
+        if (err || !results) {
+            console.error(err);
+        } else {
+            results.forEach(function(result) {
+                var txstat = {
+                    "timestamp": result.timestamp,
+                    "txns": result.txns
+                }
+                console.log(' - txstat ' + result.timestamp + ' / txns = ' + result.txns);
+                TxStat.collection.update({ timestamp: result.timestamp }, { $set: txstat }, { upsert: true });
+            });
+        }
+    });
+}
+
+/**
+  * Checks if the a record exists for the block number 
   *     if record exists: abort
   *     if record DNE: write a file for the block
   */
@@ -162,6 +236,29 @@ if (process.env.RESCAN) {
   rescan = true;
 }
 
+// tx stats
+var notxstats = false;
+// tx days: aggregate range
+var txndays = 14; /* 14 days */
+// interval
+var txStatInterval = 10 * 60 * 1000;
+
+/**
+ * Usage:
+ *  - to execute updateTxStats() only once.
+ *   NOTXSTATS=1 tools/stats.js
+ */
+if (process.env.NOTXSTATS) {
+    notxstats = true;
+}
+
+if (process.env.TXNDAYS) {
+    txndays = Number(process.env.TXNDAYS);
+    if (txndays < 1) {
+        txndays = 1;
+    }
+}
+
 // run
 updateStats(range, interval, rescan);
 
@@ -169,4 +266,13 @@ if (!rescan) {
   setInterval(() => {
     updateStats(range, interval);
   }, statInterval);
+}
+
+// update TxStats
+updateTxStats(config.settings, txndays);
+
+if (!notxstats) {
+    setInterval(function() {
+        updateTxStats(config.settings, txndays);
+    }, txStatInterval);
 }
