@@ -150,10 +150,8 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
                         files: [
                             '/js/controllers/AccountsController.js',
-                            '/plugins/datatables/datatables.min.css',
                             '/plugins/datatables/datatables.bootstrap.css',
-                            '/plugins/datatables/datatables.all.min.js',
-                            '/plugins/datatables/datatable.min.js'
+                            '/plugins/datatables/datatables.all.min.js'
                         ]
                     });
                 }]

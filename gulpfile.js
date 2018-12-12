@@ -82,6 +82,7 @@ var public_js_scripts = [
 
 var public_js_controllers_scripts = [
   'AddressController.js',
+  'AccountsController.js',
   'BlockController.js',
   'ContractController.js',
   'DAOController.js',
@@ -304,6 +305,12 @@ gulp.task('uglify-module', ['clean'], function() {
     .pipe(concat('datatables.all.min.js'))
     .pipe(uglify())
     .pipe(gulp.dest(bases.distdir + 'plugins/datatables'));
+
+  // d3.tip
+  gulp.src('node_modules/d3-tip/dist/index.js')
+    .pipe(uglify())
+    .pipe(rename('d3.tip.min.js'))
+    .pipe(gulp.dest(bases.distdir + 'plugins'));
 });
 
 var copyPublic = function() {
