@@ -69,10 +69,10 @@ Basic settings:
 
 
 ### Run:
-The below will start both the web-gui and sync.js (which populates MongoDV with blocks/transactions).
+The below will start the web-gui.
 `npm start`
 
-You can leave sync.js running without app.js and it will sync and grab blocks based on config.json parameters
+You can leave sync.js running without app.js and it will sync and grab blocks based on config.json parameters (which populates MongoDB with blocks/transactions).
 `node ./tools/sync.js`
 
 Enabling stats requires running a separate process:

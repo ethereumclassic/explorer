@@ -6,7 +6,9 @@
   "repository": "https://github.com/ethereumproject/explorer",
   "license": "MIT",
   "scripts": {
-    "start": "concurrently \"node tools/sync.js \" \"node app.js\" ",
+    "start": "concurrently \"node --max_old_space_size=60000 app.js\" ",
+    "sync": "concurrently \"node --max_old_space_size=60000 tools/sync.js\" ",
+    "stats": "concurrently \"node --max_old_space_size=60000 tools/stats.js \" ",
     "pretest": "copyfiles app.js app/  ",
     "test": "mocha --exit"
   },
