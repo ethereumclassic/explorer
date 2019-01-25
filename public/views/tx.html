@@ -8,7 +8,7 @@
           <tr ><td width="25%">TxHash</td><td>{{tx.hash}}</td></tr>
           <tr ><td width="25%">TxReceipt Status</td><td>{{tx.status}}</td></tr>
           <tr ><td width="25%">Block Height</td>
-                <td><a href="/block/{{tx.blockNumber}}">{{tx.blockNumber}}</a></td>
+                <td><a href="/block/{{tx.blockNumber}}">{{tx.blockNumber | number}}</a></td>
           </tr>
           <tr ><td width="25%">TimeStamp</td>
                 <td>{{tx.datetime | date:'yyyy-MM-dd HH:mm:ss Z' }} ({{tx.timestamp | timeDuration}} ago)</td>
@@ -19,10 +19,10 @@
                 <td><a href="/addr/{{tx.to}}">{{tx.to}}</a></td></tr>
           <tr ng-show="tx.creates"><td width="25%">creates</td>
                 <td><a href="/addr/{{tx.creates}}">{{tx.creates}}</a></td></tr>                
-          <tr ><td width="25%">Value</td><td>{{tx.value}} {{ settings.symbol }}</td></tr>
+          <tr ><td width="25%">Value</td><td>{{tx.value | number}} {{ settings.symbol }}</td></tr>
           <tr ><td width="25%">Gas Provided</td><td>{{tx.gas | number}}</td></tr>
           <tr ><td width="25%">Gas Used</td><td>{{tx.gasUsed | number}}</td></tr>
-          <tr ><td width="25%">Gas Price</td><td>{{tx.gasPrice}} {{ settings.symbol }}</td></tr>
+          <tr ><td width="25%">Gas Price</td><td>{{tx.gasPrice}} {{ settings.symbol }} ({{tx.gasPriceGwei}} Gwei)</td></tr>
           <tr ><td width="25%">Nonce</td><td>{{tx.nonce}}</td></tr>
           <tr ><td width="25%">Input Data</td><td><pre class="code">{{tx.input}}</pre></td></tr>
         </table>

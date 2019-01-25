@@ -81,6 +81,7 @@ exports.data = function(req, res){
       } else {
         var ttx = tx;
         ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
+        ttx.gasPriceGwei = new BigNumber(tx.gasPrice).div(etherUnits.getValueOfUnit('gwei')).toString(10);
         ttx.gasPrice = etherUnits.toEther( new BigNumber(tx.gasPrice), "wei");
         //get TxReceipt status & gasUsed
         var receipt = web3.eth.getTransactionReceipt(txHash);
