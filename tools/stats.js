@@ -59,7 +59,7 @@ var getStats = function(web3, blockNumber, nextBlock, endNumber, interval, resca
 }
 
 /**
-  * Checks if the a record exists for the block number 
+  * Checks if the a record exists for the block number
   *     if record exists: abort
   *     if record DNE: write a file for the block
   */
@@ -81,13 +81,13 @@ var checkBlockDBExistsThenWrite = function(web3, blockData, nextBlock, endNumber
             new BlockStat(stat).save( function( err, s, count ){
                 console.log(s)
                 if ( typeof err !== 'undefined' && err ) {
-                   console.log('Error: Aborted due to error on ' + 
-                        'block number ' + blockData.number.toString() + ': ' + 
+                   console.log('Error: Aborted due to error on ' +
+                        'block number ' + blockData.number.toString() + ': ' +
                         err);
                    process.exit(9);
                 } else {
                     console.log('DB successfully written for block number ' +
-                        blockData.number.toString() );    
+                        blockData.number.toString() );
                     getStats(web3, blockData.number - interval, blockData, endNumber, interval, rescan);
                 }
             });
@@ -111,7 +111,7 @@ var checkBlockDBExistsThenWrite = function(web3, blockData, nextBlock, endNumber
 // geth --rpc --rpcaddr "localhost" --rpcport "8545"  --rpcapi "eth,net,web3"
 
 var minutes = 1;
-statInterval = minutes * 60 * 1000;
+statInterval = 20 * minutes * 60 * 1000;
 
 var rescan = false; /* rescan: true - rescan range */
 var range = 1000;
