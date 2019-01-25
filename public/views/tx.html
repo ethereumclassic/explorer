@@ -4,24 +4,24 @@
       <div class="portlet-body">
 
         <table class="col-md-6 table table-hover">
-          
-          <tr ><td width="25%">hash</td><td>{{tx.hash}}</td></tr>
-          <tr ><td width="25%">blockNumber</td>
+
+          <tr ><td width="25%">TxHash</td><td>{{tx.hash}}</td></tr>
+          <tr ><td width="25%">Block Height</td>
                 <td><a href="/block/{{tx.blockNumber}}">{{tx.blockNumber}}</a></td>
           </tr>
-          <tr ><td width="25%">Time</td>
+          <tr ><td width="25%">TimeStamp</td>
                 <td>{{tx.datetime | date:'yyyy-MM-dd HH:mm:ss Z' }} ({{tx.timestamp | timeDuration}} ago)</td>
           </tr>
-          <tr ><td width="25%">from</td>
+          <tr ><td width="25%">From</td>
                 <td><a href="/addr/{{tx.from}}">{{tx.from}}</a></td></tr>
-          <tr ng-show="tx.to"><td width="25%">to</td>
+          <tr ng-show="tx.to"><td width="25%">To</td>
                 <td><a href="/addr/{{tx.to}}">{{tx.to}}</a></td></tr>
-          <tr ng-show="tx.creates"><td width="25%">creates</td>
-                <td><a href="/addr/{{tx.creates}}">{{tx.creates}}</a></td></tr>                
-          <tr ><td width="25%">value</td><td>{{tx.value}} {{ settings.symbol }}</td></tr>
-          <tr ><td width="25%">gas Provided</td><td>{{tx.gas | number}}</td></tr>
-          <tr ><td width="25%">gasPrice</td><td>{{tx.gasPrice | number}}</td></tr>
-          <tr ><td width="25%">nonce</td><td>{{tx.nonce}}</td></tr>
+          <tr ng-show="tx.creates"><td width="25%">Creates</td>
+                <td><a href="/addr/{{tx.creates}}">{{tx.creates}}</a></td></tr>
+          <tr ><td width="25%">Value</td><td>{{tx.value}} {{ settings.symbol }}</td></tr>
+          <tr ><td width="25%">Gas Limit</td><td>{{tx.gas | number}}</td></tr>
+          <tr ><td width="25%">Gas Price</td><td>{{tx.gasPrice | number}}</td></tr>
+          <tr ><td width="25%">Nonce</td><td>{{tx.nonce}}</td></tr>
           <tr ><td width="25%">Input Data</td><td><pre class="code">{{tx.input}}</pre></td></tr>
         </table>
 
@@ -32,7 +32,7 @@
                   <th> To </th>
                   <th style="text-align:right"> Amount </th>
                   <th style="text-align:right"> Gas </th>
-                  <th style="text-align:right"> GasUsed </th>
+                  <th style="text-align:right"> Gas Used </th>
                   <th></th>
               </tr>
           </thead>
