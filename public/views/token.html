@@ -9,7 +9,7 @@
                   {{ token.balance | number: 10 }} </span><br>
                 <span class="eth-stat-text">
                   {{ token.name }} Address Balance ({{ settings.symbol }})
-                  </span><br> 
+                  </span><br>
                   <div class="margin-top-20">
                   {{ token.total_supply | number:1 }} <span class="eth-stat-text">Total {{ token.symbol }} Tokens</span>
                   </div>
@@ -29,17 +29,17 @@
                     <span class='btn blue-madison' ng-show="!isFollowing(token.ash)" ng-click="follow(token.ash)">WATCH <i class="fa fa-rss "></i></span>
                     <span class='btn grey'  ng-show="isFollowing(token.ash)" ng-click="unFollow(token.ash)">WATCHING <i class="fa fa-check "></i></span>
                     <div class="margin-top-20">
-                        {{ token.follow_count }}0 
+                        {{ token.follow_count }}0
                         <span class="eth-stat-text">WATCHING</span>
                     </div>
                     <div class="margin-top-20">
                        <span class="eth-stat-text">Contract Creator</span><br>
-                       <a href="/addr/{{token.creator}}">{{token.creator.substr(0,24)}}...</a> at txn 
+                       <a href="/address/{{token.creator}}">{{token.creator.substr(0,24)}}...</a> at txn
                        <a href="/tx/{{token.transaction}}">{{token.transaction.substr(0,24)}}...</a>
                     </div>
                     <div class="margin-top-20">
                        <span class="eth-stat-text">Token Address</span><br>
-                       <a href="/addr/{{token.address}}">{{token.address}}</a>
+                       <a href="/address/{{token.address}}">{{token.address}}</a>
                     </div>
                 </div>
               </div>
@@ -53,7 +53,7 @@
   <!-- Begin: Transaction Datatable -->
   <div class="portlet light col-md-12">
      <div class="portlet-body">
-       
+
        <div class="tabbable-line">
           <ul class="nav nav-tabs ">
               <li ng-class="{active: activeTab == 'tab_token_1' || !activeTab}">
@@ -64,10 +64,10 @@
               </li>
               <li ng-class="{active: activeTab == 'tab_token_3'}">
                   <a href="#tab_token_3" data-toggle="tab" aria-expanded="true"> Contract Transactions </a>
-              </li>              
+              </li>
               <li ng-class="{active: activeTab == 'tab_token_4'}">
                   <a href="#tab_token_4" data-toggle="tab" aria-expanded="false"> Contract Source </a>
-              </li>              
+              </li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane" ng-class="{active: activeTab == 'tab_token_1' || !activeTab}" id="tab_token_1">
@@ -113,7 +113,7 @@
 
             <div class="tab-pane" id="tab_token_4" ng-class="{active: activeTab == 'tab_token_4'}">
               <contract-source></contract-source>
-            </div>            
+            </div>
         </div><!-- end tab content -->
       </div>
     </div><!-- End: portlet -->

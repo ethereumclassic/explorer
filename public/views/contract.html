@@ -2,7 +2,7 @@
 <div class="row">
   <div class="col-md-12 portlet light">
       <div class="portlet-body">
- 
+
         <div class="tabbable-line">
           <ul class="nav nav-tabs ">
               <li ng-class="{active: !contract.compiled}">
@@ -31,7 +31,7 @@
                 </div>
                 <span class="help-block font-red-mint">{{errors.address}}</span>
               </div>
-              
+
               <div class="form-group col-sm-3">
                 <span class="help-block"><b>Contract Name </b></span>
                 <div class="input-group">
@@ -74,13 +74,13 @@
               </div>
               </div>
               <div class="row">
-              <button type="button" data-loading-text="Compiling..." class="btn btn-info" ng-click="submitCode()" data-style="expand-right" id="submitCodeBtn">Validate Code 
+              <button type="button" data-loading-text="Compiling..." class="btn btn-info" ng-click="submitCode()" data-style="expand-right" id="submitCodeBtn">Validate Code
               </button>
 
 
               <button type="button" class="btn grey-cascade" ng-click="resetCode()">Reset</button>
               </div></form>
-              
+
             </div><!-- End: source code tab -->
 
             <div class="tab-pane" id="tab_contract_2" ng-class="{active: contract.compiled}" ng-show="contract.compiled">
@@ -91,14 +91,14 @@
                 <p>
                 <!-- can't get this without custom evm
                 <i class="fa fa-check-circle-o font-green-sharp"></i> Note: Contract was created by transaction <a href="/tx/{{contract.txHash}}">{{contract.txHash}}</a><br>-->
-                <i class="fa fa-check-circle-o font-green-sharp"></i> View the verified result at <a href="/addr/{{contract.address}}">{{contract.address}}</a>.
+                <i class="fa fa-check-circle-o font-green-sharp"></i> View the verified result at <a href="/address/{{contract.address}}">{{contract.address}}</a>.
                 </p>
               </div>
               <div class="col-sm-12" ng-show="!contract.valid">
                 <h4>Unable to Verify Code</h4>
                 <p>
                 <!--<i class="fa fa-check-circle-o"></i> Note: Contract was created by transaction <a href="/tx/{{contract.txHash}}">{{contract.txHash}}</a><br>-->
-                <i class="fa fa-times-circle-o font-red-mint"></i> The compiled result does not match the input creation bytecode located at <a href="/addr/{{contract.address}}">{{contract.address}}</a>.
+                <i class="fa fa-times-circle-o font-red-mint"></i> The compiled result does not match the input creation bytecode located at <a href="/address/{{contract.address}}">{{contract.address}}</a>.
                 </p>
               </div>
             </div>
@@ -107,7 +107,7 @@
               <div class="col-sm-12 code well">
                 <b>Compiler Version:</b> {{contract.compilerVersion}}<br>
                 <b>Optimization Enabled:</b> {{contract.optimization}}<br>
-                
+
                 <div ng-repeat="v in contract.verifiedContracts">
                   <br><b>ContractName:</b><br>
                   <pre>{{v.name}}</pre>

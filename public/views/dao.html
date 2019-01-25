@@ -9,7 +9,7 @@
                   {{ dao.balance | number: 10 }} </span><br>
                 <span class="eth-stat-text">
                   TheDAO Balance
-                  </span><br> 
+                  </span><br>
                   <div class="margin-top-20">
                   {{ dao.extra_balance | number: 10 }} <span class="eth-stat-text">TheDAO Extra Balance
                   </span>
@@ -33,12 +33,12 @@
                     <span class='btn blue-madison' ng-show="!isFollowing(dao.ash)" ng-click="follow(dao.ash)">WATCH <i class="fa fa-rss "></i></span>
                     <span class='btn grey'  ng-show="isFollowing(dao.ash)" ng-click="unFollow(dao.ash)">WATCHING <i class="fa fa-check "></i></span>
                     <div class="margin-top-20">
-                        {{ dao.follow_count }}0 
+                        {{ dao.follow_count }}0
                         <span class="eth-stat-text">WATCHING</span>
                     </div>
                     <div class="margin-top-20">
                        <span class="eth-stat-text">Contract Creator</span><br>
-                       <a href="/addr/0x793ea9692ada1900fbd0b80fffec6e431fe8b391">0x793ea9692ada1900fbd0b80...</a> at txn 
+                       <a href="/address/0x793ea9692ada1900fbd0b80fffec6e431fe8b391">0x793ea9692ada1900fbd0b80...</a> at txn
                        <a href="/tx/0xe9ebfecc2fa10100db51a4408d18193b3ac504584b51a4e55bdef1318f0a30f9">0xe9ebfecc2fa10100db51a44...</a>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
   <!-- Begin: Transaction Datatable -->
   <div class="portlet light col-md-12">
      <div class="portlet-body">
-       
+
        <div class="tabbable-line">
           <ul class="nav nav-tabs ">
               <li ng-class="{active: activeTab == 'tab_dao_1' || !activeTab}">

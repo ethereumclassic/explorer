@@ -51,7 +51,7 @@ angular.module('BlocksApp').controller('AccountsController', function($statePara
         {
           render:
             function(data, type, row) {
-              return '<a href="/addr/' + data +'">' + data + '</a>'
+              return '<a href="/address/' + data +'">' + data + '</a>'
             },
           targets: [1]
         },
