@@ -25,22 +25,22 @@ module.exports = function(req, res) {
 
   if (!("action" in req.body))
     res.status(400).send();
-  
-  else if (req.body.action=="miners") 
+
+  else if (req.body.action=="miners")
     getMinerStats(req, res)
-  
-  else if (req.body.action=="hashrate") 
+
+  else if (req.body.action=="hashrate")
     getHashrate(res);
 
   else if (req.body.action=="hashrates")
     getHashrates(req, res);
-  
+
 }
 /**
   Aggregate miner stats
 **/
 var getMinerStats = function(req, res) {
-  var range =  6*60*60; // 6 hours
+  var range =  24*60*60; // 24 hours
   // check validity of range
   if (req.body.range && req.body.range < 60 * 60 * 24 * 7) {
     range = parseInt(req.body.range);
@@ -95,7 +95,7 @@ var getHashrates = function(req, res) {
   //var range =     14 * 24 * 60 * 60; /* 14 days */
   //var range =     30 * 24 * 60 * 60; /* 1 months */
   //var range = 2 * 30 * 24 * 60 * 60; /* 2 months */
-  var range = 6 * 30 * 24 * 60 * 60; /* 6 months */
+  var range = 36 * 30 * 24 * 60 * 60; /* 36 months */
   if (req.body.days && req.body.days <= 365) {
     var days = parseInt(req.body.days);
     if (days <= 1) {
@@ -194,9 +194,9 @@ var getEtcEth = function(res) {
     method: 'GET',
     data: 'eth'
   }];
-  
+
   async.map(options, function(opt, callback) {
-    
+
     https.request(opt, function(mg) {
       mg.on('data', function (data) {
         try {
@@ -233,7 +233,7 @@ var getEtcEth = function(res) {
           "etcEthDiff": etcEthDiff
         }));
         res.end();
-      } 
+      }
     }
 
   });
