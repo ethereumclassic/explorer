@@ -80,3 +80,8 @@ Enabling stats requires running a separate process:
 
 You can configure intervals (how often a new data point is pulled) and range (how many blocks to go back) with the following:
 `RESCAN=1000:100000 node tools/stats.js` (New data point every 1,000 blocks. Go back 100,000 blocks).
+
+## Docker installation
+Set `nodeAddr` in `config.json` to `host.docker.internal`
+
+Run `docker-compose up`
