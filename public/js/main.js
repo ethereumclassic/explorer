@@ -119,7 +119,7 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
             }
         })
         .state('address', {
-            url: "/addr/{hash}",
+            url: "/addr{dummy:(?:ess)?}/{hash}",
             templateUrl: "views/address.html",
             data: {pageTitle: 'Address'},
             controller: "AddressController",
