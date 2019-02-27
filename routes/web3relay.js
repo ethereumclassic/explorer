@@ -85,7 +85,10 @@ exports.data = function(req, res){
         ttx.gasPrice = etherUnits.toEther( new BigNumber(tx.gasPrice), "wei");
         //get TxReceipt status & gasUsed
         var receipt = web3.eth.getTransactionReceipt(txHash);
-        if (receipt.status != "0x0"){
+        if (!receipt) {
+          ttx.status = "Pending";
+        }
+        else if (receipt && receipt.status != "0x0"){
           ttx.status = "Success";
         }
         else{
