@@ -84,17 +84,23 @@ exports.data = function(req, res){
         ttx.gasPriceGwei = new BigNumber(tx.gasPrice).div(etherUnits.getValueOfUnit('gwei')).toString(10);
         ttx.gasPrice = etherUnits.toEther( new BigNumber(tx.gasPrice), "wei");
         //get TxReceipt status & gasUsed
-        var receipt = web3.eth.getTransactionReceipt(txHash);
-        if (!receipt) {
-          ttx.status = "Pending";
-        }
-        else if (receipt && receipt.status != "0x0"){
-          ttx.status = "Success";
-        }
-        else{
-          ttx.status = "Failure";
-        }
-        ttx.gasUsed = receipt.gasUsed;
+        web3.eth.getTransactionReceipt(txHash, function(err, receipt) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          if (!receipt) {
+            ttx.status = "Pending";
+          } else if (receipt && receipt.status != "0x0"){
+            ttx.status = "Success";
+          } else{
+            ttx.status = "Failure";
+          }
+          if (receipt) {
+            ttx.gasUsed = receipt.gasUsed;
+            ttx.txFee = etherUnits.toEther( new BigNumber(Math.floor(etherUnits.toWei(tx.gasPrice * receipt.gasUsed, "ether"))), "wei");
+          }
+        });
         //get timestamp from block
         var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
           if (!err && block)
@@ -103,14 +109,21 @@ exports.data = function(req, res){
           if (ttx.input != "0x") {
             // check if input data is a string or contact data
             if (ttx.to != null) {
-              var bytecode = web3.eth.getCode(ttx.to);
-              if (bytecode == "0x") {
-                // decode string data
-                var data = ttx.input.replace(/^0x/, '');
-                ttx.inputString = Buffer.from(data, 'hex').toString();
-              } else {
-                ttx.isTrace = true;
-              }
+              web3.eth.getCode(ttx.to, function(err, bytecode) {
+                if (!err) {
+                  if (bytecode == "0x") {
+                    // decode string data
+                    var data = ttx.input.replace(/^0x/, '');
+                    ttx.inputString = Buffer.from(data, 'hex').toString();
+                  } else {
+                    ttx.isTrace = true;
+                  }
+                }
+                res.write(JSON.stringify(ttx));
+                res.end();
+                return;
+              });
+              return;
             } else {
               ttx.isTrace = true;
             }
