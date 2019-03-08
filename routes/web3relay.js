@@ -126,40 +126,40 @@ exports.data = function(req, res){
 
     var addrData = {};
 
-    if (options.indexOf("balance") > -1) {
-      try {
-        addrData["balance"] = web3.eth.getBalance(addr);  
-        addrData["balance"] = etherUnits.toEther(addrData["balance"], 'wei');
-      } catch(err) {
+    // batch job
+    var batch = web3.createBatch();
+    batch.add(web3.eth.getBalance.request(addr));
+    batch.add(web3.eth.getTransactionCount.request(addr));
+    batch.add(web3.eth.getCode.request(addr));
+
+    batch.requestManager.sendBatch(batch.requests, function(err, results) {
+      if (err) {
         console.error("AddrWeb3 error :" + err);
-        addrData = {"error": true};
+        res.write(JSON.stringify({"error": true}));
+        res.end();
+        return;
       }
-    }
-    if (options.indexOf("count") > -1) {
-      try {
-         addrData["count"] = web3.eth.getTransactionCount(addr);
-      } catch (err) {
-        console.error("AddrWeb3 error :" + err);
-        addrData = {"error": true};
-      }
-    }
-    if (options.indexOf("bytecode") > -1) {
-      try {
-         addrData["bytecode"] = web3.eth.getCode(addr);
-         if (addrData["bytecode"].length > 2) 
+
+      results = results || [];
+      var addrData = {};
+      batch.requests.map(function (request, index) {
+        return results[index] || {};
+      }).forEach(function (result, i) {
+        if (i == 0) {
+          addrData["balance"] = etherUnits.toEther(result.result, 'wei');
+        } else if (i == 1) {
+          addrData["count"] = Number(result.result);
+        } else if (i == 2) {
+          addrData["bytecode"] = result.result;
+          if (addrData["bytecode"].length > 2)
             addrData["isContract"] = true;
-         else
+          else
             addrData["isContract"] = false;
-      } catch (err) {
-        console.error("AddrWeb3 error :" + err);
-        addrData = {"error": true};
-      }
-    }
-   
-    res.write(JSON.stringify(addrData));
-    res.end();
-
-
+        }
+      });
+      res.write(JSON.stringify(addrData));
+      res.end();
+    });
   } else if ("block" in req.body) {
     var blockNumOrHash;
     if (/^(0x)?[0-9a-f]{64}$/i.test(req.body.block.trim())) {
