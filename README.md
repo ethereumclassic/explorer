@@ -34,7 +34,7 @@ Basic settings:
 ```json
 {
     "nodeAddr":     "localhost",
-    "gethPort":     8545,
+    "rpcPort":      8545,
     "startBlock":   0,
     "endBlock":     "latest",
     "quiet":        true,
@@ -94,7 +94,7 @@ Basic settings:
 
 ```nodeAddr```    Your node API RPC address.
 
-```gethPort```    Your node API RPC port.
+```rpcPort```     Your node API RPC port.
 
 ```startBlock```  This is the start block of the blockchain, should always be 0 if you want to sync the whole ETC blockchain.
 

@@ -17,7 +17,7 @@ var filterTrace = require('./filters').filterTrace;
 
 /*Start config for node connection and sync*/
 // load config.json
-var config = { nodeAddr: 'localhost', gethPort: 8545 };
+var config = { nodeAddr: 'localhost', rpcPort: 8545 };
 try {
     var local = require('../config.json');
     _.extend(config, local);
@@ -34,11 +34,11 @@ try {
 }
 
 //Create Web3 connection
-console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
+console.log('Connecting ' + config.nodeAddr + ':' + config.rpcPort + '...');
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
 } else {
-  web3 = new Web3(new Web3.providers.HttpProvider('http://'+config.nodeAddr+':'+config.gethPort));
+  web3 = new Web3(new Web3.providers.HttpProvider('http://'+config.nodeAddr+':'+config.rpcPort));
 }
 
 if (web3.isConnected())
@@ -46,10 +46,7 @@ if (web3.isConnected())
 else
   throw "No connection, please specify web3host in conf.json";
 
-if (web3.version.node.split('/')[0].toLowerCase().includes('parity')) {
-  // parity extension
-  web3 = require("../lib/trace.js")(web3);
-}
+web3 = require("../lib/trace.js")(web3);
 
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
