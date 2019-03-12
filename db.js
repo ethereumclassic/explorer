@@ -12,7 +12,7 @@ var Block = new Schema(
     "transactionsRoot": String,
     "stateRoot": String,
     "receiptRoot": String,
-    "miner": String,
+    "miner": {type: String, lowercase: true},
     "difficulty": String,
     "totalDifficulty": String,
     "size": Number,
@@ -46,13 +46,13 @@ var Contract = new Schema(
 
 var Transaction = new Schema(
 {
-    "hash": {type: String, index: {unique: true}},
+    "hash": {type: String, index: {unique: true}, lowercase: true},
     "nonce": Number,
     "blockHash": String,
     "blockNumber": Number,
     "transactionIndex": Number,
-    "from": String,
-    "to": String,
+    "from": {type: String, lowercase: true},
+    "to": {type: String, lowercase: true},
     "value": String,
     "gas": Number,
     "gasPrice": String,
