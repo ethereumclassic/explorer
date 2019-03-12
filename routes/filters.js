@@ -4,11 +4,11 @@ var BigNumber = require('bignumber.js');
 var RLP = require('rlp');
 
 /*
-  Filter an array of TX 
+  Filter an array of TX
 */
 function filterTX(txs, value) {
   return txs.map(function(tx){
-    return [tx.hash, tx.blockNumber, tx.from, tx.to, etherUnits.toEther(new BigNumber(tx.value), 'ether'), tx.gas, tx.timestamp, tx.creates];
+    return [tx.hash, tx.blockNumber, tx.status, tx.from, tx.to, etherUnits.toEther(new BigNumber(tx.value), 'ether'), tx.gas, tx.gasUsed, tx.timestamp, tx.creates];
   })
 }
 
@@ -25,14 +25,14 @@ function filterTrace(txs, value) {
     } else {
       if (t.action.to)
         t.to = t.action.to;
-      t.from = t.action.from; 
+      t.from = t.action.from;
       if (t.action.gas)
         t.gas = new BigNumber(t.action.gas).toNumber();
       if ((t.result) && (t.result.gasUsed))
         t.gasUsed = new BigNumber(t.result.gasUsed).toNumber();
       if ((t.result) && (t.result.address))
         t.to = t.result.address;
-      t.value = etherUnits.toEther( new BigNumber(t.action.value), "wei");            
+      t.value = etherUnits.toEther( new BigNumber(t.action.value), "wei");
     }
     return t;
   })
@@ -40,11 +40,11 @@ function filterTrace(txs, value) {
 
 function filterBlock(block, field, value) {
   var tx = block.transactions.filter(function(obj) {
-    return obj[field]==value;   
+    return obj[field]==value;
   });
   tx = tx[0];
   if (typeof tx !== "undefined")
-    tx.timestamp = block.timestamp; 
+    tx.timestamp = block.timestamp;
   return tx;
 }
 
@@ -70,15 +70,13 @@ function filterBlocks(blocks) {
 /* stupid datatable format */
 function datatableTX(txs) {
   return txs.map(function(tx){
-    return [tx.hash, tx.blockNumber, tx.from, tx.to, 
-            etherUnits.toEther(new BigNumber(tx.value), 'wei'), tx.gas, tx.timestamp]
+    return [tx.hash, tx.blockNumber, tx.status, tx.from, tx.to, etherUnits.toEther(new BigNumber(tx.value), 'wei'), tx.gas, tx.gasUsed, tx.timestamp]
   })
 }
 
 function internalTX(txs) {
   return txs.map(function(tx){
-    return [tx.transactionHash, tx.blockNumber, tx.action.from, tx.action.to, 
-            etherUnits.toEther(new BigNumber(tx.action.value), 'wei'), tx.action.gas, tx.timestamp]
+    return [tx.transactionHash, tx.blockNumber, tx.action.from, tx.action.to, etherUnits.toEther(new BigNumber(tx.action.value), 'wei'), tx.action.gas, tx.timestamp]
   })
 }
 

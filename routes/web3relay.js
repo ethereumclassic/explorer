@@ -86,6 +86,15 @@ exports.data = function(req, res){
           } else {
             var ttx = tx;
             ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
+            ttx.gasPriceGwei = new BigNumber(tx.gasPrice).div(etherUnits.getValueOfUnit('gwei')).toString(10);
+            ttx.gasPrice = etherUnits.toEther( new BigNumber(tx.gasPrice), "wei");
+            ttx.txFee = ttx.gasPrice * tx.gasUsed;
+            //calculate transaction confirmations
+            var latestBlock = web3.eth.blockNumber() + 1;
+            ttx.confirmation = latestBlock - tx.blockNumber;
+            if (ttx.confirmation === latestBlock) {
+              ttx.confirmation = 0;
+            }
             //get timestamp from block
             var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
               if (!err && block)

@@ -12,6 +12,7 @@ function normalizeTX(txData, blockData) {
   var tx = {
     blockHash: txData.blockHash,
     blockNumber: txData.blockNumber,
+    status: 0,
     from: txData.from,
     to: txData.to,
     hash: txData.hash,
@@ -21,19 +22,29 @@ function normalizeTX(txData, blockData) {
     s: txData.s,
     v: txData.v,
     gas: txData.gas,
+    gasUsed: 0,
     gasPrice: txData.gasPrice,
     input: txData.input,
     transactionIndex: txData.transactionIndex,
     timestamp: blockData.timestamp
   };
+  // getTransactionReceipt to get contract address and more data
+
+  let receipt;
+  try {
+    receipt = web3.eth.getTransactionReceipt(tx.hash)
+  } catch(err) {
+    console.log('Error', err);
+  }
+  tx.gasUsed = receipt.gasUsed;
+  tx.status = receipt.status;
+
   if (txData.to == null) {
     // parity support `creates` field
     if (txData.creates) {
       tx.creates = txData.creates;
       return tx;
     } else {
-      // getTransactionReceipt to get contract address
-      var receipt = web3.eth.getTransactionReceipt(tx.hash);
       if (receipt && receipt.contractAddress) {
         tx.creates = receipt.contractAddress;
       }

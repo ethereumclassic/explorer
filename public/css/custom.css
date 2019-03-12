@@ -5,13 +5,13 @@ img.logo-default {
 }
 .create{background-color:#36c6d3}
 .truncate-txhash, .truncate-addrhash{
-    white-space:nowrap; 
+    white-space:nowrap;
     overflow:hidden;
     text-overflow: ellipsis;
     max-width:220px;
 }
 .truncate-addrhash {
-    max-width:200px;   
+    max-width:200px;
 }
 .scrollable {
     max-height: 400px;
@@ -20,7 +20,7 @@ img.logo-default {
 }
 #table_txs td, #table_internal_txs td {
     font-size: 12px;
-    white-space:nowrap; 
+    white-space:nowrap;
     overflow:hidden;
     text-overflow: ellipsis;
 }
@@ -53,7 +53,7 @@ img.logo-default {
 }
 .home-tx{
     font-size: 12px;
-    white-space:nowrap; 
+    white-space:nowrap;
     overflow:hidden;
     text-overflow: ellipsis;
 }
@@ -81,7 +81,7 @@ pre {
     word-wrap: break-word;
 }
 pre.code-js, .verified{
-    max-height: 200px; 
+    max-height: 200px;
 }
 .code {
     font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
@@ -131,3 +131,9 @@ li.ng-scope {
     background-color: transparent;
 }
 .page-spinner-bar{margin-top:-84px;margin-left:-98px;top:50%;left:50%;}
+.tx-sucess {
+  color: green;
+}
+.tx-failed {
+  color: red;
+}
