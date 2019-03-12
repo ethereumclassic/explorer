@@ -14,6 +14,7 @@ var async = require('async');
 
 require( '../db.js' );
 var mongoose = require( 'mongoose' );
+var Block = mongoose.model( 'Block' );
 var Transaction = mongoose.model( 'Transaction' );
 
 var getLatestBlocks = require('./index').getLatestBlocks;
@@ -62,35 +63,42 @@ exports.data = function(req, res){
   if ("tx" in req.body) {
     var txHash = req.body.tx.toLowerCase();
 
-    web3.eth.getTransaction(txHash, function(err, tx) {
-      if(err || !tx) {
-        console.error("TxWeb3 error :" + err)
-        if (!tx) {
-          web3.eth.getBlock(txHash, function(err, block) {
-            if(err || !block) {
-              console.error("BlockWeb3 error :" + err)
-              res.write(JSON.stringify({"error": true}));
+    Transaction.findOne({hash: txHash}).lean(true).exec(function(err, doc) {
+      if (err || !doc) {
+        web3.eth.getTransaction(txHash, function(err, tx) {
+          if(err || !tx) {
+            console.error("TxWeb3 error :" + err)
+            if (!tx) {
+              web3.eth.getBlock(txHash, function(err, block) {
+                if(err || !block) {
+                  console.error("BlockWeb3 error :" + err)
+                  res.write(JSON.stringify({"error": true}));
+                } else {
+                  console.log("BlockWeb3 found: " + txHash)
+                  res.write(JSON.stringify({"error": true, "isBlock": true}));
+                }
+                res.end();
+              });
             } else {
-              console.log("BlockWeb3 found: " + txHash)
-              res.write(JSON.stringify({"error": true, "isBlock": true}));
+              res.write(JSON.stringify({"error": true}));
+              res.end();
             }
-            res.end();
-          });
-        } else {
-          res.write(JSON.stringify({"error": true}));
-          res.end();
-        }
-      } else {
-        var ttx = tx;
-        ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
-        //get timestamp from block
-        var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
-          if (!err && block)
-            ttx.timestamp = block.timestamp;
-          ttx.isTrace = (ttx.input != "0x");
-          res.write(JSON.stringify(ttx));
-          res.end();
+          } else {
+            var ttx = tx;
+            ttx.value = etherUnits.toEther( new BigNumber(tx.value), "wei");
+            //get timestamp from block
+            var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
+              if (!err && block)
+              ttx.timestamp = block.timestamp;
+              ttx.isTrace = (ttx.input != "0x");
+              res.write(JSON.stringify(ttx));
+              res.end();
+            });
+          }
         });
+      } else {
+        res.write(JSON.stringify(doc));
+        res.end();
       }
     });
 
@@ -198,14 +206,25 @@ exports.data = function(req, res){
         blockNumOrHash = parseInt(req.body.block);
     }
 
-    web3.eth.getBlock(blockNumOrHash, function(err, block) {
-      if(err || !block) {
-        console.error("BlockWeb3 error :" + err)
-        res.write(JSON.stringify({"error": true}));
-      } else {
-        res.write(JSON.stringify(filterBlocks(block)));
-      }
-      res.end();
+    Block.findOne({$or: [{hash: blockNumOrHash}, {number: blockNumOrHash}]},
+      { '_id': 0 }).lean(true).exec("findOne", function(err, doc) {
+        if (err || !doc) {
+          web3.eth.getBlock(blockNumOrHash, function(err, block) {
+            if(err || !block) {
+              console.error("BlockWeb3 error :" + err)
+              res.write(JSON.stringify({"error": true}));
+            } else {
+              res.write(JSON.stringify(filterBlocks(block)));
+            }
+            res.end();
+          });
+        } else {
+          Transaction.find({blockNumber: doc.number}).distinct("hash", (err, txs) => {
+            doc["transactions"] = txs;
+            res.write(JSON.stringify(filterBlocks(doc)));
+            res.end();
+          });
+        }
     });
 
     /*
