@@ -2,13 +2,13 @@
 
 <b>Live Version: [etherhub.io](http://etherhub.io)</b>
 
-Follow the project progress at: [ETC Block Explorer Development](https://github.com/ethereumproject/explorer)
+Follow the project progress at: [ETC Block Explorer Development](https://github.com/ethereumclassic/explorer)
 
 ## Local installation
 
 Clone the repo
 
-`git clone https://github.com/ethereumproject/explorer`
+`git clone https://github.com/ethereumclassic/explorer`
 
 Download [Nodejs and npm](https://docs.npmjs.com/getting-started/installing-node "Nodejs install") if you don't have them
 
@@ -186,3 +186,8 @@ Enabling richlist requires running a separate process:
 
 You can configure intervals (how often a new data point is pulled) and range (how many blocks to go back) with the following:
 `RESCAN=100:7400000 node tools/stats.js` (New data point every 100 blocks. Go back 7,400,000 blocks).
+
+## Docker installation
+Set `nodeAddr` in `config.json` to `host.docker.internal`
+
+Run `docker-compose up`
