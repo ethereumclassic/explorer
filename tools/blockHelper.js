@@ -49,7 +49,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     else {
         desiredBlockHashOrNumber = blockHashOrNumber;
     }
-    if(web3.isConnected()) {
+    if(web3.eth.net.isListening()) {
         web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
             if(error) {
                 console.log('Warning: error on getting block with hash/number: ' +

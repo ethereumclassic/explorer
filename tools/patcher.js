@@ -15,7 +15,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
         return;
     }
     desiredBlockHashOrNumber = blockHashOrNumber;
-    if(web3.isConnected()) {
+    if(web3.eth.net.isListening()) {
         web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
             if(error) {
                 console.log('Warning: error on getting block with hash/number: ' +
@@ -109,7 +109,7 @@ var writeTransactionsToDB = function(config, blockData) {
 var patchBlocks = function(config) {
     // number of blocks should equal difference in block numbers
     var firstBlock = 0;
-    var lastBlock = web3.eth.blockNumber - 1;
+    var lastBlock = web3.eth.getBlockNumber - 1;
     blockIter(web3, firstBlock, lastBlock, config);
 }
 

@@ -237,7 +237,7 @@ var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr 
 
 web3 = require("../lib/trace.js")(web3);
 
-var latestBlock = web3.eth.blockNumber;
+var latestBlock = web3.eth.getBlockNumber;
 
 // run
 console.log("* latestBlock = " + latestBlock);

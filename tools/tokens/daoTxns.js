@@ -42,7 +42,7 @@ if (typeof web3 !== "undefined") {
   web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.rpcPort.toString()));
 }
 
-if (web3.isConnected())
+if (web3.eth.net.isListening())
   console.log("Web3 connection established");
 else
   throw "No connection";
@@ -228,7 +228,7 @@ InternalTx.collection.count({timestamp: null}, function(err, c) {
 
 var min;
 
-var max = web3.eth.blockNumber;
+var max = web3.eth.getBlockNumber;
 
 setInterval(function() {
   InternalTx.findOne({"timestamp": null}, "blockNumber")

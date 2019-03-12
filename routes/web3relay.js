@@ -41,7 +41,7 @@ if (typeof web3 !== "undefined") {
   web3 = new Web3(new Web3.providers.HttpProvider('http://'+config.nodeAddr+':'+config.rpcPort));
 }
 
-if (web3.isConnected())
+if (web3.eth.net.isListening())
   console.log("Web3 connection established");
 else
   throw "No connection, please specify web3host in conf.json";

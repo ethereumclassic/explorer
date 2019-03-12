@@ -37,7 +37,7 @@ var listenBlocks = function(config) {
         console.log('Warning: null block hash');
     } else {
       console.log('Found new block: ' + latestBlock);
-      if(web3.isConnected()) {
+      if(web3.eth.net.isListening()) {
         web3.eth.getBlock(latestBlock, true, function(error,blockData) {
           if(error) {
             console.log('Warning: error on getting block with hash/number: ' +   latestBlock + ': ' + error);
@@ -59,7 +59,7 @@ var listenBlocks = function(config) {
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
 var syncChain = function(config, nextBlock){
-  if(web3.isConnected()) {
+  if(web3.eth.net.isListening()) {
     if (web3.eth.syncing) {
       console.log('Info: waiting until syncing finished... (currentBlock is #' + web3.eth.syncing.currentBlock + ')');
       setTimeout(function() { syncChain(config, nextBlock); }, 10000);
@@ -310,8 +310,8 @@ var prepareSync = function(config, callback) {
   oldBlockFind.exec(function (err, docs) {
     if(err || !docs || docs.length < 1) {
       // not found in db. sync from config.endBlock or 'latest'
-      if(web3.isConnected()) {
-        var currentBlock = web3.eth.blockNumber;
+      if(web3.eth.net.isListening()) {
+        var currentBlock = web3.eth.getBlockNumber;
         var latestBlock = config.endBlock || currentBlock || 'latest';
         if(latestBlock === 'latest') {
           web3.eth.getBlock(latestBlock, true, function(error, blockData) {
@@ -345,7 +345,7 @@ var prepareSync = function(config, callback) {
   Block Patcher(experimental)
 **/
 var runPatcher = function(config, startBlock, endBlock) {
-  if(!web3 || !web3.isConnected()) {
+  if(!web3 || !web3.eth.net.isListening()) {
     console.log('Error: Web3 is not connected. Retrying connection shortly...');
     setTimeout(function() { runPatcher(config); }, 3000);
     return;
@@ -362,7 +362,7 @@ var runPatcher = function(config, startBlock, endBlock) {
       }
 
       var lastMissingBlock = docs[0].number + 1;
-      var currentBlock = web3.eth.blockNumber;
+      var currentBlock = web3.eth.getBlockNumber;
       runPatcher(config, lastMissingBlock, currentBlock - 1);
     });
     return;

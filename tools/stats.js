@@ -9,7 +9,7 @@ var mongoose = require( 'mongoose' );
 var BlockStat = require( '../db.js' ).BlockStat;
 
 var updateStats = function(range, interval, rescan) {
-    var latestBlock = web3.eth.blockNumber;
+    var latestBlock = web3.eth.getBlockNumber;
 
     interval = Math.abs(parseInt(interval));
     if (!range) {
@@ -33,7 +33,7 @@ var getStats = function(web3, blockNumber, nextBlock, endNumber, interval, resca
         return;
     }
 
-    if(web3.isConnected()) {
+    if(web3.eth.net.isListening()) {
 
         web3.eth.getBlock(blockNumber, true, function(error, blockData) {
             if(error) {
