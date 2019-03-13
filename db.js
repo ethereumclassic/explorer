@@ -98,6 +98,10 @@ module.exports.Account = mongoose.model('Account');
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB', {
   useMongoClient: true
+  // poolSize: 5,
+  // rs_name: 'myReplicaSetName',
+  // user: 'explorer',
+  // pass: 'yourdbpasscode'
 });
 
 // mongoose.set('debug', true);
