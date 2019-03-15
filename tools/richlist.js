@@ -15,8 +15,8 @@ var Block = require('../db.js').Block;
 
 const ADDRESS_CACHE_MAX = 10000; // address cache threshold
 
-function makeParityRichList(number, offset, blockNumber, updateCallback) {
-  var self = makeParityRichList;
+function makeRichList(number, offset, blockNumber, updateCallback) {
+  var self = makeRichList;
   if (!self.index) {
     self.index = 0;
   }
@@ -127,7 +127,7 @@ function makeParityRichList(number, offset, blockNumber, updateCallback) {
       updateCallback(accounts, blockNumber);
     }
     setTimeout(function() {
-      makeParityRichList(number, lastAccount, blockNumber, updateCallback);
+      makeRichList(number, lastAccount, blockNumber, updateCallback);
     }, 300);
   });
 }
@@ -242,4 +242,4 @@ var latestBlock = web3.eth.blockNumber;
 // run
 console.log("* latestBlock = " + latestBlock);
 
-makeParityRichList(500, null, latestBlock, updateAccounts);
+makeRichList(500, null, latestBlock, updateAccounts);
