@@ -8,6 +8,53 @@ var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
+const normalizeTX = async (txData, blockData) => {
+  var tx = {
+    blockHash: txData.blockHash,
+    blockNumber: txData.blockNumber,
+    from: txData.from.toLowerCase(),
+    to: txData.to.toLowerCase(),
+    hash: txData.hash,
+    value: etherUnits.toEther(new BigNumber(txData.value), 'wei'),
+    nonce: txData.nonce,
+    r: txData.r,
+    s: txData.s,
+    v: txData.v,
+    gas: txData.gas,
+    gasUsed: 0,
+    gasPrice: String(txData.gasPrice),
+    input: txData.input,
+    transactionIndex: txData.transactionIndex,
+    timestamp: blockData.timestamp,
+    status: 0
+  };
+  // getTransactionReceipt to get contract address and more data
+
+  let receipt;
+  try {
+    receipt = await web3.eth.getTransactionReceipt(tx.hash)
+  } catch(err) {
+    console.log('Error', err);
+  }
+  tx.gasUsed = receipt.gasUsed;
+  tx.status = receipt.status;
+
+  if (txData.to == null) {
+    // parity support `creates` field
+    if (txData.creates) {
+      tx.creates = txData.creates;
+      return tx;
+    } else {
+      if (receipt && receipt.contractAddress) {
+        tx.creates = receipt.contractAddress;
+      }
+      return tx;
+    }
+  } else {
+    return tx;
+  }
+}
+
 var grabBlock = function(config, web3, blockHashOrNumber) {
     var desiredBlockHashOrNumber;
     // check if done
@@ -76,14 +123,14 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 /**
     Break transactions out of blocks and write to DB
 **/
-var writeTransactionsToDB = function(config, blockData) {
+const writeTransactionsToDB = async (config, blockData) => {
     var bulkOps = [];
     if (blockData.transactions.length > 0) {
         for (d in blockData.transactions) {
             var txData = blockData.transactions[d];
-            txData.timestamp = blockData.timestamp;
-            txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
-            bulkOps.push(txData);
+
+            var tx = await normalizeTX(txData, blockData);
+            bulkOps.push(tx);
         }
         Transaction.collection.insert(bulkOps, function( err, tx ){
             if ( typeof err !== 'undefined' && err ) {

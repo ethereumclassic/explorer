@@ -51,10 +51,12 @@ var Transaction = new Schema(
     "blockHash": String,
     "blockNumber": Number,
     "transactionIndex": Number,
+    "status": Number,
     "from": {type: String, lowercase: true},
     "to": {type: String, lowercase: true},
     "value": String,
     "gas": Number,
+    "gasUsed": Number,
     "gasPrice": String,
     "timestamp": Number,
     "input": String
@@ -83,6 +85,7 @@ Account.index({balance:-1, blockNumber:-1});
 Account.index({type:-1, balance:-1});
 Block.index({miner:1});
 Block.index({miner:1, blockNumber:-1});
+Block.index({hash:1, number:-1});
 
 mongoose.model('BlockStat', BlockStat);
 mongoose.model('Block', Block);

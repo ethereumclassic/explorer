@@ -9,13 +9,62 @@ var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
 var _ = require('lodash');
 
-var async = require('async');
+var asyncL = require('async');
 var Web3 = require('web3');
 
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 var Account         = mongoose.model( 'Account' );
+
+const normalizeTX = async (txData, blockData) => {
+  var tx = {
+    blockHash: txData.blockHash,
+    blockNumber: txData.blockNumber,
+    status: 1,
+    from: txData.from.toLowerCase(),
+    to: String(txData.to).toLowerCase(),
+    hash: txData.hash,
+    value: etherUnits.toEther(new BigNumber(txData.value), 'wei'),
+    nonce: txData.nonce,
+    r: txData.r,
+    s: txData.s,
+    v: txData.v,
+    gas: txData.gas,
+    gasUsed: 0,
+    gasPrice: String(txData.gasPrice),
+    input: txData.input,
+    transactionIndex: txData.transactionIndex,
+    timestamp: blockData.timestamp
+  };
+  // getTransactionReceipt to get contract address and more data
+
+  let receipt;
+  try {
+    receipt = await web3.eth.getTransactionReceipt(tx.hash)
+  } catch(err) {
+    console.log('Error', err);
+  }
+  tx.gasUsed = receipt.gasUsed;
+
+  if (receipt.status != null)
+  tx.status = receipt.status;
+
+  if (txData.to == null) {
+    // parity support `creates` field
+    if (txData.creates) {
+      tx.creates = txData.creates;
+      return tx;
+    } else {
+      if (receipt && receipt.contractAddress) {
+        tx.creates = receipt.contractAddress;
+      }
+      return tx;
+    }
+  } else {
+    return tx;
+  }
+}
 
 /**
   //Just listen for latest blocks and sync from the start of the app.
@@ -147,7 +196,7 @@ var writeBlockToDB = function(config, blockData, flush) {
 /**
   Break transactions out of blocks and write to DB
 **/
-var writeTransactionsToDB = function(config, blockData, flush) {
+const writeTransactionsToDB = async(config, blockData, flush) => {
   var self = writeTransactionsToDB;
   if (!self.bulkOps) {
     self.bulkOps = [];
@@ -163,9 +212,9 @@ var writeTransactionsToDB = function(config, blockData, flush) {
   if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
       var txData = blockData.transactions[d];
-      txData.timestamp = blockData.timestamp;
-      txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
-      self.bulkOps.push(txData);
+
+      var tx = await normalizeTX(txData, blockData);
+      self.bulkOps.push(tx);
     }
     console.log('\t- block #' + blockData.number.toString() + ': ' + blockData.transactions.length.toString() + ' transactions recorded.');
   }
@@ -207,8 +256,8 @@ var writeTransactionsToDB = function(config, blockData, flush) {
       if (accounts.length > 0) {
         chunks.push(accounts);
       }
-      async.eachSeries(chunks, function(chunk, outerCallback) {
-        async.waterfall([
+      asyncL.eachSeries(chunks, function(chunk, outerCallback) {
+        asyncL.waterfall([
           // get contract account type
           function(callback) {
             var batch = web3.createBatch();
@@ -304,10 +353,10 @@ var writeTransactionsToDB = function(config, blockData, flush) {
 /**
   //check oldest block or starting block then callback
 **/
-var prepareSync = function(config, callback) {
+const prepareSync = async (config, callback) => {
   var blockNumber = null;
   var oldBlockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
-  oldBlockFind.exec(function (err, docs) {
+  oldBlockFind.exec(async (err, docs) => {
     if(err || !docs || docs.length < 1) {
       // not found in db. sync from config.endBlock or 'latest'
       if(web3.isConnected()) {
@@ -344,7 +393,7 @@ var prepareSync = function(config, callback) {
 /**
   Block Patcher(experimental)
 **/
-var runPatcher = function(config, startBlock, endBlock) {
+const runPatcher = async(config, startBlock, endBlock) => {
   if(!web3 || !web3.isConnected()) {
     console.log('Error: Web3 is not connected. Retrying connection shortly...');
     setTimeout(function() { runPatcher(config); }, 3000);
@@ -354,7 +403,7 @@ var runPatcher = function(config, startBlock, endBlock) {
   if(typeof startBlock === 'undefined' || typeof endBlock === 'undefined') {
     // get the last saved block
     var blockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
-    blockFind.exec(function (err, docs) {
+    blockFind.exec(async (err, docs) => {
       if(err || !docs || docs.length < 1) {
         // no blocks found. terminate runPatcher()
         console.log('No need to patch blocks.');
