@@ -12,7 +12,6 @@ module.exports = function(app){
   var Token = require('./token');
 
   var compile = require('./compiler');
-  var fiat = require('./fiat');
   var stats = require('./stats');
   var richList = require('./richlist');
 
@@ -33,7 +32,6 @@ module.exports = function(app){
   app.post('/web3relay', web3relay.data);
   app.post('/compile', compile);
 
-  app.post('/fiat', fiat);
   app.post('/stats', stats);
 }
 
