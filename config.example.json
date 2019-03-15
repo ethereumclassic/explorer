@@ -9,6 +9,7 @@
     "patchBlocks":  100,
     "bulkSize":     100,
     "useRichList":  true,
+    "CMC_API_KEY":  "<PUT CMC API KEY HERE>",
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",

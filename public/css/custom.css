@@ -141,3 +141,6 @@ li.ng-scope {
   .search-form.open{width:100%!important;}
 }
 .page-spinner-bar{margin-top:-84px;margin-left:-98px;top:50%;left:50%;}
+.mini-logo {
+  height: 1.2em;
+}

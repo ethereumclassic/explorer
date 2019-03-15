@@ -7,8 +7,8 @@
 
           <tr ><td width="25%">Transaction Hash:</td><td>{{tx.hash}}</td></tr>
           <tr ><td width="25%">Status:</td><td>
-            <span ng-show="tx.status==0" alt="A Status code indicating if the top-level call succeeded or failed (applicable for Post BYZANTIUM blocks only)"><font color="#de4437"> Failed (Error encountered during transaction !)</font></span>
-            <span ng-show="!(tx.status==0) && tx.blockNumber" alt="A Status code indicating if the top-level call succeeded or failed (applicable for Post BYZANTIUM blocks only)"><font color="#00c9a7"> Success </font></span>
+            <span ng-show="tx.status==0" alt="A Status code indicating if the top-level call succeeded or failed (applicable for Post BYZANTIUM blocks only)"><font color="red"> Failed (Error encountered during transaction !)</font></span>
+            <span ng-show="!(tx.status==0) && tx.blockNumber" alt="A Status code indicating if the top-level call succeeded or failed (applicable for Post BYZANTIUM blocks only)"><font color="green"> Success </font></span>
             <span ng-show="tx.hash && tx.blockNumber==null" alt="Transaction not included on blockchain"><font color="#77838f"> Pending </font></span>
             <span ng-show="!tx.hash" alt="transaction fail"><font color="#77838f"> Not exist </font></span>
           </td></tr>
@@ -27,14 +27,14 @@
           <tr ng-show="tx.to"><td width="25%">To:</td>
             <td><a href="/addr/{{tx.to}}">{{tx.to}}</a></td></tr>
           <tr ><td width="25%">Value:</td>
-            <td>{{tx.value | number: 8}} {{ settings.symbol }}</td></tr>
+            <td><span style="color:green"> <img src="/img/etc-mini-logo.svg" alt="mini-logo" class="mini-logo" /> {{tx.value | number: 8}} {{ settings.symbol }}</span> => {{ tx.valueUSD | currency : "USD $" : 4 }}</td></tr>
           <tr ><td width="25%">Transaction fee:</td>
-            <td>{{tx.txFee | number : 6}} {{ settings.symbol }}</td></tr>
+            <td>{{tx.txFee | number : 6}} {{ settings.symbol }} => {{ tx.txFeeUSD | currency : "USD $" : 10 }}</td></tr>
           <tr ><td width="25%">Gas Limit:</td><td>{{tx.gas | number}}</td></tr>
           <tr ><td width="25%">Gas Used by Transaction:</td>
             <td>{{tx.gasUsed | number}}</td></tr>
           <tr ><td width="25%">Gas Price:</td>
-            <td>{{tx.gasPriceEth | number:9}} {{ settings.symbol }} ({{tx.gasPriceGwei | number}} Gwei)</td>
+            <td>{{tx.gasPriceEther | number:9}} {{ settings.symbol }} ({{tx.gasPriceGwei | number}} Gwei)</td>
           </tr>
           <tr ><td width="25%">Nonce:</td><td>{{tx.nonce}}</td></tr>
           <tr ><td width="25%">Input Data</td><td><pre class="code">{{tx.input}}</pre></td></tr>

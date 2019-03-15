@@ -43,6 +43,7 @@ Basic settings:
     "patchBlocks":  100,
     "bulkSize":     100,
     "useRichList":  true,
+    "CMC_API_KEY":  "<PUT CMC API KEY HERE>",
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",
@@ -56,7 +57,6 @@ Basic settings:
         "logo": "/img/explorer-logo.png",
         "customCss": "green-haze.min.css",
         "copyright": "2018 &copy; Ethereum Classic.",
-        "useEthFiat": false,
         "poweredbyCustom": false,
         "poweredbyEtcImage": "/img/powered-by-etcexplorer-w.png",
         "poweredbyEtc": true,
