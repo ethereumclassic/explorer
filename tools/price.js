@@ -21,10 +21,9 @@ const getQuote = async () => {
         console.log(quoteUSD)
 
         quoteObject = {
-            symbol: config.settings.symbol,
             timestamp: Math.round(new Date(quoteUSD.status.timestamp).getTime() / 1000),
-            quoteBTC: quoteBTC.data.symbol.quote.BTC.price,
-            quoteUSD: quoteUSD.data.symbol.quote.USD.price,
+            quoteBTC: quoteBTC.data.ETC.quote.BTC.price,
+            quoteUSD: quoteUSD.data.ETC.quote.USD.price,
         }
 
         new Market(quoteObject).save( ( err, market, count ) => {
