@@ -8,6 +8,45 @@ var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
+function normalizeTX(txData, blockData) {
+  var tx = {
+    blockHash: txData.blockHash,
+    blockNumber: txData.blockNumber,
+    status: 1,
+    from: txData.from.toLowerCase(),
+    to: String(txData.to).toLowerCase(),
+    hash: txData.hash,
+    value: etherUnits.toEther(new BigNumber(txData.value), 'wei'),
+    nonce: txData.nonce,
+    r: txData.r,
+    s: txData.s,
+    v: txData.v,
+    gas: txData.gas,
+    gasUsed: 0,
+    gasPrice: String(txData.gasPrice),
+    input: txData.input,
+    transactionIndex: txData.transactionIndex,
+    timestamp: blockData.timestamp
+  };
+  // getTransactionReceipt to get contract address and more data
+
+  var receipt;
+  try {
+    receipt = web3.eth.getTransactionReceipt(txData.hash)
+  } catch(err) {
+    console.log('Error', err);
+  }
+  tx.gasUsed = receipt.gasUsed;
+
+  if (receipt.status != null)
+  tx.status = receipt.status;
+
+  if (txData.to == null)
+  tx.creates = txData.creates.toLowerCase();
+
+  return tx;
+}
+
 var grabBlock = function(config, web3, blockHashOrNumber) {
     var desiredBlockHashOrNumber;
     // check if done
@@ -81,9 +120,9 @@ var writeTransactionsToDB = function(config, blockData) {
     if (blockData.transactions.length > 0) {
         for (d in blockData.transactions) {
             var txData = blockData.transactions[d];
-            txData.timestamp = blockData.timestamp;
-            txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
-            bulkOps.push(txData);
+
+            var tx = normalizeTX(txData, blockData);
+            bulkOps.push(tx);
         }
         Transaction.collection.insert(bulkOps, function( err, tx ){
             if ( typeof err !== 'undefined' && err ) {

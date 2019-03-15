@@ -17,6 +17,45 @@ var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 var Account         = mongoose.model( 'Account' );
 
+function normalizeTX(txData, blockData) {
+  var tx = {
+    blockHash: txData.blockHash,
+    blockNumber: txData.blockNumber,
+    status: 1,
+    from: txData.from.toLowerCase(),
+    to: String(txData.to).toLowerCase(),
+    hash: txData.hash,
+    value: etherUnits.toEther(new BigNumber(txData.value), 'wei'),
+    nonce: txData.nonce,
+    r: txData.r,
+    s: txData.s,
+    v: txData.v,
+    gas: txData.gas,
+    gasUsed: 0,
+    gasPrice: String(txData.gasPrice),
+    input: txData.input,
+    transactionIndex: txData.transactionIndex,
+    timestamp: blockData.timestamp
+  };
+  // getTransactionReceipt to get contract address and more data
+
+  var receipt;
+  try {
+    receipt = web3.eth.getTransactionReceipt(txData.hash)
+  } catch(err) {
+    console.log('Error', err);
+  }
+  tx.gasUsed = receipt.gasUsed;
+
+  if (receipt.status != null)
+  tx.status = receipt.status;
+
+  if (txData.to == null)
+  tx.creates = txData.creates.toLowerCase();
+
+  return tx;
+}
+
 /**
   //Just listen for latest blocks and sync from the start of the app.
 **/
@@ -163,9 +202,9 @@ var writeTransactionsToDB = function(config, blockData, flush) {
   if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
       var txData = blockData.transactions[d];
-      txData.timestamp = blockData.timestamp;
-      txData.value = etherUnits.toEther(new BigNumber(txData.value), 'wei');
-      self.bulkOps.push(txData);
+
+      var tx = normalizeTX(txData, blockData);
+      self.bulkOps.push(tx);
     }
     console.log('\t- block #' + blockData.number.toString() + ': ' + blockData.transactions.length.toString() + ' transactions recorded.');
   }
