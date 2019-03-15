@@ -18,7 +18,7 @@ var DAOTransferToken = mongoose.model('DAOTransferToken');
 var InternalTx     = mongoose.model( 'InternalTransaction' );
 
 // load config.json
-var config = { nodeAddr: 'localhost', gethPort: 8545 };
+var config = { nodeAddr: 'localhost', rpcPort: 8545 };
 try {
     var local = require('../../config.json');
     _.extend(config, local);
@@ -34,15 +34,15 @@ try {
     }
 }
 
-console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
+console.log('Connecting ' + config.nodeAddr + ':' + config.rpcPort + '...');
 
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
 } else {
-  web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+  web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.rpcPort.toString()));
 }
 
-if (web3.isConnected()) 
+if (web3.isConnected())
   console.log("Web3 connection established");
 else
   throw "No connection";
@@ -80,20 +80,20 @@ var populateCreatedTokens = function () {
           new DAOCreatedToken(newToken).save( function( err, token, count ){
             if ( typeof err !== 'undefined' && err ) {
               if (err.code == 11000) {
-                  console.log('Skip: Duplicate tx ' + 
-                  log[l].transactionHash + ': ' + 
+                  console.log('Skip: Duplicate tx ' +
+                  log[l].transactionHash + ': ' +
                   err);
               } else {
-                 console.log('Error: Aborted due to error on ' + 
-                      'block number ' + log[l].blockNumber.toString() + ': ' + 
+                 console.log('Error: Aborted due to error on ' +
+                      'block number ' + log[l].blockNumber.toString() + ': ' +
                       err);
                  process.exit(9);
               }
-            } else 
+            } else
               console.log('DB successfully written for tx ' +
-                        token.transactionHash );            
-            
-          });        
+                        token.transactionHash );
+
+          });
         }
       }
 
@@ -131,21 +131,21 @@ var populateTransferTokens = function () {
           new DAOTransferToken(newToken).save( function( err, token, count ){
             if ( typeof err !== 'undefined' && err ) {
               if (err.code == 11000) {
-                  console.log('Skip: Duplicate tx ' + 
-                  log[l].transactionHash + ': ' + 
+                  console.log('Skip: Duplicate tx ' +
+                  log[l].transactionHash + ': ' +
                   err);
                   return null;
               } else {
-                 console.log('Error: Aborted due to error on ' + 
-                      'block number ' + log[l].blockNumber.toString() + ': ' + 
+                 console.log('Error: Aborted due to error on ' +
+                      'block number ' + log[l].blockNumber.toString() + ': ' +
                       err);
                  process.exit(9);
               }
-            } else 
+            } else
               console.log('DB successfully written for tx ' +
-                        log[l].transactionHash );            
-            
-          });        
+                        log[l].transactionHash );
+
+          });
         }
       }
 
@@ -154,17 +154,17 @@ var populateTransferTokens = function () {
 
 var bulkTimeUpdate = function(bulk, callback) {
   console.log("Bulk execution started");
-  bulk.execute(function(err,result) {             
-    if (err) 
+  bulk.execute(function(err,result) {
+    if (err)
       console.error(err);
-    else 
+    else
       console.log(result.toJSON());
   });
 }
 
 
 var patchTimestamps = function(collection) {
-  mongoose.connection.on("open", function(err,conn) { 
+  mongoose.connection.on("open", function(err,conn) {
 
     var bulk = collection.initializeOrderedBulkOp();
 
@@ -192,14 +192,14 @@ var patchTimestamps = function(collection) {
           // Execute per 1000 operations and re-init
           bulkTimeUpdate(bulk);
           bulk = collection.initializeOrderedBulkOp();
-        } 
+        }
         if(count == missingCount) {
           // Clean up queues
           bulkTimeUpdate(bulk);
         }
       }, 1000);
     });
-        
+
   })
 }
 
@@ -210,15 +210,15 @@ var patchBlocks = function(max, min) {
   Block.find({"number": {$gt: min, $lt: max}}, "number timestamp").lean(true).exec(function(err, docs) {
     async.forEach(docs, function(doc, cb) {
       var q = { 'timestamp': null, 'blockNumber': doc.number };
-      InternalTx.collection.update(q, { $set: { 'timestamp': doc.timestamp }}, 
+      InternalTx.collection.update(q, { $set: { 'timestamp': doc.timestamp }},
                             {multi: true, upsert: false}, function(err, tx) {
                               if(err) console.error(err);
                               console.log(tx)
                               cb();
                             });
     }, function() { return; });
-  });  
-        
+  });
+
 }
 
 InternalTx.collection.count({timestamp: null}, function(err, c) {
