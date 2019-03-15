@@ -22,7 +22,7 @@ var Block = new Schema(
     "timestamp": Number,
     "blockTime": Number,
     "uncles": [String]
-});
+}, {collection: "Block"});
 
 var Account = new Schema(
 {
@@ -30,7 +30,7 @@ var Account = new Schema(
     "balance": Number,
     "blockNumber": Number,
     "type": {type: Number, default: 0} // address: 0x0, contract: 0x1
-});
+}, {collection: "Account"});
 
 var Contract = new Schema(
 {
@@ -75,7 +75,7 @@ var BlockStat = new Schema(
     "miner": String,
     "blockTime": Number,
     "uncleCount": Number
-});
+}, {collection: "BlockStat"});
 
 var Market = new Schema(
 {
@@ -83,7 +83,7 @@ var Market = new Schema(
     "timestamp": Number,
     "quoteBTC": Number,
     "quoteUSD": Number
-});
+}, {collection: "Market"});
 
 // create indices
 Transaction.index({blockNumber:-1});
@@ -96,7 +96,7 @@ Account.index({type:-1, balance:-1});
 Block.index({miner:1});
 Block.index({miner:1, blockNumber:-1});
 Block.index({hash:1, number:-1});
-Market.index({timestamp: -1})
+Market.index({timestamp: -1});
 
 mongoose.model('BlockStat', BlockStat);
 mongoose.model('Block', Block);
