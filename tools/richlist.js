@@ -9,6 +9,7 @@ require("@babel/register")({
 const _ = require('lodash');
 const Web3 = require('web3');
 const asyncL = require('async');
+const fs = require('fs');
 const BigNumber = require('bignumber.js');
 const mongoose = require('mongoose');
 
@@ -545,6 +546,29 @@ async function startSync(isParity) {
   }
 }
 
+// only update some accounts and exit
+if (process.argv[2]) {
+  console.log("Update accounts ...");
+
+  let addrs = process.argv[2];
+  try {
+    if (fs.existsSync(addrs)) {
+      let content = fs.readFileSync(addrs);
+      let json = JSON.parse(content);
+      web3.eth.getBlockNumber((err, latestBlock) => {
+        if (err) {
+          console.error(err);
+          process.exit(1);
+        }
+        console.log(`* latestBlock = ${latestBlock}`);
+        readJsonAccounts(json, latestBlock, updateAccounts);
+      });
+    }
+  } catch(err) {
+    console.error(err);
+    process.exit(1);
+  }
+} else
 web3.eth.getNodeInfo((err, nodeInfo) => {
   let isParity = false;
 
