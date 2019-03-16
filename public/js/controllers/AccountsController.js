@@ -58,9 +58,6 @@ angular.module('BlocksApp').controller('AccountsController', function($statePara
         {
           render:
             function(data, type, row) {
-              if (data & 0x1) {
-                return "Contract";
-              }
               if (data & 0x4) { // user defined account type
                 var accountType = data >> 3;
                 accountType = accountType.toString();
@@ -68,6 +65,9 @@ angular.module('BlocksApp').controller('AccountsController', function($statePara
                   return $scope.settings.accountTypes[accountType];
                 }
                 return "Genesis Alloc";
+              }
+              if (data & 0x1) {
+                return "Contract";
               }
               return "Account";
             },
