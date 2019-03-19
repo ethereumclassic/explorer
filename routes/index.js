@@ -2,6 +2,7 @@ var mongoose = require( 'mongoose' );
 
 var Block     = mongoose.model( 'Block' );
 var Transaction = mongoose.model( 'Transaction' );
+var Account = mongoose.model('Account');
 var filters = require('./filters');
 
 var async = require('async');
@@ -27,6 +28,7 @@ module.exports = function(app){
   app.post('/tx', getTx);
   app.post('/block', getBlock);
   app.post('/data', getData);
+  app.get('/total', getTotal);
 
   app.post('/tokenrelay', Token);
   app.post('/web3relay', web3relay.data);
@@ -35,7 +37,7 @@ module.exports = function(app){
   app.post('/stats', stats);
 }
 
-var getAddr = function(req, res){
+const getAddr = async (req, res) => {
   // TODO: validate addr and tx
   var addr = req.body.addr.toLowerCase();
   var count = parseInt(req.body.count);
@@ -57,15 +59,14 @@ var getAddr = function(req, res){
     }
   }
 
-  addrFind.lean(true).sort(sortOrder).skip(start).limit(limit)
-    .exec("find", function (err, docs) {
+  addrFind.lean(true).sort(sortOrder).skip(start).limit(limit).exec("find", function (err, docs) {
       if (docs)
         data.data = filters.filterTX(docs, addr);
       else
         data.data = [];
       res.write(JSON.stringify(data));
       res.end();
-    });
+  });
 
 };
 var getAddrCounter = function(req, res) {
@@ -154,6 +155,22 @@ var getData = function(req, res){
     res.status(400).send();
   }
 };
+
+/*
+  Total supply API code
+*/
+var getTotal = function(req, res) {
+  Account.aggregate([
+    { $group: { _id: null, totalSupply: { $sum: '$balance' } } }
+  ]).exec(function(err, docs) {
+    if (err) {
+      res.write("Error getting total supply");
+      res.end()
+    }
+    res.write(docs[0].totalSupply.toString());
+    res.end();
+  });
+}
 
 /*
   temporary blockstats here
