@@ -12,9 +12,10 @@ var BigNumber = require('bignumber.js');
 var etherUnits = require(__lib + "etherUnits.js")
 
 require( '../db.js' );
-var mongoose = require( 'mongoose' );
-var Block = mongoose.model( 'Block' );
-var Transaction = mongoose.model( 'Transaction' );
+const mongoose = require( 'mongoose' );
+const Block = mongoose.model( 'Block' );
+const Transaction = mongoose.model( 'Transaction' );
+const Market = mongoose.model( 'Market' );
 
 var getLatestBlocks = require('./index').getLatestBlocks;
 var filterBlocks = require('./filters').filterBlocks;
@@ -59,13 +60,13 @@ if (web3.version.node.split('/')[0].toLowerCase().includes('parity')) {
 var newBlocks = web3.eth.filter("latest");
 var newTxs = web3.eth.filter("pending");
 
-exports.data = function(req, res){
+exports.data = async (req, res) => {
   console.log(req.body)
 
   if ("tx" in req.body) {
     var txHash = req.body.tx.toLowerCase();
 
-    Transaction.findOne({hash: txHash}).lean(true).exec(function(err, doc) {
+    Transaction.findOne({hash: txHash}).lean(true).exec(async(err, doc) => {
       if (err || !doc) {
         web3.eth.getTransaction(txHash, function(err, tx) {
           if(err || !tx) {
@@ -111,7 +112,7 @@ exports.data = function(req, res){
         txResponse = doc;
       }
 
-      var latestBlock = web3.eth.blockNumber + 1;
+      const latestBlock = await web3.eth.blockNumber + 1;
 
       txResponse.confirmations = latestBlock - txResponse.blockNumber;
 
@@ -121,6 +122,12 @@ exports.data = function(req, res){
       txResponse.gasPriceGwei = etherUnits.toGwei( new BigNumber(txResponse.gasPrice), "wei");
       txResponse.gasPriceEther = etherUnits.toEther( new BigNumber(txResponse.gasPrice), "wei");
       txResponse.txFee = txResponse.gasPriceEther * txResponse.gasUsed;
+
+      if (config.settings.useFiat) {
+        const latestPrice = await Market.findOne().sort({timestamp: -1})
+        txResponse.txFeeUSD = txResponse.txFee * latestPrice.quoteUSD;
+        txResponse.valueUSD = txResponse.value * latestPrice.quoteUSD;
+      }
 
       res.write(JSON.stringify(txResponse));
       res.end();
@@ -188,6 +195,11 @@ exports.data = function(req, res){
         console.error("AddrWeb3 error :" + err);
         addrData = {"error": true};
       }
+    }
+
+    if (config.settings.useFiat) {
+      const latestPrice = await Market.findOne().sort({timestamp: -1})
+      addrData["balanceUSD"] = addrData.balance * latestPrice.quoteUSD;
     }
 
     res.write(JSON.stringify(addrData));

@@ -7,21 +7,23 @@
       <div class="portlet-body">
         <div class="row">
             <div class="col-md-6 center">
-              <div >
+              <div>
                 <span class="eth-stat-title">
                   {{ addr.balance | number: 4 }} {{ settings.symbol }}</span><br>
                 <span class="eth-stat-text">
                   {{ settings.symbol }} Balance <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="Note: Balance may not reflect transaction data if you have transactions resulting from Contract Internal Transactions. We are working on adding that functionality."></i>
-                  </span><br>
-                  <div ng-hide="addr.mined==0" class="margin-top-20">
+                </span><br>
+                <div ng-show="settings.useFiat" class="margin-top-20">
+                  <span class="fade">{{ addr.balanceUSD | currency : "$" : 4 }}</span> <span class="eth-stat-text fade">USD balance</span>
+                </div>
+                <div ng-hide="addr.mined==0" class="margin-top-20">
                   {{ addr.mined }} <span class="eth-stat-text">Mined</span>
-                  </div>
-                  <div class="margin-top-20">
+                </div>
+                <div class="margin-top-20">
                   {{ addr.count }} <span class="eth-stat-text">Transactions</span>
-                  </div>
+                </div>
               </div>
             </div>
-
       </div><!--end row-->
     </div><!--end portlet-body-->
   </div><!--end portlet-->
