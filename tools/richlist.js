@@ -513,7 +513,7 @@ function readJsonAccounts(json, blockNumber, callback, defaultType = 0) {
 /**
  * Start config for node connection and sync
  */
-var config = { nodeAddr: 'localhost', 'gethPort': 8545 };
+var config = { nodeAddr: 'localhost', 'rpcPort': 8545 };
 // load the config.json file
 try {
   var loaded = require('../config.json');
@@ -529,9 +529,9 @@ try {
 //config.quiet = false;
 //mongoose.set('debug', true);
 
-console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
+console.log('Connecting ' + config.nodeAddr + ':' + config.rpcPort + '...');
 
-var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.rpcPort.toString()));
 
 var useParity = false;
 if (!process.env.NOPARITY
