@@ -42,6 +42,7 @@ Basic settings:
     "patch":        true,
     "patchBlocks":  100,
     "bulkSize":     100,
+    "useRichList":  true,
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",
@@ -107,6 +108,8 @@ Basic settings:
 ```patch```       If set to true and below value is set, sync will iterated through the # of blocks specified.
 
 ```patchBlocks``` If `patch` is set to true, the amount of block specified will be check from the latest one.
+
+```useRichList``` If `useRichList` is set to true, explorer will update account balance for richlist page.
 
 ### Mongodb Auth setting.
 
@@ -180,6 +183,9 @@ You can leave sync.js running without app.js and it will sync and grab blocks ba
 
 Enabling stats requires running a separate process:
 `node ./tools/stats.js`
+
+Enabling richlist requires running a separate process:
+`node ./tools/richlist.js`
 
 You can configure intervals (how often a new data point is pulled) and range (how many blocks to go back) with the following:
 `RESCAN=100:7700000 node tools/stats.js` (New data point every 100 blocks. Go back 7,700,000 blocks).

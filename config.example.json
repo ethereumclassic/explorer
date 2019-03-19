@@ -8,6 +8,7 @@
     "patch":        true,
     "patchBlocks":  100,
     "bulkSize":     100,
+    "useRichList":  true,
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",
