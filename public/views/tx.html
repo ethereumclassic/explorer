@@ -4,24 +4,41 @@
       <div class="portlet-body">
 
         <table class="col-md-6 table table-hover">
-          
-          <tr ><td width="25%">hash</td><td>{{tx.hash}}</td></tr>
-          <tr ><td width="25%">blockNumber</td>
-                <td><a href="/block/{{tx.blockNumber}}">{{tx.blockNumber}}</a></td>
+
+          <tr ><td width="25%">Transaction Hash:</td><td>{{tx.hash}}</td></tr>
+          <tr ng-show="tx.status"><td width="25%">Status:</td><td>
+            <span ng-show="tx.status==0" alt="A Status code indicating if the top-level call succeeded or failed (applicable for Post BYZANTIUM blocks only)"><font color="red"> Failed (Error encountered during transaction !)</font></span>
+            <span ng-show="!(tx.status==0) && tx.blockNumber" alt="A Status code indicating if the top-level call succeeded or failed (applicable for Post BYZANTIUM blocks only)"><font color="green"> Success </font></span>
+            <span ng-show="tx.hash && tx.blockNumber==null" alt="Transaction not included on blockchain"><font color="#77838f"> Pending </font></span>
+            <span ng-show="!tx.hash" alt="transaction fail"><font color="#77838f"> Not exist </font></span>
+          </td></tr>
+          <tr ><td width="25%">Block:</td>
+            <td>
+              <a href="/block/{{tx.blockNumber}}">{{tx.blockNumber | number}}</a>
+              <i class="fa fa-check-circle"></i>
+              <ng-pluralize count="tx.confirmations" when="{'0': 'Pending confirmation', 'one': '1 block confirmation', 'other': '{} block confirmations'}"></ng-pluralize>
+            </td>
           </tr>
-          <tr ><td width="25%">Time</td>
-                <td>{{tx.datetime | date:'yyyy-MM-dd HH:mm:ss Z' }} ({{tx.timestamp | timeDuration}} ago)</td>
+          <tr ><td width="25%">TimeStamp:</td>
+            <td><i class="fa fa-clock-o"></i> {{tx.timestamp | timeDuration}} ago ({{tx.datetime | date:'yyyy-MM-dd HH:mm:ss Z' }})</td>
           </tr>
-          <tr ><td width="25%">from</td>
-                <td><a href="/addr/{{tx.from}}">{{tx.from}}</a></td></tr>
-          <tr ng-show="tx.to"><td width="25%">to</td>
-                <td><a href="/addr/{{tx.to}}">{{tx.to}}</a></td></tr>
-          <tr ng-show="tx.creates"><td width="25%">creates</td>
-                <td><a href="/addr/{{tx.creates}}">{{tx.creates}}</a></td></tr>                
-          <tr ><td width="25%">value</td><td>{{tx.value}} {{ settings.symbol }}</td></tr>
-          <tr ><td width="25%">gas Provided</td><td>{{tx.gas | number}}</td></tr>
-          <tr ><td width="25%">gasPrice</td><td>{{tx.gasPrice | number}}</td></tr>
-          <tr ><td width="25%">nonce</td><td>{{tx.nonce}}</td></tr>
+          <tr ><td width="25%">From:</td>
+            <td><a href="/addr/{{tx.from}}">{{tx.from}}</a></td></tr>
+          <tr ng-show="tx.to"><td width="25%">To:</td>
+            <td><a href="/addr/{{tx.to}}">{{tx.to}}</a></td></tr>
+          <tr ng-show="tx.creates"><td width="25%">Creates:</td>
+            <td><a href="/addr/{{tx.creates}}">{{tx.creates}}</a></td></tr>
+          <tr ><td width="25%">Value:</td>
+            <td>{{tx.value | number: 8}} {{ settings.symbol }}</td></tr>
+          <tr ><td width="25%">Transaction fee:</td>
+            <td>{{tx.txFee | number : 6}} {{ settings.symbol }}</td></tr>
+          <tr ><td width="25%">Gas Limit:</td><td>{{tx.gas | number}}</td></tr>
+          <tr ><td width="25%">Gas Used by Transaction:</td>
+            <td>{{tx.gasUsed | number}}</td></tr>
+          <tr ><td width="25%">Gas Price:</td>
+            <td>{{tx.gasPriceEther | number:9}} {{ settings.symbol }} ({{tx.gasPriceGwei | number}} Gwei)</td>
+          </tr>
+          <tr ><td width="25%">Nonce:</td><td>{{tx.nonce}}</td></tr>
           <tr ><td width="25%">Input Data</td><td><pre class="code">{{tx.input}}</pre></td></tr>
         </table>
 
