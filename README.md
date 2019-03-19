@@ -1,14 +1,16 @@
-# ETCExplorer
+# ETC Explorer
+
+<img src="public/img/explorer-logo.png" alt="ETC Explorer logo" height="200" />
 
 <b>Live Version: [etherhub.io](http://etherhub.io)</b>
 
-Follow the project progress at: [ETC Block Explorer Development](https://github.com/ethereumproject/explorer)
+Follow the project progress at: [ETC Block Explorer Development](https://github.com/ethereumclassic/explorer)
 
 ## Local installation
 
 Clone the repo
 
-`git clone https://github.com/ethereumproject/explorer`
+`git clone https://github.com/ethereumclassic/explorer`
 
 Download [Nodejs and npm](https://docs.npmjs.com/getting-started/installing-node "Nodejs install") if you don't have them
 
@@ -169,6 +171,7 @@ And explore it.
 ### Run
 
 The below will start both the web-gui and sync.js (which populates MongoDB with blocks/transactions).
+
 `npm start`
 
 You can leave sync.js running without app.js and it will sync and grab blocks based on config.json parameters
@@ -188,4 +191,11 @@ Enabling price conversion requires running a separate process:
 `npm run price`
 
 You can configure intervals (how often a new data point is pulled) and range (how many blocks to go back) with the following:
+
 `RESCAN=100:7700000 node tools/stats.js` (New data point every 100 blocks. Go back 7,700,000 blocks).
+
+## Docker installation
+
+Set `nodeAddr` in `config.json` to `host.docker.internal`
+
+Run `docker-compose up`
