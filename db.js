@@ -22,7 +22,7 @@ var Block = new Schema(
     "timestamp": Number,
     "blockTime": Number,
     "uncles": [String]
-});
+}, {collection: "Block"});
 
 var Account = new Schema(
 {
@@ -30,7 +30,7 @@ var Account = new Schema(
     "balance": Number,
     "blockNumber": Number,
     "type": {type: Number, default: 0} // address: 0x0, contract: 0x1
-});
+}, {collection: "Account"});
 
 var Contract = new Schema(
 {
@@ -72,7 +72,7 @@ var BlockStat = new Schema(
     "miner": String,
     "blockTime": Number,
     "uncleCount": Number
-});
+}, {collection: "BlockStat"});
 
 // create indices
 Transaction.index({blockNumber:-1});
