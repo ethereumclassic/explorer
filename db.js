@@ -96,7 +96,7 @@ module.exports.Transaction = mongoose.model('Transaction');
 module.exports.Account = mongoose.model('Account');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB', {
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
   useMongoClient: true
   // poolSize: 5,
   // rs_name: 'myReplicaSetName',

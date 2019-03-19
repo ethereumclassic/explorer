@@ -128,15 +128,15 @@ $ > use admin
 $ > db.createUser( { user: "admin", pwd: "<Enter a secure password>", roles: ["root"] } )
 ```
 
-And, You can make Explorer's "blockDB" database with db user accounts "explorer" and password "some_pass_code".
+And, You can make Explorer's "explorerDB" database with db user accounts "explorer" and password "some_pass_code".
 
 ```
-$ > use blockDB
+$ > use explorerDB
 $ > db.createUser( { user: "explorer", pwd: "<Enter a secure password>", roles: ["dbOwner"] } )
 $ > quit()
 ```
 
-Above dbuser explorer will full access blockDB and clustor setting will be well used on monitoring the multiple sharding and replication of multiple mongodb instances.
+Above dbuser explorer will full access explorerDB and clustor setting will be well used on monitoring the multiple sharding and replication of multiple mongodb instances.
 Enable database authorization in the MongoDB configuration file /etc/mongodb.conf by appending the following lines:
 
 ```
@@ -160,7 +160,7 @@ will show db informations.
 and You can add modified from  ./db.js:103 lines,  add auth information and mongodb connect options.
 
 ```
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/blockDB', {
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
   useMongoClient: true
   // poolSize: 5,
   // rs_name: 'myReplicaSetName',
