@@ -256,7 +256,7 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                   dataset.push(d);
                 }
               });
-            } else if (k !== 'height') {
+            } else if (k !== 'height' && k != 'circulatingSupply') {
               var d = { _id: k, amount: res.data[k] };
               dataset.push(d);
             }

@@ -144,7 +144,7 @@ var getBlock = function (req, res) {
  */
 var getTotalSupply = function(req, res) {
   var act;
-  if (req.params.act && ['total', 'totalSupply', 'genesisAlloc', 'minerRewards', 'uncleRewards'].indexOf(req.params.act) > -1) {
+  if (req.params.act && ['total', 'totalSupply', 'circulatingSupply', 'genesisAlloc', 'minerRewards', 'uncleRewards'].indexOf(req.params.act) > -1) {
     act = req.params.act;
     if (act === 'total') {
       act = 'totalSupply';
@@ -234,7 +234,9 @@ var getTotalSupply = function(req, res) {
       }
 
       var totalSupply = total.plus(genesisAlloc);
-      var ret = { "height": blockNumber, "totalSupply": totalSupply.div(1e+18), "genesisAlloc": genesisAlloc.div(1e+18), "minerRewards": total.div(1e+18) };
+      // circulationSupply = totalSupply - longterm reserve
+      var circulatingSupply = totalSupply.minus(rewards.longtermReserve || 0);
+      var ret = { "height": blockNumber, "circulatingSupply": circulatingSupply.div(1e+18), "totalSupply": totalSupply.div(1e+18), "genesisAlloc": genesisAlloc.div(1e+18), "minerRewards": total.div(1e+18) };
       if (req.method === 'POST' && typeof rewards.genesisAlloc === 'object') {
         ret.genesisAlloc = rewards.genesisAlloc;
       }
@@ -263,6 +265,7 @@ var getTotalSupply = function(req, res) {
               });
               ret.uncleRewards = totalUncleRewards.div(1e+18);
               ret.totalSupply = totalSupply.plus(totalUncleRewards).div(1e+18);
+              ret.circulatingSupply = circulatingSupply.plus(totalUncleRewards).div(1e+18);
               if (req.method === 'GET' && act) {
                 res.write(ret[act].toString());
               } else {
@@ -286,6 +289,7 @@ var getTotalSupply = function(req, res) {
         });
         ret.uncleRewards = totalUncleRewards.div(1e+18);
         ret.totalSupply = totalSupply.plus(totalUncleRewards).div(1e+18);
+        ret.circulatingSupply = circulatingSupply.plus(totalUncleRewards).div(1e+18);
       }
       if (req.method === 'GET' && act) {
         res.write(ret[act].toString());
