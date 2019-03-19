@@ -1,6 +1,5 @@
-<site-notes></site-notes>
+<!-- site-notes></site-notes -->
 <simple-summary-stats></simple-summary-stats>
-<!-- summary-stats></summary-stats -->
 
 <div class="row">
     <div class="col-md-6 col-sm-6">
@@ -52,7 +51,7 @@
                         <a class="btn btn-med" ng-click="reloadTransactions()"><i class="fa fa-refresh" ng-class="{'fa-spin': txLoading}"></i>
                         </a>
                     </div>
-                </div>                    
+                </div>
             </div>
             <div class="portlet-body">
                 <div class="general-item-list scrollable">
@@ -63,8 +62,8 @@
                         </div>
                         <div class="item-date" style="float:right">{{t.timestamp | timeDuration }} ago</div>
                     </div>
-                    <div class="todo-tasklist-controls"> 
-                      <span class="todo-tasklist-item-text">From <a href="/addr/{{t.from}}">{{t.from.substr(0,24)}}...</a></span> 
+                    <div class="todo-tasklist-controls">
+                      <span class="todo-tasklist-item-text">From <a href="/addr/{{t.from}}">{{t.from.substr(0,24)}}...</a></span>
                       <span class="todo-tasklist-item-text">To <a href="/addr/{{t.to}}">{{t.to.substr(0,24)}}...</a></span><br>
                       <div class="todo-tasklist-item-text" style="margin-top:4px;">{{t.value}} {{settings.symbol}}</div>
                     </div>
@@ -75,4 +74,3 @@
         <!-- END PORTLET-->
     </div>
 </div>
-
