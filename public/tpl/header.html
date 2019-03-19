@@ -41,90 +41,17 @@
         <li class="active">
           <a href="/">Home</a>
         </li>
-        <li ng-show="settings.useRichList">
-          <a href="/accounts">Accounts</a>
-        </li>
-        <li>
-          <a href="/token">Tokens</a>
-        </li>
-        <li class="menu-dropdown mega-menu-dropdown ">
-          <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle"> Stats
-          <i class="fa fa-angle-down"></i>
+        <li ng-repeat="(key, menu) in settings.menu" class="menu-dropdown classic-menu-dropdown"
+            ng-if="key != 'Accounts' || (key == 'Accounts' && settings.showRichList)">
+          <a ng-if="menu.items" data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" ng-attr-href="{{menu.link || '#'}}"> {{key}}
+            <i class="fa fa-angle-down"></i>
           </a>
-          <ul class="dropdown-menu">
-            <li>
-              <div class="mega-menu-content">
-                <div class="row">
-                  <div class="col-md-12">
-                    <ul class="mega-menu-submenu">
-                      <li>
-                        <a href="/stats/hashrate">
-                        <i class="fa fa-line-chart"></i> Hashrate Chart </a>
-                      </li>
-                      <li>
-                        <a href="/stats/miner_hashrate">
-                        <i class="fa fa-line-chart"></i> Miner Distribution Chart</a>
-                      </li>
-                      <li>
-                        <a href="/stats/difficulty">
-                        <i class="fa fa-line-chart"></i> Difficulty Chart</a>
-                      </li>
-                      <li>
-                        <a href="/stats/blocktime">
-                        <i class="fa fa-line-chart"></i> Blocktime Chart</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <li class="menu-dropdown classic-menu-dropdown ">
-          <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#"> Misc
-          <i class="fa fa-angle-down"></i>
-          </a>
-          <ul class="dropdown-menu pull-left">
-            <li>
-              <a href="/contract">
-              <i class="icon-check"></i> Verify Contract </a>
-            </li>
-          </ul>
-        </li>
-        <li class="menu-dropdown classic-menu-dropdown ">
-          <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#"> Community
-          <i class="fa fa-angle-down"></i>
-          </a>
-          <ul class="dropdown-menu pull-left">
-            <li>
-              <a href="https://forum.ethereumclassic.org" target="_blank">
-              <i class="fa fa-group"></i>
-              <span class="title" data-toggle="tooltip" title="Community Chat"> The Forum</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://tokenmint.io" target="_blank">
-              <i class="fa fa-leaf"></i>
-              <span class="title" data-toggle="tooltip" title="ERC223 Token Factory" > TokenMint.io</span>
-              </a>
-            </li>
-            <li>
-              <a href=" https://ethereumclassic.github.io/etherwallet/ " target="_blank">
-              <i class="fa fa-folder-open"></i>
-              <span class="title" data-toggle="tooltip" title="Client Side JS ETC Wallet"> ClassicEtherWallet.com</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://2miners.com/etc-stats" target="_blank">
-              <i class="fa fa-bar-chart"></i>
-              <span class="title" data-toggle="tooltip" title="Mainnet Stats"> Live Network Stats </span>
-              </a>
-            </li>
-            <li>
-              <a href="http://statebot.info" target="_blank">
-              <i class="fa fa-android"></i>
-              <span class="title" data-toggle="tooltip" title="JSON state dumps for analysis"> Statebot.io </span>
-              </a>
+          <a ng-if="!menu.items" ng-attr-href="{{menu.link || '#'}}">{{key}}</a>
+          <ul ng-if="menu.items" class="dropdown-menu pull-left" ng-attr-style="{{menu.style}}">
+            <li ng-repeat="item in menu.items">
+              <hr ng-if="!item.title" />
+              <a ng-if="item.title" href="{{item.link}}" ng-attr-target="{{item.target}}">
+              <i class="{{item.iconClass}}"></i><span class="title" ng-attr-title="{{item.tooltip}}" data-toggle="tooltip"> {{item.title}}</span></a>
             </li>
           </ul>
         </li>

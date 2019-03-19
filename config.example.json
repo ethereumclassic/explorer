@@ -54,6 +54,35 @@
             "0xeda79f0735a56510876a497e1c105916666b0199": "Comining",
             "0xd3bfd58a31ddeb2fdd2bc212e38c41725bc93ccd": "EtherDig HVPPS",
             "0xf35074bbd0a9aee46f4ea137971feec024ab704e": "solopool.org"
-         }
+         },
+        "menu": {
+            "Tokens": { "link":"/token" },
+            "Accounts": { "link": "/accounts" },
+            "Stats": {
+                "link":"",
+                "items": [
+                    {"title":"HashRate Chart","link":"/stats/hashrate", "iconClass":"fa fa-line-chart"},
+                    {"title":"Miner Distribution Chart","link":"/stats/miner_hashrate", "iconClass":"fa fa-line-chart"},
+                    {"title":"Difficulty Chart","link":"/stats/difficulty", "iconClass":"fa fa-line-chart"},
+                    {"title":"Blocktime Chart","link":"/stats/blocktime", "iconClass":"fa fa-line-chart"}
+                ]
+            },
+            "Misc": {
+                "link":"",
+                "items": [
+                    {"title":"Verify Contract (N/A)","link":"", "iconClass":"icon-check"}
+                ]
+            },
+            "Community": {
+                "link":"",
+                "items": [
+                    {"title":"The Forum","link":"https://forum.ethereumclassic.org", "target":"_blank", "title":"Community Chat", "iconClass":"fa fa-group"},
+                    {"title":"TokenMint.io","link":"https://tokenmint.io", "target":"_blank", "title":"ERC223 Token Factory", "iconClass":"fa fa-leaf"},
+                    {"title":"ClassicEtherWallet.com","link":"https://ethereumproject.github.io/etherwallet/", "target":"_blank", "tooltip":"Client Side JS ETC Wallet", "iconClass":"fa fa-leaf"},
+                    {"title":"Live Network Stats","link":"https://classicstats.net", "target":"_blank", "tooltip":"Mainnet Stats", "iconClass":"fa fa-bar-chart"},
+                    {"title":"Statebot.io","link":"http://statebot.info", "target":"_blank", "tooltip":"JSON state dumps for analysis", "iconClass":"fa fa-android"}
+                ]
+            }
+        }
     }
 }

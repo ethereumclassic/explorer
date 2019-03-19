@@ -856,6 +856,7 @@
         display: none;
     }
 
+    .page-header .page-header-menu .hor-menu .navbar-nav li.classic-menu-dropdown .dropdown-menu>li.dropdown-submenu.open>.dropdown-menu,.page-header .page-header-menu .hor-menu .navbar-nav li.classic-menu-dropdown li.open>.dropdown-menu,.page-header .page-header-menu .hor-menu .navbar-nav li.classic-menu-dropdown.open>.dropdown-menu,
     .page-header .page-header-menu .hor-menu .navbar-nav li.classic-menu-dropdown .dropdown-menu>li.dropdown-submenu.open>.dropdown-menu,.page-header .page-header-menu .hor-menu .navbar-nav li.classic-menu-dropdown li.opened>.dropdown-menu,.page-header .page-header-menu .hor-menu .navbar-nav li.classic-menu-dropdown.opened>.dropdown-menu {
         display: block;
     }
@@ -1904,4 +1905,8 @@ body,html {
 .page-on-load .page-container,.page-on-load .page-footer,.page-on-load .page-header,.page-on-load .page-prefooter,.page-on-load>.clearfix {
     display: none;
     transition: all 2s;
+}
+
+.dropdown-menu hr {
+    margin: 0;
 }
