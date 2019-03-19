@@ -8,7 +8,7 @@ var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 
-function normalizeTX(txData, blockData) {
+const normalizeTX = async (txData, blockData) => {
   var tx = {
     blockHash: txData.blockHash,
     blockNumber: txData.blockNumber,
@@ -27,9 +27,9 @@ function normalizeTX(txData, blockData) {
   };
   // getTransactionReceipt to get contract address and more data
 
-  var receipt;
+  let receipt;
   try {
-    receipt = web3.eth.getTransactionReceipt(txData.hash)
+    receipt = await web3.eth.getTransactionReceipt(txData.hash)
   } catch(err) {
     console.log('Error', err);
   }
@@ -61,7 +61,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
         return;
     }
     desiredBlockHashOrNumber = blockHashOrNumber;
-    if(web3.isConnected()) {
+    if(web3.eth.net.isListening()) {
         web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
             if(error) {
                 console.log('Warning: error on getting block with hash/number: ' +
@@ -155,7 +155,7 @@ var writeTransactionsToDB = function(config, blockData) {
 var patchBlocks = function(config) {
     // number of blocks should equal difference in block numbers
     var firstBlock = 0;
-    var lastBlock = web3.eth.blockNumber - 1;
+    var lastBlock = web3.eth.getBlockNumber() - 1;
     blockIter(web3, firstBlock, lastBlock, config);
 }
 
@@ -193,7 +193,7 @@ var blockIter = function(web3, firstBlock, lastBlock, config) {
 }
 
 // load config.json
-var config = { nodeAddr: 'localhost', rpcPort: 8545 };
+var config = { nodeAddr: 'localhost', wsPort: 8546 };
 try {
     var local = require('../config.json');
     _.extend(config, local);
@@ -209,7 +209,7 @@ try {
     }
 }
 
-console.log('Connecting ' + config.nodeAddr + ':' + config.rpcPort + '...');
-var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.rpcPort.toString()));
+console.log('Connecting ' + config.nodeAddr + ':' + config.wsPort + '...');
+var web3 = new Web3(new Web3.providers.WebsocketProvider('ws://' + config.nodeAddr + ':' + config.wsPort.toString()));
 
 patchBlocks(config);

@@ -49,7 +49,7 @@ var grabBlock = function(config, web3, blockHashOrNumber) {
     else {
         desiredBlockHashOrNumber = blockHashOrNumber;
     }
-    if(web3.isConnected()) {
+    if(web3.eth.net.isListening()) {
         web3.eth.getBlock(desiredBlockHashOrNumber, true, function(error, blockData) {
             if(error) {
                 console.log('Warning: error on getting block with hash/number: ' +
@@ -175,7 +175,7 @@ var writeTransactionsToDB = function(config, blockData) {
 }
 
 // load config.json
-var config = { nodeAddr: 'localhost', rpcPort: 8545, bulkSize: 100 };
+var config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
 try {
     var local = require('../config.json');
     _.extend(config, local);
@@ -191,9 +191,9 @@ try {
     }
 }
 
-console.log('Connecting ' + config.nodeAddr + ':' + config.rpcPort + '...');
+console.log('Connecting ' + config.nodeAddr + ':' + config.wsPort + '...');
 
-var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.rpcPort.toString()));
+var web3 = new Web3(new Web3.providers.WebsocketProvider('ws://' + config.nodeAddr + ':' + config.wsPort.toString()));
 
 // set the default blocks if it's not provided
 if (!('blocks' in config) || !(Array.isArray(config.blocks))) {

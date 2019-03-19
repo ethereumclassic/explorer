@@ -5,6 +5,7 @@
 */
 
 var Web3 = require("web3");
+var web3explorer = require('web3-explorer');
 var web3;
 
 var _ = require('lodash');
@@ -23,7 +24,7 @@ var filterTrace = require('./filters').filterTrace;
 
 /*Start config for node connection and sync*/
 // load config.json
-var config = { nodeAddr: 'localhost', rpcPort: 8545 };
+var config = { nodeAddr: 'localhost', wsPort: 8546 };
 try {
     var local = require('../config.json');
     _.extend(config, local);
@@ -40,25 +41,28 @@ try {
 }
 
 //Create Web3 connection
-console.log('Connecting ' + config.nodeAddr + ':' + config.rpcPort + '...');
+console.log('Connecting ' + config.nodeAddr + ':' + config.wsPort + '...');
 if (typeof web3 !== "undefined") {
   web3 = new Web3(web3.currentProvider);
 } else {
-  web3 = new Web3(new Web3.providers.HttpProvider('http://'+config.nodeAddr+':'+config.rpcPort));
+  web3 = new Web3(new Web3.providers.WebsocketProvider('ws://' + config.nodeAddr +':'+ config.wsPort));
 }
 
-if (web3.isConnected())
+if (web3.eth.net.isListening())
   console.log("Web3 connection established");
 else
   throw "No connection, please specify web3host in conf.json";
 
-if (web3.version.node.split('/')[0].toLowerCase().includes('parity')) {
-  // parity extension
-  web3 = require("../lib/trace.js")(web3);
-}
+async function detectNode() {
+  var nodeInfo = await web3.eth.getNodeInfo();
 
-var newBlocks = web3.eth.filter("latest");
-var newTxs = web3.eth.filter("pending");
+  if (nodeInfo.split('/')[0].toLowerCase().includes('parity')) {
+    console.log("Web3 has detected parity node configuration");
+    web3explorer(web3);
+  }
+  console.log("Node version = " + nodeInfo);
+}
+detectNode();
 
 exports.data = async (req, res) => {
   console.log(req.body)
@@ -112,7 +116,7 @@ exports.data = async (req, res) => {
         txResponse = doc;
       }
 
-      const latestBlock = await web3.eth.blockNumber + 1;
+      const latestBlock = await web3.eth.getBlockNumber() + 1;
 
       txResponse.confirmations = latestBlock - txResponse.blockNumber;
 
@@ -169,7 +173,7 @@ exports.data = async (req, res) => {
 
     if (options.indexOf("balance") > -1) {
       try {
-        addrData["balance"] = web3.eth.getBalance(addr);
+        addrData["balance"] = await web3.eth.getBalance(addr);
         addrData["balance"] = etherUnits.toEther(addrData["balance"], 'wei');
       } catch(err) {
         console.error("AddrWeb3 error :" + err);
@@ -178,7 +182,7 @@ exports.data = async (req, res) => {
     }
     if (options.indexOf("count") > -1) {
       try {
-         addrData["count"] = web3.eth.getTransactionCount(addr);
+         addrData["count"] = await web3.eth.getTransactionCount(addr);
       } catch (err) {
         console.error("AddrWeb3 error :" + err);
         addrData = {"error": true};
@@ -186,7 +190,7 @@ exports.data = async (req, res) => {
     }
     if (options.indexOf("bytecode") > -1) {
       try {
-         addrData["bytecode"] = web3.eth.getCode(addr);
+         addrData["bytecode"] = await web3.eth.getCode(addr);
          if (addrData["bytecode"].length > 2)
             addrData["isContract"] = true;
          else

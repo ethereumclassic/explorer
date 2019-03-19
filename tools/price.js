@@ -37,7 +37,7 @@ const getQuote = async () => {
 }
 
 
-var config = { nodeAddr: 'localhost', rpcPort: 8545, bulkSize: 100 };
+var config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
 try {
     var local = require('../config.json');
     _.extend(config, local);

@@ -5,7 +5,7 @@ var eth = require('./web3relay').eth;
 
 var Contract = require('./contracts');
 
-/* 
+/*
   TODO: support other languages
 */
 module.exports = function(req, res) {
@@ -21,7 +21,7 @@ module.exports = function(req, res) {
 }
 
 
-var compileSolc = function(req, res) {
+var compileSolc = async (req, res) => {
 
   // get bytecode at address
   var address = req.body.address;
@@ -31,7 +31,7 @@ var compileSolc = function(req, res) {
   var optimization = (req.body.optimization) ? true : false;
   var optimise = (optimization) ? 1 : 0;
 
-  var bytecode = eth.getCode(address);
+  var bytecode = await eth.getCode(address);
   if (bytecode.substring(0,2)=="0x")
     bytecode = bytecode.substring(2);
 
@@ -53,14 +53,14 @@ var compileSolc = function(req, res) {
         testValidCode(output, data, bytecode, res);
     } else {
 
-      solc.loadRemoteVersion(version, function(err, solcV) {  
+      solc.loadRemoteVersion(version, function(err, solcV) {
         if (err) {
           console.error(err);
           res.write(JSON.stringify({"valid": false}));
           res.end();
         }
         else {
-          var output = solcV.compile(input, optimise); 
+          var output = solcV.compile(input, optimise);
           testValidCode(output, data, bytecode, res);
         }
       });
@@ -77,7 +77,7 @@ var testValidCode = function(output, data, bytecode, response) {
   for (var contractName in output.contracts) {
     // code and ABI that are needed by web3
     console.log(contractName + ': ' + output.contracts[contractName].bytecode);
-    verifiedContracts.push({"name": contractName, 
+    verifiedContracts.push({"name": contractName,
                             "abi": output.contracts[contractName].interface,
                             "bytecode": output.contracts[contractName].bytecode});
   }

@@ -8,8 +8,8 @@ var Web3 = require('web3');
 var mongoose = require( 'mongoose' );
 var BlockStat = require( '../db.js' ).BlockStat;
 
-var updateStats = function(range, interval, rescan) {
-    var latestBlock = web3.eth.blockNumber;
+var updateStats = async (range, interval, rescan) => {
+    var latestBlock = await web3.eth.getBlockNumber();
 
     interval = Math.abs(parseInt(interval));
     if (!range) {
@@ -33,7 +33,7 @@ var getStats = function(web3, blockNumber, nextBlock, endNumber, interval, resca
         return;
     }
 
-    if(web3.isConnected()) {
+    if(web3.eth.net.isListening()) {
 
         web3.eth.getBlock(blockNumber, true, function(error, blockData) {
             if(error) {
@@ -140,7 +140,7 @@ if (process.env.RESCAN) {
 }
 
 // load config.json
-var config = { nodeAddr: 'localhost', rpcPort: 8545, bulkSize: 100 };
+var config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
 try {
     var local = require('../config.json');
     _.extend(config, local);
@@ -156,9 +156,9 @@ try {
     }
 }
 
-console.log('Connecting ' + config.nodeAddr + ':' + config.rpcPort + '...');
+console.log('Connecting ' + config.nodeAddr + ':' + config.wsPort + '...');
 
-var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.rpcPort.toString()));
+var web3 = new Web3(new Web3.providers.WebsocketProvider('ws://' + config.nodeAddr + ':' + config.wsPort.toString()));
 
 // run
 updateStats(range, interval, rescan);

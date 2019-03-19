@@ -27,12 +27,13 @@
     "serve-favicon": "~2.4.5",
     "socket.io": "^2.0.4",
     "solc": "^0.4.19",
-    "web3": "~0.19.0"
+    "web3": "1.0.0-beta.36",
+    "web3-explorer": "1.0.2"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "copyfiles": "^1.2.0",
-    "ethereumjs-testrpc": "^6.0.3",
+    "ganache-cli": "^6.4.1",
     "mocha": "^4.1.0",
     "request": "^2.83.0"
   }

@@ -31,6 +31,10 @@ img.logo-default {
     color: #7f90a4;
 }
 .eth-stat-title {
+    font-size: 25px;
+    text-align: center;
+}
+.eth-stat-title2 {
     font-size: 20px;
     text-align: center;
 }

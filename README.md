@@ -34,7 +34,7 @@ Basic settings:
 ```json
 {
     "nodeAddr":     "localhost",
-    "rpcPort":      8545,
+    "wsPort":       8546,
     "startBlock":   0,
     "endBlock":     "latest",
     "quiet":        true,
