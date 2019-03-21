@@ -37,7 +37,6 @@ var compileSolc = async (req, res) => {
 
   var data = {
     "address": address,
-    "creationTransaction": "", // deal with this later
     "compilerVersion": version,
     "optimization": optimization,
     "contractName": name,

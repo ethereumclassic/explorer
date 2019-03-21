@@ -15,26 +15,25 @@
     "test": "mocha --exit"
   },
   "dependencies": {
-    "bignumber.js": "^5.0.0",
-    "body-parser": "^1.12.2",
-    "concurrently": "^3.5.1",
-    "ejs": "~2.5.7",
-    "express": "^4.16.0",
-    "mongoose": "^4.10.8",
-    "morgan": "^1.9.0",
+    "bignumber.js": "^8.1.1",
+    "body-parser": "^1.18.3",
+    "concurrently": "4.1.0",
+    "ejs": "2.6.1",
+    "express": "^4.16.4",
+    "mongoose": "^4.13.18",
+    "morgan": "^1.9.1",
     "node-fetch": "^2.3.0",
-    "rlp": "^2.0.0",
-    "serve-favicon": "~2.4.5",
-    "socket.io": "^2.0.4",
+    "rlp": "^2.2.3",
+    "serve-favicon": "~2.5.0",
     "solc": "^0.4.19",
-    "web3": "1.0.0-beta.36",
+    "web3": "1.0.0-beta.37",
     "web3-explorer": "1.0.2"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "copyfiles": "^1.2.0",
+    "chai": "^4.2.0",
+    "copyfiles": "^2.1.0",
     "ganache-cli": "^6.4.1",
-    "mocha": "^4.1.0",
-    "request": "^2.83.0"
+    "mocha": "^6.0.2",
+    "request": "^2.88.0"
   }
 }

@@ -35,8 +35,15 @@ var Account = new Schema(
 var Contract = new Schema(
 {
     "address": {type: String, index: {unique: true}},
+    "blockNumber": Number,
+    "ERC": {type: Number, index: true}, //0:normal contract, 2:ERC20, 3:ERC223
     "creationTransaction": String,
     "contractName": String,
+    "tokenName": String,
+    "symbol": String,
+    "owner": String,
+    "decimals": Number,
+    "totalSupply": Number,
     "compilerVersion": String,
     "optimization": Boolean,
     "sourceCode": String,
@@ -62,6 +69,18 @@ var Transaction = new Schema(
     "timestamp": Number,
     "input": String
 }, {collection: "Transaction"});
+
+var TokenTransfer = new Schema(
+{
+    "hash": {type: String, index: {unique: true}, lowercase: true},
+    "blockNumber": Number,
+    "method": String,
+    "from": {type: String, lowercase: true},
+    "to": {type: String, lowercase: true},
+    "contract": {type: String, lowercase: true},
+    "value": String,
+    "timestamp": Number
+}, {collection: "TokenTransfer"});
 
 var BlockStat = new Schema(
 {
@@ -97,6 +116,10 @@ Block.index({miner:1});
 Block.index({miner:1, blockNumber:-1});
 Block.index({hash:1, number:-1});
 Market.index({timestamp: -1});
+TokenTransfer.index({blockNumber:-1});
+TokenTransfer.index({from:1, blockNumber:-1});
+TokenTransfer.index({to:1, blockNumber:-1});
+TokenTransfer.index({contract:1, blockNumber:-1});
 
 mongoose.model('BlockStat', BlockStat);
 mongoose.model('Block', Block);
@@ -104,12 +127,14 @@ mongoose.model('Account', Account);
 mongoose.model('Contract', Contract);
 mongoose.model('Transaction', Transaction);
 mongoose.model('Market', Market);
+mongoose.model('TokenTransfer', TokenTransfer);
 module.exports.BlockStat = mongoose.model('BlockStat');
 module.exports.Block = mongoose.model('Block');
 module.exports.Contract = mongoose.model('Contract');
 module.exports.Transaction = mongoose.model('Transaction');
 module.exports.Account = mongoose.model('Account');
 module.exports.Market = mongoose.model('Market');
+module.exports.TokenTransfer = mongoose.model('TokenTransfer');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {

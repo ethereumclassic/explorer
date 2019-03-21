@@ -24,6 +24,17 @@
                 </div>
               </div>
             </div>
+            <div class="col-md-6 center">
+              <div ng-show="addr.isContract">
+                <span class="eth-stat-text">Contract Creator</span><br>
+                <a href="/addr/{{addr.owner}}">{{addr.owner.substr(0,24)}}...</a> at txn
+                <a href="/tx/{{addr.creationTransaction}}">{{addr.creationTransaction.substr(0,24)}}...</a>
+              </div>
+              <div class="margin-top-20" ng-show="addr.isTokenContract">
+                <span class="eth-stat-text">Token Address</span><br>
+                <a href="/token/{{addr.address}}">{{addr.address}}</a>
+              </div>
+            </div>
       </div><!--end row-->
     </div><!--end portlet-body-->
   </div><!--end portlet-->

@@ -1,5 +1,5 @@
 /*
-  Stuff to deal with verified contracts in DB 
+  Stuff to deal with verified contracts in DB
 */
 
 require( '../db.js' );
@@ -8,9 +8,9 @@ var Contract     = mongoose.model( 'Contract' );
 
 exports.addContract = function(contract) {
   Contract.update(
-    {address: contract.address}, 
-    {$setOnInsert: contract}, 
-    {upsert: true}, 
+    {address: contract.address},
+    {$setOnInsert: contract},
+    {upsert: true},
     function (err, data) {
       console.log(data);
     }
@@ -24,7 +24,7 @@ exports.findContract = function(address, res) {
       console.error("ContractFind error: " + err);
       console.error("bad address: " + address);
       res.write(JSON.stringify({"error": true, "valid": false}));
-    } else if (!doc) {
+    } else if (!doc || !doc.sourceCode) {
       res.write(JSON.stringify({"valid": false}));
     } else {
       var data = doc;

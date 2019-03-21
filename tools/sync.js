@@ -16,8 +16,22 @@ var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
 var Account         = mongoose.model( 'Account' );
+var Contract        = mongoose.model( 'Contract' );
+var TokenTransfer   = mongoose.model( 'TokenTransfer' );
 
-const normalizeTX = async (txData, blockData) => {
+const ERC20ABI = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}];
+const ERC20_METHOD_DIC = {"0xa9059cbb":"transfer", "0xa978501e":"transferFrom"};
+const METHOD_DIC = {
+    "0x930a61a57a70a73c2a503615b87e2e54fe5b9cdeacda518270b852296ab1a377":"Transfer(address,address,uint)",
+    "0xa9059cbb2ab09eb219583f4a59a5d0623ade346d962bcd4e46b11da047c9049b":"transfer(address,uint256)",
+    "0xa978501e4506ecbd340f6e45a48ac5bd126b1c14f03f2210837c8e0b602d4d7b":"transferFrom(address,address,uint)",
+    "0x086c40f692cc9c13988b9e49a7610f67375e8373bfe7653911770b351c2b1c54":"approve(address,uint)",
+    "0xf2fde38b092330466c661fc723d5289b90272a3e580e3187d1d7ef788506c557":"transferOwnership(address)",
+    "0x3bc50cfd0fe2c05fb67c0fe4be91fb10eb723ba30ea8f559d533fcd5fe29be7f":"Released(address,uint)",
+    "0xb21fb52d5749b80f3182f8c6992236b5e5576681880914484d7f4c9b062e619e":"Released(address indexed, uint indexed)"
+};
+
+const normalizeTX = async (txData, receipt, blockData) => {
   var tx = {
     blockHash: txData.blockHash,
     blockNumber: txData.blockNumber,
@@ -29,20 +43,12 @@ const normalizeTX = async (txData, blockData) => {
     s: txData.s,
     v: txData.v,
     gas: txData.gas,
+    gasUsed: receipt.gasUsed,
     gasPrice: String(txData.gasPrice),
     input: txData.input,
     transactionIndex: txData.transactionIndex,
     timestamp: blockData.timestamp
   };
-  // getTransactionReceipt to get contract address and more data
-
-  let receipt;
-  try {
-    receipt = await web3.eth.getTransactionReceipt(txData.hash)
-  } catch(err) {
-    console.log('Error', err);
-  }
-  tx.gasUsed = receipt.gasUsed;
 
   if (receipt.status)
   tx.status = receipt.status;
@@ -56,7 +62,7 @@ const normalizeTX = async (txData, blockData) => {
       return tx;
     } else {
       if (receipt && receipt.contractAddress) {
-        tx.creates = receipt.contractAddress;
+        tx.creates = receipt.contractAddress.toLowerCase();
       }
       return tx;
     }
@@ -145,7 +151,9 @@ var writeBlockToDB = function(config, blockData, flush) {
   }
   if (blockData && blockData.number >= 0) {
     self.bulkOps.push(new Block(blockData));
-    console.log('\t- block #' + blockData.number.toString() + ' inserted.');
+    if(!('quiet' in config && config.quiet === true)) {
+      console.log('\t- block #' + blockData.number.toString() + ' inserted.');
+    }
   }
 
   if(flush && self.bulkOps.length > 0 || self.bulkOps.length >= config.bulkSize) {
@@ -164,7 +172,9 @@ var writeBlockToDB = function(config, blockData, flush) {
           process.exit(9);
         }
       }else{
-        console.log('* ' + blocks.insertedCount + ' blocks successfully written.');
+        if(!('quiet' in config && config.quiet === true)) {
+          console.log('* ' + blocks.insertedCount + ' blocks successfully written.');
+        }
       }
     });
   }
@@ -188,11 +198,94 @@ const writeTransactionsToDB = async(config, blockData, flush) => {
   if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
       var txData = blockData.transactions[d];
-
-      var tx = await normalizeTX(txData, blockData);
+      var receipt = await web3.eth.getTransactionReceipt(txData.hash);
+      var tx = await normalizeTX(txData, receipt, blockData);
+      // Contact creation tx, Event logs of internal transaction
+      if (txData.input && txData.input.length > 2) {
+        // Contact creation tx
+        if (txData.to == null) {
+          contractAddress = txData.creates.toLowerCase();
+          var contractdb = {}
+          var isTokenContract = true;
+          var Token = new web3.eth.Contract(ERC20ABI, contractAddress);
+          contractdb.owner = txData.from;
+          contractdb.blockNumber = blockData.number;
+          contractdb.creationTransaction = txData.hash;
+          try {
+            var call = await web3.eth.call({ to: contractAddress, data:web3.utils.sha3("totalSupply()")});
+            if (call == '0x') {
+              isTokenContract = false;
+            } else {
+              try {
+                contractdb.tokenName = await Token.methods.name().call();
+                contractdb.decimals = await Token.methods.decimals().call();
+                contractdb.symbol = await Token.methods.symbol().call();
+                contractdb.totalSupply = await Token.methods.totalSupply().call();
+              } catch (err) {
+                isTokenContract = false;
+              }
+            }
+          } catch (err) {
+            isTokenContract = false;
+          }
+          contractdb.byteCode = await web3.eth.getCode(contractAddress);
+          if (isTokenContract) {
+            contractdb.ERC = 2;
+          } else {
+            // Normal Contract
+            contractdb.ERC = 0;
+          }
+          // Write to db
+          Contract.update (
+            {address: contractAddress},
+            {$setOnInsert: contractdb},
+            {upsert: true},
+            function (err, data) {
+              if (err) {
+                console.log(err);
+              }
+            }
+          );
+        } else {
+          // Internal transaction  . write to doc of InternalTx
+          var transfer = {"hash": "", "blockNumber": 0, "from": "", "to": "", "contract":"", "value": 0, "timestamp":0};
+          var methodCode = txData.input.substr(0,10);
+          if (ERC20_METHOD_DIC[methodCode]=="transfer" || ERC20_METHOD_DIC[methodCode]=="transferFrom") {
+            if (ERC20_METHOD_DIC[methodCode]=="transfer") {
+              // Token transfer transaction
+              transfer.from = txData.from;
+              transfer.to = "0x" + txData.input.substring(34,74);
+              transfer.value = Number("0x" + txData.input.substring(74));
+            } else {
+              // transferFrom
+              transfer.from = "0x" + txData.input.substring(34,74);
+              transfer.to = "0x" + txData.input.substring(74,114);
+              transfer.value = Number("0x" + txData.input.substring(114));
+            }
+            transfer.method = ERC20_METHOD_DIC[methodCode];
+            transfer.hash = txData.hash;
+            transfer.blockNumber = blockData.number;
+            transfer.contract = txData.to;
+            transfer.timestamp = blockData.timestamp;
+            // Write transfer transaction into db
+            TokenTransfer.update (
+              {hash: transfer.hash},
+              {$setOnInsert: transfer},
+              {upsert: true},
+              function (err, data) {
+                if (err) {
+                  console.log(err);
+                }
+              }
+            );
+          }
+        }
+      }
       self.bulkOps.push(tx);
     }
-    console.log('\t- block #' + blockData.number.toString() + ': ' + blockData.transactions.length.toString() + ' transactions recorded.');
+    if(!('quiet' in config && config.quiet === true)) {
+      console.log('\t- block #' + blockData.number.toString() + ': ' + blockData.transactions.length.toString() + ' transactions recorded.');
+    }
   }
   self.blocks++;
 
@@ -267,12 +360,14 @@ const writeTransactionsToDB = async(config, blockData, flush) => {
           if(!('quiet' in config && config.quiet === true)) {
             console.log('Skip: Duplicate transaction key ' + err);
           }
-        }else{
+        } else {
           console.log('Error: Aborted due to error on Transaction: ' + err);
           process.exit(9);
         }
-      }else{
-        console.log('* ' + tx.insertedCount + ' transactions successfully recorded.');
+      } else {
+        if (!('quiet' in config && config.quiet === true)) {
+          console.log('* ' + tx.insertedCount + ' transactions successfully recorded.');
+        }
       }
     });
   }
@@ -297,12 +392,18 @@ const prepareSync = async (config, callback) => {
               console.log('Warning: null block data received from the block with hash/number: ' + latestBlock);
             } else {
               console.log('Starting block number = ' + blockData.number);
+              if ('quiet' in config && config.quiet === true) {
+                console.log("Quiet mode enabled");
+              }
               blockNumber = blockData.number - 1;
               callback(null, blockNumber);
             }
           });
         } else {
           console.log('Starting block number = ' + latestBlock);
+          if ('quiet' in config && config.quiet === true) {
+            console.log("Quiet mode enabled");
+          }
           blockNumber = latestBlock - 1;
           callback(null, blockNumber);
         }
@@ -313,6 +414,9 @@ const prepareSync = async (config, callback) => {
     }else{
       blockNumber = docs[0].number - 1;
       console.log('Old block found. Starting block number = ' + blockNumber);
+      if ('quiet' in config && config.quiet === true) {
+        console.log("Quiet mode enabled");
+      }
       callback(null, blockNumber);
     }
   });
@@ -386,7 +490,7 @@ var checkBlockDBExistsThenWrite = function(config, patchData, flush) {
     if (!b.length){
       writeBlockToDB(config, patchData, flush);
       writeTransactionsToDB(config, patchData, flush);
-    }else if(!('quiet' in config && config.quiet === true)) {
+    } else if (!('quiet' in config && config.quiet === true)) {
       console.log('Block number: ' +patchData.number.toString() + ' already exists in DB.');
     }
   });

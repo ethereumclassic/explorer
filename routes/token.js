@@ -25,11 +25,10 @@ module.exports = async (req, res) => {
       var actualBalance = await eth.getBalance(contractAddress);
       actualBalance = etherUnits.toEther(actualBalance, 'wei');
       var totalSupply = await Token.methods.totalSupply().call();
-      // totalSupply = etherUnits.toEther(totalSupply, 'wei')*100;
-      var decimals = await Token.methods.decimals().call();
       var name = await Token.methods.name().call();
       var symbol = await Token.methods.symbol().call();
       var count = await eth.getTransactionCount(contractAddress);
+
       var tokenData = {
         "balance": actualBalance,
         "total_supply": totalSupply,
@@ -47,7 +46,6 @@ module.exports = async (req, res) => {
     var addr = req.body.user.toLowerCase();
     try {
       var tokens = await Token.methods.balanceOf(addr).call();
-      // tokens = etherUnits.toEther(tokens, 'wei')*100;
       res.write(JSON.stringify({"tokens": tokens}));
       res.end();
     } catch (e) {

@@ -99,9 +99,15 @@ exports.data = async (req, res) => {
                 console.error(err);
                 return;
               }
-              if(receipt.status != null)
-                ttx.status = receipt.status;
               ttx.gasUsed = receipt.gasUsed;
+              if(receipt.status) {
+                ttx.status = receipt.status;
+              }
+              if (!tx.to && !tx.creates) {
+                if (receipt && receipt.contractAddress) {
+                  ttx.creates = receipt.contractAddress;
+                }
+              }
             });
             //get timestamp from block
             var block = web3.eth.getBlock(tx.blockNumber, function(err, block) {
