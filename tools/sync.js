@@ -12,6 +12,9 @@ var _ = require('lodash');
 var asyncL = require('async');
 var Web3 = require('web3');
 
+const fetch = require("node-fetch");
+const Market = require( '../db.js' ).Market;
+
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
 var Transaction     = mongoose.model( 'Transaction' );
@@ -496,6 +499,43 @@ var checkBlockDBExistsThenWrite = function(config, patchData, flush) {
   });
 };
 /**
+  Fetch market price from cryptocompare
+**/
+// 10 minutes
+const quoteInterval = 10 * 60 * 1000;
+
+const getQuote = async () => {
+    const options = {
+        timeout: 10000
+    }
+    const URL = `https://min-api.cryptocompare.com/data/price?fsym=${config.settings.symbol}&tsyms=USD`;
+
+    try {
+        let requestUSD = await fetch(URL);
+        let quoteUSD = await requestUSD.json();
+
+        quoteObject = {
+            timestamp: Math.round( Date.now() / 1000),
+            quoteUSD: quoteUSD.USD,
+        }
+
+        new Market(quoteObject).save( ( err, market, count ) => {
+            if ( typeof err !== 'undefined' && err ) {
+               process.exit(9);
+            } else {
+              if(!('quiet' in config && config.quiet === true)) {
+                console.log('DB successfully written for market quote.');
+              }
+            }
+        });
+    } catch (error) {
+      if(!('quiet' in config && config.quiet === true)) {
+        console.log(error);
+      }
+    }
+}
+
+/**
   Start config for node connection and sync
 **/
 /**
@@ -545,3 +585,10 @@ if (config.syncAll === true){
   console.log('Starting Full Sync');
   syncChain(config);
 }
+
+// Start price sync on DB
+getQuote()
+
+setInterval(() => {
+    getQuote()
+}, quoteInterval);

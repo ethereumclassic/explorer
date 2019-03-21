@@ -33,11 +33,11 @@
           <tr ng-show="tx.creates"><td width="25%">Creates:</td>
             <td><a href="/addr/{{tx.creates}}">{{tx.creates}}</a></td></tr>
           <tr ng-hide="tx.value==0"><td width="25%">Value:</td>
-            <td><span style="color:green"> <img src="/img/etc-mini-logo.svg" alt="mini-logo" class="mini-logo" /> {{tx.value | number: 8}} {{ settings.symbol }}</span><span ng-show="settings.useFiat"> => {{ tx.valueUSD | currency : "USD $" : 4 }}</span></td></tr>
+            <td><span style="color:green"> <img src="/img/etc-mini-logo.svg" alt="mini-logo" class="mini-logo" /> {{tx.value | number: 8}} {{ settings.symbol }}</span> => {{ tx.valueUSD | currency : "USD $" : 4 }}</td></tr>
           <tr ng-show="tx.tokenValue"><td width="25%">Token Value:</td>
             <td>{{tx.tokenValue | number: 8}} <a href="/addr/{{tx.tokenContract}}">{{ tx.tokenSymbol }}</a></td></tr>
           <tr ><td width="25%">Transaction fee:</td>
-            <td>{{tx.txFee | number : 6}} {{ settings.symbol }}<span ng-show="settings.useFiat"> => {{ tx.txFeeUSD | currency : "USD $" : 10 }}</span></td></tr>
+            <td>{{tx.txFee | number : 6}} {{ settings.symbol }} => {{ tx.txFeeUSD | currency : "USD $" : 10 }}</td></tr>
           <tr ><td width="25%">Gas Limit:</td><td>{{tx.gas | number}}</td></tr>
           <tr ><td width="25%">Gas Used by Transaction:</td>
             <td>{{tx.gasUsed | number}}</td></tr>

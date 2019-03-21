@@ -10,7 +10,6 @@
     "sync": "node tools/sync.js",
     "stats": "node tools/stats.js",
     "rich":  "node tools/richlist.js",
-    "price": "node tools/price.js",
     "pretest": "copyfiles app.js app/  ",
     "test": "mocha --exit"
   },

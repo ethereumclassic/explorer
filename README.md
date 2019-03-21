@@ -60,7 +60,6 @@ Basic settings:
         "poweredbyCustom": false,
         "poweredbyEtcImage": "/img/powered-by-etcexplorer-w.png",
         "poweredbyEtc": true,
-        "useFiat":      false,
         "miners": {
             "0xdf7d7e053933b5cc24372f878c90e62dadad5d42": "EtherMine",
             "0xc91716199ccde49dc4fafaeb68925127ac80443f": "F2Pool",
@@ -185,10 +184,6 @@ Enabling stats requires running a separate process:
 Enabling richlist requires running a separate process:
 
 `npm run rich`
-
-Enabling price conversion requires running a separate process:
-
-`npm run price`
 
 You can configure intervals (how often a new data point is pulled) and range (how many blocks to go back) with the following:
 
