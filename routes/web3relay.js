@@ -42,11 +42,7 @@ try {
 
 //Create Web3 connection
 console.log('Connecting ' + config.nodeAddr + ':' + config.wsPort + '...');
-if (typeof web3 !== "undefined") {
-  web3 = new Web3(web3.currentProvider);
-} else {
-  web3 = new Web3(new Web3.providers.WebsocketProvider('ws://' + config.nodeAddr +':'+ config.wsPort));
-}
+web3 = new Web3(new Web3.providers.WebsocketProvider('ws://' + config.nodeAddr +':'+ config.wsPort));
 
 if (web3.eth.net.isListening())
   console.log("Web3 connection established");
