@@ -8,6 +8,27 @@ const Web3 = require('web3');
 const mongoose = require('mongoose');
 const { BlockStat } = require('../db.js');
 
+// load config.json
+const config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
+try {
+  var local = require('../config.json');
+  _.extend(config, local);
+  console.log('config.json found.');
+} catch (error) {
+  if (error.code === 'MODULE_NOT_FOUND') {
+    var local = require('../config.example.json');
+    _.extend(config, local);
+    console.log('No config file found. Using default configuration... (config.example.json)');
+  } else {
+    throw error;
+    process.exit(1);
+  }
+}
+
+console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
+// Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
+var web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
+
 const updateStats = async (range, interval, rescan) => {
   let latestBlock = await web3.eth.getBlockNumber();
 
@@ -132,27 +153,6 @@ if (process.env.RESCAN) {
 
   rescan = true;
 }
-
-// load config.json
-const config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
-try {
-  var local = require('../config.json');
-  _.extend(config, local);
-  console.log('config.json found.');
-} catch (error) {
-  if (error.code === 'MODULE_NOT_FOUND') {
-    var local = require('../config.example.json');
-    _.extend(config, local);
-    console.log('No config file found. Using default configuration... (config.example.json)');
-  } else {
-    throw error;
-    process.exit(1);
-  }
-}
-
-console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
-
-var web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
 
 // run
 updateStats(range, interval, rescan);

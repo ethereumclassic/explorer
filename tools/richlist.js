@@ -16,6 +16,25 @@ const { Block } = require('../db.js');
 
 const ADDRESS_CACHE_MAX = 10000; // address cache threshold
 
+/**
+ * Start config for node connection and sync
+ */
+var config = { nodeAddr: 'localhost', 'wsPort': 8546 };
+// load the config.json file
+try {
+  const loaded = require('../config.json');
+  _.extend(config, loaded);
+  console.log('config.json found.');
+} catch (error) {
+  console.log('No config file found.');
+  throw error;
+  process.exit(1);
+}
+
+console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
+// Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
+var web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
+
 // RichList for Geth Classic, Geth
 function makeRichList(toBlock, blocks, updateCallback) {
   const self = makeRichList;
@@ -417,28 +436,9 @@ function readJsonAccounts(json, blockNumber, callback, defaultType = 0) {
   });
 }
 
-/**
- * Start config for node connection and sync
- */
-var config = { nodeAddr: 'localhost', 'wsPort': 8546 };
-// load the config.json file
-try {
-  const loaded = require('../config.json');
-  _.extend(config, loaded);
-  console.log('config.json found.');
-} catch (error) {
-  console.log('No config file found.');
-  throw error;
-  process.exit(1);
-}
-
 // temporary turn on some debug
 //config.quiet = false;
 //mongoose.set('debug', true);
-
-console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
-
-var web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
 
 async function startSync() {
   const latestBlock = await web3.eth.getBlockNumber();
