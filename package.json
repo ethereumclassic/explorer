@@ -11,8 +11,8 @@
     "stats": "node tools/stats.js",
     "rich": "node tools/richlist.js",
     "test": "mocha --exit",
-    "lint:check": "concurrently \"eslint *.js ./lib/*.js ./routes/*.js ./tools/*.js \" \"html-linter --config html-linter.json\" ",
-    "lint:fix": "eslint *.js ./lib/*.js ./routes/*.js ./tools/*.js --fix"
+    "lint:check": "concurrently \"eslint *.js ./lib/*.js ./test/*.js ./test/units/*.js ./routes/*.js ./tools/*.js \" \"html-linter --config html-linter.json\" ",
+    "lint:fix": "eslint *.js ./lib/*.js ./test/*.js ./test/units/*.js ./routes/*.js ./tools/*.js --fix"
   },
   "dependencies": {
     "bignumber.js": "^8.1.1",

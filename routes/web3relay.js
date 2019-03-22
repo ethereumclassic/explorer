@@ -130,7 +130,7 @@ exports.data = async (req, res) => {
       txResponse.txFee = txResponse.gasPriceEther * txResponse.gasUsed;
 
       if (config.settings.useFiat) {
-        const latestPrice = await Market.findOne().sort({timestamp: -1});
+        const latestPrice = await Market.findOne().sort({ timestamp: -1 });
         txResponse.txFeeUSD = txResponse.txFee * latestPrice.quoteUSD;
         txResponse.valueUSD = txResponse.value * latestPrice.quoteUSD;
       }
@@ -202,8 +202,8 @@ exports.data = async (req, res) => {
     }
 
     if (config.settings.useFiat) {
-      const latestPrice = await Market.findOne().sort({timestamp: -1});
-      addrData["balanceUSD"] = addrData.balance * latestPrice.quoteUSD;
+      const latestPrice = await Market.findOne().sort({ timestamp: -1 });
+      addrData['balanceUSD'] = addrData.balance * latestPrice.quoteUSD;
     }
 
     res.write(JSON.stringify(addrData));
