@@ -11,7 +11,7 @@
     "stats": "node tools/stats.js",
     "rich": "node tools/richlist.js",
     "test": "mocha --exit",
-    "lint:check": "eslint *.js ./lib/*.js ./routes/*.js ./tools/*.js",
+    "lint:check": "concurrently \"eslint *.js ./lib/*.js ./routes/*.js ./tools/*.js \" \"html-linter --config html-linter.json\" ",
     "lint:fix": "eslint *.js ./lib/*.js ./routes/*.js ./tools/*.js --fix"
   },
   "dependencies": {
@@ -34,6 +34,7 @@
     "eslint": "^5.15.3",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
+    "html-linter": "^1.1.1",
     "mocha": "^6.0.2",
     "request": "^2.88.0"
   }
