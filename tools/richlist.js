@@ -50,7 +50,9 @@ function makeRichList(toBlock, blocks, updateCallback) {
     fromBlock = 0;
   }
 
-  console.log(`Scan accounts from ${fromBlock} to ${toBlock} ...`);
+  if (!('quiet' in config && config.quiet === true)) {
+    console.log(`Scan accounts from ${fromBlock} to ${toBlock} ...`);
+  }
 
   let ended = false;
   if (fromBlock == toBlock) {
@@ -134,7 +136,9 @@ function makeRichList(toBlock, blocks, updateCallback) {
       console.info(`* ${len} / ${self.index + len} total accounts.`);
       if (updateCallback && (len >= 100 || ended)) {
         self.index += len;
-        console.log(`* update ${len} accounts ...`);
+        if (!('quiet' in config && config.quiet === true)) {
+          console.log(`* update ${len} accounts ...`);
+        }
 
         // split accounts into chunks to make proper sized json-rpc batch job.
         const accounts = Object.keys(self.accounts);
@@ -294,7 +298,9 @@ function makeParityRichList(number, offset, blockNumber, updateCallback) {
     offset = lastAccount;
     const j = Object.keys(accounts).length;
     self.index += j;
-    console.log(` * ${j} / ${self.index} accounts, offset = ${offset}`);
+    if (!('quiet' in config && config.quiet === true)) {
+      console.log(` * ${j} / ${self.index} accounts, offset = ${offset}`);
+    }
     if (updateCallback) {
       updateCallback(accounts, blockNumber);
     }
@@ -362,7 +368,9 @@ var bulkInsert = function (bulk) {
             console.log(`WARN: Fail to upsert (ignore) ${err}`);
 
           }
-          console.log(`* ${localbulk.length} accounts successfully updated.`);
+          if (!('quiet' in config && config.quiet === true)) {
+            console.log(`* ${localbulk.length} accounts successfully updated.`);
+          }
           if (bulk.length > 0) {
             setTimeout(() => {
               bulkInsert(bulk);
@@ -374,7 +382,9 @@ var bulkInsert = function (bulk) {
         process.exit(9);
       }
     } else {
-      console.log(`* ${data.insertedCount} accounts successfully inserted.`);
+      if (!('quiet' in config && config.quiet === true)) {
+        console.log(`* ${data.insertedCount} accounts successfully inserted.`);
+      }
       if (bulk.length > 0) {
         setTimeout(() => {
           bulkInsert(bulk);
@@ -460,6 +470,9 @@ async function startSync() {
       } catch (e) {
         console.log('Error: Fail to load genesis address (ignore)');
       }
+    }
+    if ('quiet' in config && config.quiet === true) {
+      console.log('Quiet mode enabled');
     }
     makeRichList(latestBlock, 500, updateAccounts);
   }

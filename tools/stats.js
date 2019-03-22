@@ -28,6 +28,9 @@ try {
 console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
 const web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
+if ('quiet' in config && config.quiet === true) {
+  console.log('Quiet mode enabled');
+}
 
 const updateStats = async (range, interval, rescan) => {
   let latestBlock = await web3.eth.getBlockNumber();
@@ -94,15 +97,17 @@ var checkBlockDBExistsThenWrite = function (web3, blockData, nextBlock, endNumbe
         'uncleCount': blockData.uncles.length,
       };
       new BlockStat(stat).save((err, s, count) => {
-        console.log(s);
+        if (!('quiet' in config && config.quiet === true)) {
+          console.log(s);
+        }
         if (typeof err !== 'undefined' && err) {
-          console.log(`${'Error: Aborted due to error on ' +
-                        'block number '}${blockData.number.toString()}: ${
+          console.log(`${'Error: Aborted due to error on ' + 'block number '}${blockData.number.toString()}: ${
             err}`);
           process.exit(9);
         } else {
-          console.log(`DB successfully written for block number ${
-            blockData.number.toString()}`);
+          if (!('quiet' in config && config.quiet === true)) {
+            console.log(`DB successfully written for block number ${blockData.number.toString()}`);
+          }
           getStats(web3, blockData.number - interval, blockData, endNumber, interval, rescan);
         }
       });
@@ -110,11 +115,14 @@ var checkBlockDBExistsThenWrite = function (web3, blockData, nextBlock, endNumbe
       if (rescan || !nextBlock) {
         getStats(web3, blockData.number - interval, blockData, endNumber, interval, rescan);
         if (nextBlock) {
-          console.log(`WARN: block number: ${blockData.number.toString()} already exists in DB.`);
+          if (!('quiet' in config && config.quiet === true)) {
+            console.log(`WARN: block number: ${blockData.number.toString()} already exists in DB.`);
+          }
         }
       } else {
-        console.error(`Aborting because block number: ${blockData.number.toString()
-        } already exists in DB.`);
+        if (!('quiet' in config && config.quiet === true)) {
+          console.error(`Aborting because block number: ${blockData.number.toString()} already exists in DB.`);
+        }
 
       }
     }
