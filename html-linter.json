@@ -2,7 +2,7 @@
   "files": [
     "./public/tpl/*.html",
     "./public/views/*.html",
-    "public/views/stats/*.html"
+    "./public/views/stats/*.html"
   ],
   "indentation": {
     "char": "space",

@@ -1,109 +1,115 @@
 <!-- BEGIN PAGE CONTENT-->
 <div class="row">
-  <div class="col-md-12 portlet light">
-      <div class="portlet-body">
-        <div class="row">
-            <div class="col-md-6 center">
-              <div >
-                <span class="eth-stat-title2">
-                  {{ token.balance | number: 10 }} </span><br>
-                <span class="eth-stat-text">
-                  {{ token.name }} Address Balance ({{ settings.symbol }})
-                  </span><br>
-                  <div class="margin-top-20">
-                  {{ token.total_supply | number:1 }} <span class="eth-stat-text">Total {{ token.symbol }} Tokens</span>
-                  </div>
-                  {{ token.total_holders | number:1 }} <div class="margin-top-20">
-                   <span class="eth-stat-text">Token Holders</span>
-                  </div>
-                  <div class="margin-top-20">
-                  {{ token.count }} <span class="eth-stat-text">Transactions</span>
-                  </div>
-              </div>
-            </div>
-
-            <div class="col-md-6 center">
-              <div>
-                <span class="eth-stat-text">Contract Creator</span><br>
-                <a href="/addr/{{token.owner}}">{{token.owner.substr(0,24)}}...</a> at txn
-                <a href="/tx/{{token.creationTransaction}}">{{token.creationTransaction.substr(0,24)}}...</a>
-              </div>
-              <div class="margin-top-20">
-                <span class="eth-stat-text">Contract Address</span><br>
-                <a href="/addr/{{token.address}}">{{token.address}}</a>
-              </div>
-            </div>
-
-      </div><!--end row-->
-
-    </div><!--end portlet-body-->
-  </div><!--end portlet-->
-
-  <!-- Begin: Transaction Datatable -->
-  <div class="portlet light col-md-12">
-     <div class="portlet-body">
-
-       <div class="tabbable-line">
-          <ul class="nav nav-tabs ">
-              <li ng-class="{active: activeTab == 'tab_token_1' || !activeTab}">
-                  <a href="#tab_token_1" data-toggle="tab" aria-expanded="true"> Get Balance </a>
-              </li>
-              <li ng-class="{active: activeTab == 'tab_token_2'}">
-                  <a href="#tab_token_2" data-toggle="tab" aria-expanded="false"> Token Transfers </a>
-              </li>
-              <li ng-class="{active: activeTab == 'tab_token_3'}">
-                  <a href="#tab_token_3" data-toggle="tab" aria-expanded="true"> Contract Transactions </a>
-              </li>
-              <li ng-class="{active: activeTab == 'tab_token_4'}">
-                  <a href="#tab_token_4" data-toggle="tab" aria-expanded="false"> Contract Source </a>
-              </li>
-          </ul>
-          <div class="tab-content">
-            <div class="tab-pane" ng-class="{active: activeTab == 'tab_token_1' || !activeTab}" id="tab_token_1">
-                <h4>Get {{ token.name }}  <span ng-show="!token.name">Token</span> Balance</h4>
-                <div class="row"><!-- get my balance -->
-                  <form class="col-md-10 center" name="form.tokens">
-                    <span class="help-block"><b>Enter Your Address </b></span>
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="addrInput" placeholder="{{token.address}}" ng-model="form.addrInput" ng-keyup="$event.keyCode == 13 ? getBalance(form.addrInput) : null">
-                        <span class="input-group-btn">
-                            <button class="btn blue-madison" type="button" ng-click="getBalance(form.addrInput)">Go!</button>
-                        </span>
-                    </div>
-                     <span class="help-block font-red-mint">{{errors.address}}</span>
-                  </form>
-                </div><!--end row-->
-                <div class="row" ng-show="showTokens"><!-- balance results -->
-                  <div class="col-md-10">
-                    <h4>You have <span class="eth-stat-title2 font-blue-madison">{{userTokens | number}}</span> {{ token.symbol }}  tokens.</h4>
-                  </div>
-                </div>
-            </div><!-- end get Token Balance Tab -->
-            <div class="tab-pane" id="tab_token_2" ng-class="{active: activeTab == 'tab_token_2'}">
-              <transfer-tokens></transfer-tokens>
-            </div><!-- end Internal txs Tab -->
-            <div class="tab-pane table-container" ng-class="{active: activeTab == 'tab_token_3'}" id="tab_token_3"><!-- Datatable tab -->
-
-              <table class="table table-striped table-hover" id="table_txs" style="table-layout:fixed;width: 98% !important;">
-                  <thead>
-                      <tr role="row" class="heading">
-                          <th width="15%"> TxHash </th>
-                          <th width="8%"> Block </th>
-                          <th width="15%"> From </th>
-                          <th width="15%"> To </th>
-                          <th width="10%"> {{ settings.symbol }} </th>
-                          <th width="0%"> gas </th>
-                          <th width="12%"> Age </th>
-                      </tr>
-                  </thead>
-                  <tbody></tbody>
-              </table>
-            </div><!-- End: Datatable tab -->
-
-            <div class="tab-pane" id="tab_token_4" ng-class="{active: activeTab == 'tab_token_4'}">
-              <contract-source></contract-source>
-            </div>
-        </div><!-- end tab content -->
+<div class="col-md-12 portlet light">
+  <div class="portlet-body">
+    <div class="row">
+      <div class="col-md-6 center">
+        <div >
+          <span class="eth-stat-title2">
+          {{ token.balance | number: 10 }} </span><br>
+          <span class="eth-stat-text">
+          {{ token.name }} Address Balance ({{ settings.symbol }})
+          </span><br>
+          <div class="margin-top-20">
+            {{ token.total_supply | number:1 }} <span class="eth-stat-text">Total {{ token.symbol }} Tokens</span>
+          </div>
+          {{ token.total_holders | number:1 }}
+          <div class="margin-top-20">
+            <span class="eth-stat-text">Token Holders</span>
+          </div>
+          <div class="margin-top-20">
+            {{ token.count }} <span class="eth-stat-text">Transactions</span>
+          </div>
+        </div>
       </div>
-    </div><!-- End: portlet -->
+      <div class="col-md-6 center">
+        <div>
+          <span class="eth-stat-text">Contract Creator</span><br>
+          <a href="/addr/{{token.owner}}">{{token.owner.substr(0,24)}}...</a> at txn
+          <a href="/tx/{{token.creationTransaction}}">{{token.creationTransaction.substr(0,24)}}...</a>
+        </div>
+        <div class="margin-top-20">
+          <span class="eth-stat-text">Contract Address</span><br>
+          <a href="/addr/{{token.address}}">{{token.address}}</a>
+        </div>
+      </div>
+    </div>
+    <!--end row-->
+  </div>
+  <!--end portlet-body-->
+</div>
+<!--end portlet-->
+<!-- Begin: Transaction Datatable -->
+<div class="portlet light col-md-12">
+  <div class="portlet-body">
+    <div class="tabbable-line">
+      <ul class="nav nav-tabs ">
+        <li ng-class="{active: activeTab == 'tab_token_1' || !activeTab}">
+          <a href="#tab_token_1" data-toggle="tab" aria-expanded="true"> Get Balance </a>
+        </li>
+        <li ng-class="{active: activeTab == 'tab_token_2'}">
+          <a href="#tab_token_2" data-toggle="tab" aria-expanded="false"> Token Transfers </a>
+        </li>
+        <li ng-class="{active: activeTab == 'tab_token_3'}">
+          <a href="#tab_token_3" data-toggle="tab" aria-expanded="true"> Contract Transactions </a>
+        </li>
+        <li ng-class="{active: activeTab == 'tab_token_4'}">
+          <a href="#tab_token_4" data-toggle="tab" aria-expanded="false"> Contract Source </a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane" ng-class="{active: activeTab == 'tab_token_1' || !activeTab}" id="tab_token_1">
+          <h4>Get {{ token.name }}  <span ng-show="!token.name">Token</span> Balance</h4>
+          <div class="row">
+            <!-- get my balance -->
+            <form class="col-md-10 center" name="form.tokens">
+              <span class="help-block"><b>Enter Your Address </b></span>
+              <div class="input-group">
+                <input type="text" class="form-control" name="addrInput" placeholder="{{token.address}}" ng-model="form.addrInput" ng-keyup="$event.keyCode == 13 ? getBalance(form.addrInput) : null">
+                <span class="input-group-btn">
+                <button class="btn blue-madison" type="button" ng-click="getBalance(form.addrInput)">Go!</button>
+                </span>
+              </div>
+              <span class="help-block font-red-mint">{{errors.address}}</span>
+            </form>
+          </div>
+          <!--end row-->
+          <div class="row" ng-show="showTokens">
+            <!-- balance results -->
+            <div class="col-md-10">
+              <h4>You have <span class="eth-stat-title2 font-blue-madison">{{userTokens | number}}</span> {{ token.symbol }}  tokens.</h4>
+            </div>
+          </div>
+        </div>
+        <!-- end get Token Balance Tab -->
+        <div class="tab-pane" id="tab_token_2" ng-class="{active: activeTab == 'tab_token_2'}">
+          <transfer-tokens></transfer-tokens>
+        </div>
+        <!-- end Internal txs Tab -->
+        <div class="tab-pane table-container" ng-class="{active: activeTab == 'tab_token_3'}" id="tab_token_3">
+          <!-- Datatable tab -->
+          <table class="table table-striped table-hover" id="table_txs" style="table-layout:fixed;width: 98% !important;">
+            <thead>
+              <tr role="row" class="heading">
+                <th width="15%"> TxHash </th>
+                <th width="8%"> Block </th>
+                <th width="15%"> From </th>
+                <th width="15%"> To </th>
+                <th width="10%"> {{ settings.symbol }} </th>
+                <th width="0%"> gas </th>
+                <th width="12%"> Age </th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <!-- End: Datatable tab -->
+        <div class="tab-pane" id="tab_token_4" ng-class="{active: activeTab == 'tab_token_4'}">
+          <contract-source></contract-source>
+        </div>
+      </div>
+      <!-- end tab content -->
+    </div>
+  </div>
+  <!-- End: portlet -->
 </div>
