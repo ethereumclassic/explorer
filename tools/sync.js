@@ -57,7 +57,7 @@ const ERC20_METHOD_DIC = { '0xa9059cbb': 'transfer', '0xa978501e': 'transferFrom
  * bulkSize: size of array in block to use bulk operation
  */
 // load config.json
-var config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
+const config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
 try {
   var local = require('../config.json');
   _.extend(config, local);
@@ -75,7 +75,7 @@ try {
 
 console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
-var web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
+const web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
 
 const normalizeTX = async (txData, receipt, blockData) => {
   const tx = {

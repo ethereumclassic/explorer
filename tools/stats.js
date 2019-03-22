@@ -27,7 +27,7 @@ try {
 
 console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
-var web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
+const web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
 
 const updateStats = async (range, interval, rescan) => {
   let latestBlock = await web3.eth.getBlockNumber();
