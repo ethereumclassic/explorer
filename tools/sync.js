@@ -47,15 +47,35 @@ const ERC20ABI = [{
   'anonymous': false, 'inputs': [{ 'indexed': true, 'name': 'from', 'type': 'address' }, { 'indexed': true, 'name': 'to', 'type': 'address' }, { 'indexed': false, 'name': 'value', 'type': 'uint256' }], 'name': 'Transfer', 'type': 'event',
 }];
 const ERC20_METHOD_DIC = { '0xa9059cbb': 'transfer', '0xa978501e': 'transferFrom' };
-const METHOD_DIC = {
-  '0x930a61a57a70a73c2a503615b87e2e54fe5b9cdeacda518270b852296ab1a377': 'Transfer(address,address,uint)',
-  '0xa9059cbb2ab09eb219583f4a59a5d0623ade346d962bcd4e46b11da047c9049b': 'transfer(address,uint256)',
-  '0xa978501e4506ecbd340f6e45a48ac5bd126b1c14f03f2210837c8e0b602d4d7b': 'transferFrom(address,address,uint)',
-  '0x086c40f692cc9c13988b9e49a7610f67375e8373bfe7653911770b351c2b1c54': 'approve(address,uint)',
-  '0xf2fde38b092330466c661fc723d5289b90272a3e580e3187d1d7ef788506c557': 'transferOwnership(address)',
-  '0x3bc50cfd0fe2c05fb67c0fe4be91fb10eb723ba30ea8f559d533fcd5fe29be7f': 'Released(address,uint)',
-  '0xb21fb52d5749b80f3182f8c6992236b5e5576681880914484d7f4c9b062e619e': 'Released(address indexed, uint indexed)',
-};
+
+/**
+  Start config for node connection and sync
+**/
+/**
+ * nodeAddr: node address
+ * wsPort:  rpc port
+ * bulkSize: size of array in block to use bulk operation
+ */
+// load config.json
+var config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
+try {
+  var local = require('../config.json');
+  _.extend(config, local);
+  console.log('config.json found.');
+} catch (error) {
+  if (error.code === 'MODULE_NOT_FOUND') {
+    var local = require('../config.example.json');
+    _.extend(config, local);
+    console.log('No config file found. Using default configuration... (config.example.json)');
+  } else {
+    throw error;
+    process.exit(1);
+  }
+}
+
+console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
+// Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
+var web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
 
 const normalizeTX = async (txData, receipt, blockData) => {
   const tx = {
@@ -94,78 +114,6 @@ const normalizeTX = async (txData, receipt, blockData) => {
 };
 
 /**
-  //Just listen for latest blocks and sync from the start of the app.
-**/
-const listenBlocks = function (config) {
-  const newBlocks = web3.eth.subscribe('newBlockHeaders', (error, result) => {
-    if (!error) {
-      return;
-    }
-
-    console.error(error);
-  });
-  newBlocks.on('data', (blockHeader) => {
-    web3.eth.getBlock(blockHeader.hash, true, (error, blockData) => {
-      if (blockHeader == null) {
-        console.log('Warning: null block hash');
-      } else {
-        writeBlockToDB(config, blockData, true);
-        writeTransactionsToDB(config, blockData, true);
-      }
-    });
-  });
-  newBlocks.on('error', console.error);
-};
-/**
-  If full sync is checked this function will start syncing the block chain from lastSynced param see README
-**/
-var syncChain = function (config, nextBlock) {
-  if (web3.eth.net.isListening()) {
-    if (typeof nextBlock === 'undefined') {
-      prepareSync(config, (error, startBlock) => {
-        if (error) {
-          console.log(`ERROR: error: ${error}`);
-          return;
-        }
-        syncChain(config, startBlock);
-      });
-      return;
-    }
-
-    if (nextBlock == null) {
-      console.log('nextBlock is null');
-      return;
-    } if (nextBlock < config.startBlock) {
-      writeBlockToDB(config, null, true);
-      writeTransactionsToDB(config, null, true);
-      console.log('*** Sync Finsihed ***');
-      config.syncAll = false;
-      return;
-    }
-
-    let count = config.bulkSize;
-    while (nextBlock >= config.startBlock && count > 0) {
-      web3.eth.getBlock(nextBlock, true, (error, blockData) => {
-        if (error) {
-          console.log(`Warning (syncChain): error on getting block with hash/number: ${nextBlock}: ${error}`);
-        } else if (blockData == null) {
-          console.log(`Warning: null block data received from the block with hash/number: ${nextBlock}`);
-        } else {
-          writeBlockToDB(config, blockData);
-          writeTransactionsToDB(config, blockData);
-        }
-      });
-      nextBlock--;
-      count--;
-    }
-
-    setTimeout(() => { syncChain(config, nextBlock); }, 500);
-  } else {
-    console.log(`Error: Web3 connection time out trying to get block ${nextBlock} retrying connection now`);
-    syncChain(config, nextBlock);
-  }
-};
-/**
   Write the whole block object to DB
 **/
 var writeBlockToDB = function (config, blockData, flush) {
@@ -183,11 +131,11 @@ var writeBlockToDB = function (config, blockData, flush) {
   if (flush && self.bulkOps.length > 0 || self.bulkOps.length >= config.bulkSize) {
     const bulk = self.bulkOps;
     self.bulkOps = [];
-    if (bulk.length == 0) return;
+    if (bulk.length === 0) return;
 
     Block.collection.insert(bulk, (err, blocks) => {
       if (typeof err !== 'undefined' && err) {
-        if (err.code == 11000) {
+        if (err.code === 11000) {
           if (!('quiet' in config && config.quiet === true)) {
             console.log(`Skip: Duplicate DB key : ${err}`);
           }
@@ -227,7 +175,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
       // Contact creation tx, Event logs of internal transaction
       if (txData.input && txData.input.length > 2) {
         // Contact creation tx
-        if (txData.to == null) {
+        if (txData.to === null) {
           contractAddress = txData.creates.toLowerCase();
           const contractdb = {};
           let isTokenContract = true;
@@ -237,7 +185,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
           contractdb.creationTransaction = txData.hash;
           try {
             const call = await web3.eth.call({ to: contractAddress, data: web3.utils.sha3('totalSupply()') });
-            if (call == '0x') {
+            if (call === '0x') {
               isTokenContract = false;
             } else {
               try {
@@ -276,8 +224,8 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
             'hash': '', 'blockNumber': 0, 'from': '', 'to': '', 'contract': '', 'value': 0, 'timestamp': 0,
           };
           const methodCode = txData.input.substr(0, 10);
-          if (ERC20_METHOD_DIC[methodCode] == 'transfer' || ERC20_METHOD_DIC[methodCode] == 'transferFrom') {
-            if (ERC20_METHOD_DIC[methodCode] == 'transfer') {
+          if (ERC20_METHOD_DIC[methodCode] === 'transfer' || ERC20_METHOD_DIC[methodCode] === 'transferFrom') {
+            if (ERC20_METHOD_DIC[methodCode] === 'transfer') {
               // Token transfer transaction
               transfer.from = txData.from;
               transfer.to = `0x${txData.input.substring(34, 74)}`;
@@ -338,7 +286,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
 
     const accounts = Object.keys(data);
 
-    if (bulk.length == 0 && accounts.length == 0) return;
+    if (bulk.length === 0 && accounts.length === 0) return;
 
     // update balances
     if (config.useRichList && accounts.length > 0) {
@@ -371,7 +319,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
           n++;
           if (n <= 5) {
             console.log(` - upsert ${account} / balance = ${data[account].balance}`);
-          } else if (n == 6) {
+          } else if (n === 6) {
             console.log(`   (...) total ${accounts.length} accounts updated.`);
           }
           // upsert account
@@ -383,7 +331,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
     if (bulk.length > 0) {
       Transaction.collection.insert(bulk, (err, tx) => {
         if (typeof err !== 'undefined' && err) {
-          if (err.code == 11000) {
+          if (err.code === 11000) {
             if (!('quiet' in config && config.quiet === true)) {
               console.log(`Skip: Duplicate transaction key ${err}`);
             }
@@ -398,6 +346,78 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
         }
       });
     }
+  }
+};
+/**
+  //Just listen for latest blocks and sync from the start of the app.
+**/
+const listenBlocks = function (config) {
+  const newBlocks = web3.eth.subscribe('newBlockHeaders', (error, result) => {
+    if (!error) {
+      return;
+    }
+
+    console.error(error);
+  });
+  newBlocks.on('data', (blockHeader) => {
+    web3.eth.getBlock(blockHeader.hash, true, (error, blockData) => {
+      if (blockHeader === null) {
+        console.log('Warning: null block hash');
+      } else {
+        writeBlockToDB(config, blockData, true);
+        writeTransactionsToDB(config, blockData, true);
+      }
+    });
+  });
+  newBlocks.on('error', console.error);
+};
+/**
+  If full sync is checked this function will start syncing the block chain from lastSynced param see README
+**/
+var syncChain = function (config, nextBlock) {
+  if (web3.eth.net.isListening()) {
+    if (typeof nextBlock === 'undefined') {
+      prepareSync(config, (error, startBlock) => {
+        if (error) {
+          console.log(`ERROR: error: ${error}`);
+          return;
+        }
+        syncChain(config, startBlock);
+      });
+      return;
+    }
+
+    if (nextBlock === null) {
+      console.log('nextBlock is null');
+      return;
+    } if (nextBlock < config.startBlock) {
+      writeBlockToDB(config, null, true);
+      writeTransactionsToDB(config, null, true);
+      console.log('*** Sync Finsihed ***');
+      config.syncAll = false;
+      return;
+    }
+
+    let count = config.bulkSize;
+    while (nextBlock >= config.startBlock && count > 0) {
+      web3.eth.getBlock(nextBlock, true, (error, blockData) => {
+        if (error) {
+          console.log(`Warning (syncChain): error on getting block with hash/number: ${nextBlock}: ${error}`);
+        } else if (blockData === null) {
+          console.log(`Warning: null block data received from the block with hash/number: ${nextBlock}`);
+        } else {
+          writeBlockToDB(config, blockData);
+          writeTransactionsToDB(config, blockData);
+        }
+      });
+      nextBlock--;
+      count--;
+    }
+
+    setTimeout(() => { syncChain(config, nextBlock); }, 500);
+  } else {
+    console.log(`Error: Web3 connection time out trying to get block ${nextBlock} retrying connection now`);
+    syncChain(config, nextBlock);
   }
 };
 /**
@@ -416,7 +436,7 @@ const prepareSync = async (config, callback) => {
           web3.eth.getBlock(latestBlock, true, (error, blockData) => {
             if (error) {
               console.log(`Warning (prepareSync): error on getting block with hash/number: ${latestBlock}: ${error}`);
-            } else if (blockData == null) {
+            } else if (blockData === null) {
               console.log(`Warning: null block data received from the block with hash/number: ${latestBlock}`);
             } else {
               console.log(`Starting block number = ${blockData.number}`);
@@ -488,7 +508,7 @@ const runPatcher = async (config, startBlock, endBlock) => {
       web3.eth.getBlock(patchBlock, true, (error, patchData) => {
         if (error) {
           console.log(`Warning: error on getting block with hash/number: ${patchBlock}: ${error}`);
-        } else if (patchData == null) {
+        } else if (patchData === null) {
           console.log(`Warning: null block data received from the block with hash/number: ${patchBlock}`);
         } else {
           checkBlockDBExistsThenWrite(config, patchData);
@@ -559,36 +579,6 @@ const getQuote = async () => {
     }
   }
 };
-
-/**
-  Start config for node connection and sync
-**/
-/**
- * nodeAddr: node address
- * wsPort:  rpc port
- * bulkSize: size of array in block to use bulk operation
- */
-// load config.json
-var config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
-try {
-  var local = require('../config.json');
-  _.extend(config, local);
-  console.log('config.json found.');
-} catch (error) {
-  if (error.code === 'MODULE_NOT_FOUND') {
-    var local = require('../config.example.json');
-    _.extend(config, local);
-    console.log('No config file found. Using default configuration... (config.example.json)');
-  } else {
-    throw error;
-    process.exit(1);
-  }
-}
-
-console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
-
-// Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
-var web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
 
 // patch missing blocks
 if (config.patch === true) {
