@@ -9,8 +9,10 @@
     "app": "node app.js",
     "sync": "node tools/sync.js",
     "stats": "node tools/stats.js",
-    "rich":  "node tools/richlist.js",
-    "test": "mocha --exit"
+    "rich": "node tools/richlist.js",
+    "test": "mocha --exit",
+    "lint:check": "eslint *.js ./lib/*.js ./routes/*.js ./tools/*.js",
+    "lint:fix": "eslint *.js ./lib/*.js ./routes/*.js ./tools/*.js --fix"
   },
   "dependencies": {
     "bignumber.js": "^8.1.1",
@@ -29,6 +31,9 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "eslint": "^5.15.3",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
     "mocha": "^6.0.2",
     "request": "^2.88.0"
   }
