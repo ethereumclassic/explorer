@@ -289,7 +289,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
     if (bulk.length === 0 && accounts.length === 0) return;
 
     // update balances
-    if (config.useRichList && accounts.length > 0) {
+    if (config.settings.useRichList && accounts.length > 0) {
       asyncL.eachSeries(accounts, (account, eachCallback) => {
         const { blockNumber } = data[account];
         // get contract account type
@@ -589,7 +589,7 @@ if (config.patch === true) {
 // check NORICHLIST env
 // you can use it like as 'NORICHLIST=1 node tools/sync.js' to disable balance updater temporary.
 if (process.env.NORICHLIST) {
-  config.useRichList = false;
+  config.settings.useRichList = false;
 }
 
 // Start listening for latest blocks
@@ -602,8 +602,10 @@ if (config.syncAll === true) {
 }
 
 // Start price sync on DB
-getQuote();
-
-setInterval(() => {
+if (config.settings.useFiat) {
   getQuote();
-}, quoteInterval);
+
+  setInterval(() => {
+    getQuote();
+  }, quoteInterval);
+}
