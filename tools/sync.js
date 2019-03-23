@@ -317,10 +317,12 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
         let n = 0;
         accounts.forEach((account) => {
           n++;
-          if (n <= 5) {
-            console.log(` - upsert ${account} / balance = ${data[account].balance}`);
-          } else if (n === 6) {
-            console.log(`   (...) total ${accounts.length} accounts updated.`);
+          if (!('quiet' in config && config.quiet === true)) {
+            if (n <= 5) {
+              console.log(` - upsert ${account} / balance = ${data[account].balance}`);
+            } else if (n === 6) {
+              console.log(`   (...) total ${accounts.length} accounts updated.`);
+            }
           }
           // upsert account
           Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
@@ -498,7 +500,9 @@ const runPatcher = async (config, startBlock, endBlock) => {
 
   const missingBlocks = endBlock - startBlock + 1;
   if (missingBlocks > 0) {
-    console.log(`Patching from #${startBlock} to #${endBlock}`);
+    if (!('quiet' in config && config.quiet === true)) {
+      console.log(`Patching from #${startBlock} to #${endBlock}`);
+    }
     let patchBlock = startBlock;
     let count = 0;
     while (count < config.patchBlocks && patchBlock <= endBlock) {
