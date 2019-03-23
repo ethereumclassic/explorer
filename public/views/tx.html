@@ -11,9 +11,7 @@
           <td width="25%">Status:</td>
           <td>
             <span ng-show="tx.status==0" alt="A Status code indicating if the top-level call succeeded or failed (applicable for Post BYZANTIUM blocks only)"><font color="red"> Failed (Error encountered during transaction !)</font></span>
-            <span ng-show="!(tx.status==0) && tx.blockNumber" alt="A Status code indicating if the top-level call succeeded or failed (applicable for Post BYZANTIUM blocks only)"><font color="green"> Success </font></span>
-            <span ng-show="tx.hash && tx.blockNumber==null" alt="Transaction not included on blockchain"><font color="#77838f"> Pending </font></span>
-            <span ng-show="!tx.hash" alt="transaction fail"><font color="#77838f"> Not exist </font></span>
+            <span ng-show="tx.status==1" alt="A Status code indicating if the top-level call succeeded or failed (applicable for Post BYZANTIUM blocks only)"><font color="green"> Success </font></span>
           </td>
         </tr>
         <tr >
@@ -80,28 +78,6 @@
             <pre class="code">{{tx.input}}</pre>
           </td>
         </tr>
-      </table>
-      <table class="table table-condensed" ng-show="tx.isTrace">
-        <thead>
-          <tr>
-            <th> From </th>
-            <th> To </th>
-            <th style="text-align:right"> Amount </th>
-            <th style="text-align:right"> Gas </th>
-            <th style="text-align:right"> GasUsed </th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="t in internal_transactions track by $index">
-            <td class="truncate-addrhash"> <a href="/addr/{{t.from}}">{{t.from}}</a> </td>
-            <td class="truncate-addrhash"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
-            <td style="text-align:right"> {{t.value}} </td>
-            <td style="text-align:right"> {{t.gas}} </td>
-            <td style="text-align:right"> {{t.gasUsed}} </td>
-            <td style="text-align:center"><span class="label label-sm label-info {{t.type}}"> {{t.type}}</span><span class="label label-sm label-danger" ng-show="t.error"> {{t.error}}</span></td>
-          </tr>
-        </tbody>
       </table>
     </div>
   </div>
