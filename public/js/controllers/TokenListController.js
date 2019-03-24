@@ -5,9 +5,15 @@ angular.module('BlocksApp').controller('TokenListController', function($statePar
     });
     $scope.settings = $rootScope.setup;
 
-    $http.get('/tokens.json')
+    var tokenList = '/' + ($scope.settings.tokenList || 'tokens.json');
+    $http.get(tokenList)
       .then(function(res){
-        $scope.tokens = res.data;
+        var contentType = res.headers('Content-Type');
+        if (contentType.indexOf('/json') > 0) {
+          $scope.tokens = res.data;
+        } else {
+          $scope.tokens = [];
+        }
       })
 
 })

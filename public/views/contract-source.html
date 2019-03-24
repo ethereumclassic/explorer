@@ -5,38 +5,38 @@
     </span><br>
     <span class="eth-stat-text"><a href="/contract/{{addrHash}}">Verify And Publish Source Code.</a></span>
   </div>
-
   <div class="row" ng-show="contract.valid">
     <p class="eth-stat">
-    <i style="color: green" class="fa fa-check-circle-o"></i> Contract Source Code Verified
+      <i style="color: green" class="fa fa-check-circle-o"></i> Contract Source Code Verified
     </p>
   </div>
   <div class="row" ng-show="contract.valid">
     <div class="col-md-6 center">
       <div class="eth-stat">
-          <div class="margin-top-20">
+        <div class="margin-top-20">
           <span class="eth-stat-text">Contract Name: </span>
           <span ng-model="contract.contractName">{{contract.contractName}}</span>
-          </div>
-          <div class="margin-top-20">
+        </div>
+        <div class="margin-top-20">
           <span class="eth-stat-text">Compiler Version: </span>
           <span ng-model="contract.compilerVersion">{{contract.compilerVersion}}</span>
-          </div>
-          <div class="margin-top-20">
+        </div>
+        <div class="margin-top-20">
           <span class="eth-stat-text">Optimization Enabled: </span>
           <span ng-model="contract.optimization">{{contract.optimization}}</span>
-          </div>
+        </div>
       </div>
     </div>
-  </div><!--end row-->
+  </div>
+  <!--end row-->
   <div class="row" ng-show="contract.valid">
     Contract Source Code <i class="fa fa-code"></i>
     <pre class="code-js" ng-model="contract.sourceCode">{{contract.sourceCode}}</pre>
     <br>
     Contract ABI <i class="fa fa-cogs"></i>
-    <pre class="code-js" ng-model="contract.abi">{{contract.abi}}</pre><br>
+    <pre class="code-js" ng-model="contract.abi">{{contract.abi}}</pre>
+    <br>
   </div>
-
   <div class="row">
     Contract Bytecode <i class="fa fa-building-o"></i>
     <pre class="code-bytecode" ng-class="{verified: contract.valid}">{{addr.bytecode}}</pre>

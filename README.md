@@ -1,14 +1,16 @@
-# ETCExplorer
+# ETC Explorer
+
+<img src="public/img/explorer-logo.png" alt="ETC Explorer logo" height="200" />
 
 <b>Live Version: [etherhub.io](http://etherhub.io)</b>
 
-Follow the project progress at: [ETC Block Explorer Development](https://github.com/ethereumproject/explorer)
+Follow the project progress at: [ETC Block Explorer Development](https://github.com/ethereumclassic/explorer)
 
 ## Local installation
 
 Clone the repo
 
-`git clone https://github.com/ethereumproject/explorer`
+`git clone https://github.com/ethereumclassic/explorer`
 
 Download [Nodejs and npm](https://docs.npmjs.com/getting-started/installing-node "Nodejs install") if you don't have them
 
@@ -34,7 +36,7 @@ Basic settings:
 ```json
 {
     "nodeAddr":     "localhost",
-    "gethPort":     8545,
+    "wsPort":       8546,
     "startBlock":   0,
     "endBlock":     "latest",
     "quiet":        true,
@@ -53,12 +55,12 @@ Basic settings:
         "linkedin": "https://www.linkedin.com/company/ethereum-classic",
         "github": "https://github.com/ethereumclassic",
         "logo": "/img/explorer-logo.png",
-        "customCss": "green-haze.min.css",
-        "copyright": "2018 &copy; Ethereum Classic.",
-        "useEthFiat": false,
+        "copyright": "2019 &copy; Ethereum Classic.",
         "poweredbyCustom": false,
         "poweredbyEtcImage": "/img/powered-by-etcexplorer-w.png",
         "poweredbyEtc": true,
+        "useRichList": true,
+        "useFiat": true,
         "miners": {
             "0xdf7d7e053933b5cc24372f878c90e62dadad5d42": "EtherMine",
             "0xc91716199ccde49dc4fafaeb68925127ac80443f": "F2Pool",
@@ -92,32 +94,105 @@ Basic settings:
 
 ```
 
-```nodeAddr```    Your node API RPC address.
+| Name  | Explanation |
+|-------------|-----|
+| `nodeAddr` | Your node API RPC address. |
+| `wsPort` | Your node API WS (Websocket) port. (RPC HTTP port is deprecated on Web3 1.0 see https://web3js.readthedocs.io/en/1.0/web3.html#value) |
+| `startBlock` | This is the start block of the blockchain, should always be 0 if you want to sync the whole ETC blockchain. |
+| `endBlock` | This is usually the 'latest'/'newest' block in the blockchain, this value gets updated automatically, and will be used to patch missing blocks if the whole app goes down. |
+| `quiet` | Suppress some messages. (admittedly still not quiet) |
+| `syncAll` | If this is set to true at the start of the app, the sync will start syncing all blocks from lastSync, and if lastSync is 0 it will start from whatever the endBlock or latest block in the blockchain is. |
+| `patch` | If set to true and below value is set, sync will iterated through the # of blocks specified. |
+| `patchBlocks` | If `patch` is set to true, the amount of block specified will be check from the latest one. |
+| `useRichList` | If `useRichList` is set to true, explorer will update account balance for richlist page. |
+| `useFiat` | If `useFiat` is set to true, explorer will show price for account & tx page. ( Disable for testnets )|
 
-```gethPort```    Your node API RPC port.
+### Mongodb Auth setting.
 
-```startBlock```  This is the start block of the blockchain, should always be 0 if you want to sync the whole ETC blockchain.
+#### Configure MongoDB
 
-```endBlock```    This is usually the 'latest'/'newest' block in the blockchain, this value gets updated automatically, and will be used to patch missing blocks if the whole app goes down.
+In view of system security, most of mongoDB Admin has setup security options, So, You need to setup mongodb auth informations.
+Switch to the built-in admin database:
 
-```quiet```       Suppress some messages. (admittedly still not quiet)
+```
+$ mongo
+$ > use admin
+```
 
-```syncAll```     If this is set to true at the start of the app, the sync will start syncing all blocks from lastSync, and if lastSync is 0 it will start from whatever the endBlock or latest block in the blockchain is.
+1. Create an administrative user  (if you have already admin or root of mongodb account, then skip it)
 
-```patch```       If set to true and below value is set, sync will iterated through the # of blocks specified.
+```
+# make admin auth and role setup
+$ > db.createUser( { user: "admin", pwd: "<Enter a secure password>", roles: ["root"] } )
+```
 
-```patchBlocks``` If `patch` is set to true, the amount of block specified will be check from the latest one.
+And, You can make Explorer's "explorerDB" database with db user accounts "explorer" and password "some_pass_code".
 
+```
+$ > use explorerDB
+$ > db.createUser( { user: "explorer", pwd: "<Enter a secure password>", roles: ["dbOwner"] } )
+$ > quit()
+```
 
-### Run:
-The below will start both the web-gui and sync.js (which populates MongoDV with blocks/transactions).
+Above dbuser explorer will full access explorerDB and clustor setting will be well used on monitoring the multiple sharding and replication of multiple mongodb instances.
+Enable database authorization in the MongoDB configuration file /etc/mongodb.conf by appending the following lines:
+
+```
+auth=true
+```
+
+Restart MongoDB and verify the administrative user created earlier can connect:
+
+```
+$ sudo service mongodb restart
+$ mongo -u admin -p your_password --authenticationDatabase=admin
+```
+
+If everything is configured correctly the Mongo Shell will connect and
+
+```
+$ > show dbs
+```
+
+will show db informations.
+and You can add modified from  ./db.js:103 lines,  add auth information and mongodb connect options.
+
+```
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
+  useMongoClient: true
+  // poolSize: 5,
+  // rs_name: 'myReplicaSetName',
+  // user: 'explorer',
+  // pass: 'yourdbpasscode'
+});
+```
+
+And explore it.
+
+### Run
+
+The below will start both the web-gui and sync.js (which populates MongoDB with blocks/transactions).
+
 `npm start`
 
 You can leave sync.js running without app.js and it will sync and grab blocks based on config.json parameters
-`node ./tools/sync.js`
+
+`npm run sync`
 
 Enabling stats requires running a separate process:
-`node ./tools/stats.js`
+
+`npm run stats`
+
+Enabling richlist requires running a separate process:
+
+`npm run rich`
 
 You can configure intervals (how often a new data point is pulled) and range (how many blocks to go back) with the following:
-`RESCAN=100:7400000 node tools/stats.js` (New data point every 100 blocks. Go back 7,400,000 blocks).
+
+`RESCAN=100:7700000 node tools/stats.js` (New data point every 100 blocks. Go back 7,700,000 blocks).
+
+## Docker installation
+
+Set `nodeAddr` in `config.json` to `host.docker.internal`
+
+Run `docker-compose up`

@@ -1,114 +1,112 @@
 <!-- BEGIN PAGE CONTENT-->
 <div class="row">
   <div class="col-md-12 portlet light">
-      <div class="portlet-title">
-        <div class="caption"><span ng-show="addr.isContract">Contract </span>Overview</div>
-      </div>
-      <div class="portlet-body">
-        <div class="row">
-            <div class="col-md-6 center">
-              <div >
-                <span class="eth-stat-title">
-                  {{ addr.balance | number: 10 }} </span><br>
-                <span class="eth-stat-text">
-                  {{ settings.symbol }} Balance <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="Note: Balance may not reflect transaction data if you have transactions resulting from Contract Internal Transactions. We are working on adding that functionality."></i>
-                  </span><br> 
-                  <div ng-if="settings.useEthFiat" class="margin-top-20">
-                  <span class="fade">{{ addr.ethfiat | number: 10 }}</span> <span class="eth-stat-text fade">ETH-F balance
-                  </span> <a href="http://etherscan.io/address/{{addrHash}}" target="_blank"><i class="fa fa-external-link"></i></a>
-                  </div>
-                  <div class="margin-top-20">
-                  {{ addr.mined }} <span class="eth-stat-text">Mined</span>
-                  </div>
-                  <div class="margin-top-20">
-                  {{ addr.count }} <span class="eth-stat-text">Transactions</span>
-                  </div>
-              </div>
+    <div class="portlet-title">
+      <div class="caption"><span ng-show="addr.isContract">Contract </span>Overview</div>
+    </div>
+    <div class="portlet-body">
+      <div class="row">
+        <div class="col-md-6 center">
+          <div>
+            <span class="eth-stat-title2">
+            {{ addr.balance | number: 4 }} {{ settings.symbol }}</span><br>
+            <span class="eth-stat-text">
+            {{ settings.symbol }} Balance <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="Note: Balance may not reflect transaction data if you have transactions resulting from Contract Internal Transactions. We are working on adding that functionality."></i>
+            </span><br>
+            <div ng-show="settings.useFiat" class="margin-top-20">
+              <span class="fade">{{ addr.balanceUSD | currency : "$" : 4 }}</span> <span class="eth-stat-text fade">USD balance</span>
             </div>
-
-            <div class="col-md-6 center">
-                <div class="portlet">
-                  <div class="portlet-body">
-
-                    <span class='btn blue-madison' ng-show="!isFollowing(addrHash)" ng-click="follow(addrHash)">WATCH <i class="fa fa-rss "></i></span>
-                    <span class='btn grey'  ng-show="isFollowing(addrHash)" ng-click="unFollow(addrHash)">WATCHING <i class="fa fa-check "></i></span>
-                    <div class="margin-top-20">
-                        {{ addr.follow_count }}0 
-                        <span class="eth-stat-text">WATCHING</span>
-                    </div>
-                </div>
-              </div>
+            <div ng-hide="addr.mined==0" class="margin-top-20">
+              {{ addr.mined }} <span class="eth-stat-text">Mined</span>
             </div>
-
-      </div><!--end row-->
-    </div><!--end portlet-body-->
-  </div><!--end portlet-->
-
-  <!-- Begin: Transaction Datatable -->
-  <div class="portlet light portlet-datatable col-md-12">
-     <div class="portlet-body">
-        <div class="tabbable-line">
-          <ul class="nav nav-tabs ">
-              <li ng-class="{active: activeTab == 'tab_addr_1' || !activeTab}">
-                  <a href="#tab_addr_1" data-toggle="tab" aria-expanded="true"> Transactions </a>
-              </li>
-              <li  ng-class="{active: activeTab == 'tab_addr_2'}" ng-show="addr.isContract">
-                  <a href="#tab_addr_2" data-toggle="tab" aria-expanded="false"> Internal Transactions </a>
-              </li>
-              <li class="" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_3'}">
-                  <a href="#tab_addr_3" data-toggle="tab" aria-expanded="false"> Contract Source </a>
-              </li>
-          </ul>
-          <div class="tab-content">
-            <div class="tab-pane table-container" ng-class="{active: activeTab == 'tab_addr_1' || !activeTab}" id="tab_addr_1"><!-- Datatable tab -->
-
-              <table class="table table-striped table-hover" id="table_txs" style="table-layout:fixed;width: 98% !important;">
-                  <thead>
-                      <tr role="row" class="heading">
-                          <th width="15%"> TxHash </th>
-                          <th width="8%"> Block </th>
-                          <th width="15%"> From </th>
-                          <th width="15%"> To </th>
-                          <th width="10%"> {{ settings.symbol }} </th>
-                          <th width="0%"> gas </th>
-                          <th width="12%"> Age </th>
-                      </tr>
-                  </thead>
-                  <tbody></tbody>
-              </table>
-            </div><!-- End: Datatable tab -->
-            <div class="tab-pane" id="tab_addr_2" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_2'}">
-              <table class="table table-condensed" ng-show="addr.isContract">
-                <thead>
-                    <tr>
-                        <th width="15%"> TxHash </th>
-                        <th width="8%"> Block </th>
-                        <th width="15%"> From </th>
-                        <th width="15%"> To </th>
-                        <th width="10%"> {{ settings.symbol }} </th>
-                        <th width="0%"> gas </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="t in internal_transactions track by $index">
-                        <td class="truncate-txhash"> <a href="/tx/{{t.transactionHash}}">{{t.transactionHash}}</a> </td>
-                        <td style="text-align:right"><a href="/block/{{t.blockNumber}}">{{t.blockNumber}}</a>
-                        <td class="truncate-addrhash"> <a href="/addr/{{t.from}}">{{t.from}}</a> </td>
-                        <td class="truncate-addrhash"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
-                        <td style="text-align:right"> {{t.value}} </td>
-                        <td style="text-align:right"> {{t.gas}} </td>
-                        <td style="text-align:center"><span class="label label-sm label-info {{t.type}}"> {{t.type}}</span><span class="label label-sm label-danger" ng-show="t.error"> {{t.error}}</span></td>
-                    </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="tab-pane" id="tab_addr_3" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_3'}">
-              <contract-source></contract-source>
+            <div class="margin-top-20">
+              {{ addr.count }} <span class="eth-stat-text">Transactions</span>
             </div>
           </div>
         </div>
-      
+        <div class="col-md-6 center">
+          <div ng-show="addr.isContract">
+            <span class="eth-stat-text">Contract Creator</span><br>
+            <a href="/addr/{{addr.owner}}">{{addr.owner.substr(0,24)}}...</a> at txn
+            <a href="/tx/{{addr.creationTransaction}}">{{addr.creationTransaction.substr(0,24)}}...</a>
+          </div>
+          <div class="margin-top-20" ng-show="addr.isTokenContract">
+            <span class="eth-stat-text">Token Address</span><br>
+            <a href="/token/{{addr.address}}">{{addr.address}}</a>
+          </div>
+        </div>
       </div>
-    </div><!-- End: portlet -->
+      <!--end row-->
+    </div>
+    <!--end portlet-body-->
+  </div>
+  <!--end portlet-->
+  <!-- Begin: Transaction Datatable -->
+  <div class="portlet light portlet-datatable col-md-12">
+    <div class="portlet-body">
+      <div class="tabbable-line">
+        <ul class="nav nav-tabs ">
+          <li ng-class="{active: activeTab == 'tab_addr_1' || !activeTab}">
+            <a href="#tab_addr_1" data-toggle="tab" aria-expanded="true"> Transactions </a>
+          </li>
+          <li  ng-class="{active: activeTab == 'tab_addr_2'}" ng-show="addr.isContract">
+            <a href="#tab_addr_2" data-toggle="tab" aria-expanded="false"> Internal Transactions </a>
+          </li>
+          <li class="" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_3'}">
+            <a href="#tab_addr_3" data-toggle="tab" aria-expanded="false"> Contract Source </a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane table-container" ng-class="{active: activeTab == 'tab_addr_1' || !activeTab}" id="tab_addr_1">
+            <!-- Datatable tab -->
+            <table class="table table-striped table-hover" id="table_txs" style="table-layout:fixed;width: 98% !important;">
+              <thead>
+                <tr role="row" class="heading">
+                  <th width="15%"> TxHash </th>
+                  <th width="8%"> Block </th>
+                  <th width="15%"> From </th>
+                  <th width="15%"> To </th>
+                  <th width="10%"> {{ settings.symbol }} </th>
+                  <th width="0%"> gas </th>
+                  <th width="12%"> Age </th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <!-- End: Datatable tab -->
+          <div class="tab-pane" id="tab_addr_2" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_2'}">
+            <table class="table table-condensed" ng-show="addr.isContract">
+              <thead>
+                <tr>
+                  <th width="15%"> TxHash </th>
+                  <th width="8%"> Block </th>
+                  <th width="15%"> From </th>
+                  <th width="15%"> To </th>
+                  <th width="10%"> {{ settings.symbol }} </th>
+                  <th width="0%"> gas </th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="t in internal_transactions track by $index">
+                  <td class="truncate-txhash"> <a href="/tx/{{t.transactionHash}}">{{t.transactionHash}}</a> </td>
+                  <td style="text-align:right"><a href="/block/{{t.blockNumber}}">{{t.blockNumber}}</a>
+                  <td class="truncate-addrhash"> <a href="/addr/{{t.from}}">{{t.from}}</a> </td>
+                  <td class="truncate-addrhash"> <a href="/addr/{{t.to}}">{{t.to}}</a> </td>
+                  <td style="text-align:right"> {{t.value}} </td>
+                  <td style="text-align:right"> {{t.gas}} </td>
+                  <td style="text-align:center"><span class="label label-sm label-info {{t.type}}"> {{t.type}}</span><span class="label label-sm label-danger" ng-show="t.error"> {{t.error}}</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tab-pane" id="tab_addr_3" ng-show="addr.isContract" ng-class="{active: activeTab == 'tab_addr_3'}">
+            <contract-source></contract-source>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End: portlet -->
 </div>

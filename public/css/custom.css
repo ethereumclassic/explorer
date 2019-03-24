@@ -5,13 +5,13 @@ img.logo-default {
 }
 .create{background-color:#36c6d3}
 .truncate-txhash, .truncate-addrhash{
-    white-space:nowrap; 
+    white-space:nowrap;
     overflow:hidden;
     text-overflow: ellipsis;
     max-width:220px;
 }
 .truncate-addrhash {
-    max-width:200px;   
+    max-width:200px;
 }
 .scrollable {
     max-height: 400px;
@@ -20,7 +20,7 @@ img.logo-default {
 }
 #table_txs td, #table_internal_txs td {
     font-size: 12px;
-    white-space:nowrap; 
+    white-space:nowrap;
     overflow:hidden;
     text-overflow: ellipsis;
 }
@@ -32,6 +32,14 @@ img.logo-default {
 }
 .eth-stat-title {
     font-size: 25px;
+    text-align: center;
+}
+.eth-stat-title2 {
+    font-size: 20px;
+    text-align: center;
+}
+.eth-stat-subtitle {
+    font-size: 14px;
     text-align: center;
 }
 .eth-stat-text {
@@ -53,7 +61,7 @@ img.logo-default {
 }
 .home-tx{
     font-size: 12px;
-    white-space:nowrap; 
+    white-space:nowrap;
     overflow:hidden;
     text-overflow: ellipsis;
 }
@@ -81,7 +89,7 @@ pre {
     word-wrap: break-word;
 }
 pre.code-js, .verified{
-    max-height: 200px; 
+    max-height: 200px;
 }
 .code {
     font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
@@ -102,7 +110,7 @@ li.ng-scope {
 .table-scrollable {
     margin: 0 !important;
 }
-@media(max-width: 487px) {
+@media (max-width: 487px) {
     .container {
         margin: 0 !important;
     }
@@ -130,4 +138,13 @@ li.ng-scope {
 ::-webkit-scrollbar-track {
     background-color: transparent;
 }
+@media (max-width: 480px) {
+  .page-header .page-header-top .top-menu .navbar-nav,
+  .search-form, .page-header .page-header-top .top-menu .navbar-nav>li.dropdown,
+  .page-header .search-form .input-group .form-control{width:100%;}
+  .search-form.open{width:100%!important;}
+}
 .page-spinner-bar{margin-top:-84px;margin-left:-98px;top:50%;left:50%;}
+.mini-logo {
+  height: 1.2em;
+}

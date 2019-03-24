@@ -3,47 +3,48 @@
  * Endpoint for richlist
  */
 
-var async = require('async');
-var mongoose = require('mongoose');
+const async = require('async');
+const mongoose = require('mongoose');
 
-require( '../db.js' );
-var Account = mongoose.model('Account');
+require('../db.js');
 
-var getAccounts = function(req, res) {
-  var self = getAccounts;
+const Account = mongoose.model('Account');
+
+var getAccounts = function (req, res) {
+  const self = getAccounts;
   if (!self.totalSupply) {
     self.totalSupply = -1;
     self.timestamp = 0;
   }
 
   // check cached totalSupply
-  if (new Date() - self.timestamp > 30*60*1000) {
+  if (new Date() - self.timestamp > 30 * 60 * 1000) {
     self.totalSupply = -1;
     self.timestamp = 0;
   }
 
   // count accounts only once
-  var count = req.body.recordsTotal || 0;
+  let count = req.body.recordsTotal || 0;
   count = parseInt(count);
   if (count < 0) {
     count = 0;
   }
 
   // get totalSupply only once
-  var queryTotalSupply = self.totalSupply || req.body.totalSupply || null;
+  const queryTotalSupply = self.totalSupply || req.body.totalSupply || null;
 
   async.waterfall([
-    function(callback) {
+    function (callback) {
       if (queryTotalSupply < 0) {
         Account.aggregate([
-          { $group: { _id: null, totalSupply: { $sum: '$balance' } } }
-        ]).exec(function(err, docs) {
+          { $group: { _id: null, totalSupply: { $sum: '$balance' } } },
+        ]).exec((err, docs) => {
           if (err) {
             callbck(err);
             return;
           }
 
-          var totalSupply = docs[0].totalSupply;
+          const { totalSupply } = docs[0];
           // update cache
           self.timestamp = new Date();
           self.totalSupply = totalSupply;
@@ -53,10 +54,10 @@ var getAccounts = function(req, res) {
         callback(null, queryTotalSupply > 0 ? queryTotalSupply : null);
       }
     },
-    function(totalSupply, callback) {
+    function (totalSupply, callback) {
       if (!count) {
         // get the number of all accounts
-        Account.count({}, function(err, count) {
+        Account.count({}, (err, count) => {
           if (err) {
             callbck(err);
             return;
@@ -68,16 +69,16 @@ var getAccounts = function(req, res) {
       } else {
         callback(null, totalSupply, count);
       }
-    }
-  ], function(error, totalSupply, count) {
+    },
+  ], (error, totalSupply, count) => {
     if (error) {
-      res.write(JSON.stringify({"error": true}));
+      res.write(JSON.stringify({ 'error': true }));
       res.end();
       return;
     }
 
     // check sort order
-    var sortOrder = { balance: -1 };
+    let sortOrder = { balance: -1 };
     if (req.body.order && req.body.order[0] && req.body.order[0].column) {
       // balance column
       if (req.body.order[0].column == 3) {
@@ -94,30 +95,28 @@ var getAccounts = function(req, res) {
     }
 
     // set datatable params
-    var limit = parseInt(req.body.length);
-    var start = parseInt(req.body.start);
+    const limit = parseInt(req.body.length);
+    const start = parseInt(req.body.start);
 
-    var data = { draw: parseInt(req.body.draw), recordsFiltered: count, recordsTotal: count };
+    const data = { draw: parseInt(req.body.draw), recordsFiltered: count, recordsTotal: count };
     if (totalSupply > 0) {
       data.totalSupply = totalSupply;
     }
 
-    Account.find({}).lean(true).sort(sortOrder).skip(start).limit(limit)
-      .exec(function (err, accounts) {
+    Account.find({}).lean(true).sort(sortOrder).skip(start)
+      .limit(limit)
+      .exec((err, accounts) => {
         if (err) {
-          res.write(JSON.stringify({"error": true}));
+          res.write(JSON.stringify({ 'error': true }));
           res.end();
           return;
         }
 
-        data.data = accounts.map(function(account, i) {
-          return [i + 1 + start, account.address, account.type, account.balance, account.blockNumber];
-        });
+        data.data = accounts.map((account, i) => [i + 1 + start, account.address, account.type, account.balance, account.blockNumber]);
         res.write(JSON.stringify(data));
         res.end();
-      }
-    );
+      });
   });
-}
+};
 
 module.exports = getAccounts;

@@ -1,78 +1,74 @@
-<site-notes></site-notes>
+<!-- site-notes></site-notes -->
 <simple-summary-stats></simple-summary-stats>
-<!-- summary-stats></summary-stats -->
-
 <div class="row">
-    <div class="col-md-6 col-sm-6">
-        <!-- BEGIN PORTLET-->
-        <div class="portlet light">
-            <div class="portlet-title">
-                <div class="caption caption-md">
-                    <i class="fa fa-cubes font-red"></i>
-                    <span class="caption-subject font-red bold uppercase">Blocks</span>
-                </div>
-                <div class="actions">
-                    <div class="btn-group">
-                        <a class="btn btn-med" ng-click="reloadBlocks()"><i class="fa fa-refresh" ng-class="{'fa-spin': blockLoading}"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="portlet-body">
-                <div class="todo-tasklist scrollable">
-                    <div ng-repeat="t in latest_blocks track by $index" class="todo-tasklist-item item-border-green row" ng-class="(t.extraData.indexOf('Parity') > -1) ? 'item-border-red': '';(t.extraData.indexOf('Pool') > -1) ? 'item-border-blue': ''">
-                        <!--TODO: color by known miners -->
-                        <div class="col-sm-5">
-                            <span class="todo-tasklist-item-title"><i class="fa fa-cube"></i> <a href="/block/{{t.number}}">{{t.number}}</a></span><br>
-                            <span class="todo-tasklist-date">
-                                <i class="fa fa-hourglass-o"></i>{{t.timestamp | timeDuration }} ago</span>
-                        </div>
-                        <div class="todo-tasklist-controls col-sm-7">
-                            <div class="todo-tasklist-item-text"><a href="/addr/{{t.miner}}">{{t.extraData}}</a><br>
-                            by <a href="/addr/{{t.miner}}">{{t.miner}}</a><br>
-                            {{t.txn}} txns
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="col-md-6 col-sm-6">
+  <!-- BEGIN PORTLET-->
+  <div class="portlet light">
+    <div class="portlet-title">
+      <div class="caption caption-md">
+        <i class="fa fa-cubes font-red"></i>
+        <span class="caption-subject font-red bold uppercase">Blocks</span>
+      </div>
+      <div class="actions">
+        <div class="btn-group">
+          <a class="btn btn-med" ng-click="reloadBlocks()"><i class="fa fa-refresh" ng-class="{'fa-spin': blockLoading}"></i>
+          </a>
         </div>
-        <!-- END PORTLET-->
+      </div>
     </div>
-    <div class="col-md-6 col-sm-6" >
-        <!-- BEGIN PORTLET-->
-        <div class="portlet light">
-            <div class="portlet-title">
-                <div class="caption caption-md">
-                    <i class="icon-bar-chart font-red"></i>
-                    <span class="caption-subject font-red bold uppercase">Transactions</span>
-                </div>
-                <div class="actions">
-                    <div class="btn-group">
-                        <a class="btn btn-med" ng-click="reloadTransactions()"><i class="fa fa-refresh" ng-class="{'fa-spin': txLoading}"></i>
-                        </a>
-                    </div>
-                </div>                    
+    <div class="portlet-body">
+      <div class="todo-tasklist scrollable">
+        <div ng-repeat="t in latest_blocks track by $index" class="todo-tasklist-item item-border-green row" ng-class="(t.extraData.indexOf('Parity') > -1) ? 'item-border-red': '';(t.extraData.indexOf('Pool') > -1) ? 'item-border-blue': ''">
+          <!--TODO: color by known miners -->
+          <div class="col-sm-5">
+            <span class="todo-tasklist-item-title"><i class="fa fa-cube"></i> <a href="/block/{{t.number}}">{{t.number}}</a></span><br>
+            <span class="todo-tasklist-date">
+            <i class="fa fa-hourglass-o"></i>{{t.timestamp | timeDuration }} ago</span>
+          </div>
+          <div class="todo-tasklist-controls col-sm-7">
+            <div class="todo-tasklist-item-text"><a href="/addr/{{t.miner}}">{{t.extraData}}</a><br>
+              by <a href="/addr/{{t.miner}}">{{t.miner}}</a><br>
+              {{t.txn}} txns
             </div>
-            <div class="portlet-body">
-                <div class="general-item-list scrollable">
-                    <div class="item"  ng-repeat="t in latest_txs track by $index">
-                    <div class="item-head">
-                        <div class="truncate-txhash" style="float:left">
-                            TX <a href="/tx/{{t.hash}}" class="primary-link">{{t.hash}}</a>
-                        </div>
-                        <div class="item-date" style="float:right">{{t.timestamp | timeDuration }} ago</div>
-                    </div>
-                    <div class="todo-tasklist-controls"> 
-                      <span class="todo-tasklist-item-text">From <a href="/addr/{{t.from}}">{{t.from.substr(0,24)}}...</a></span> 
-                      <span class="todo-tasklist-item-text">To <a href="/addr/{{t.to}}">{{t.to.substr(0,24)}}...</a></span><br>
-                      <div class="todo-tasklist-item-text" style="margin-top:4px;">{{t.value}} {{settings.symbol}}</div>
-                    </div>
-                </div>
-
-            </div>
+          </div>
         </div>
-        <!-- END PORTLET-->
+      </div>
     </div>
+  </div>
+  <!-- END PORTLET-->
 </div>
-
+<div class="col-md-6 col-sm-6" >
+  <!-- BEGIN PORTLET-->
+  <div class="portlet light">
+    <div class="portlet-title">
+      <div class="caption caption-md">
+        <i class="icon-bar-chart font-red"></i>
+        <span class="caption-subject font-red bold uppercase">Transactions</span>
+      </div>
+      <div class="actions">
+        <div class="btn-group">
+          <a class="btn btn-med" ng-click="reloadTransactions()"><i class="fa fa-refresh" ng-class="{'fa-spin': txLoading}"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="portlet-body">
+      <div class="general-item-list scrollable">
+        <div class="item"  ng-repeat="t in latest_txs track by $index">
+          <div class="item-head">
+            <div class="truncate-txhash" style="float:left">
+              TX <a href="/tx/{{t.hash}}" class="primary-link">{{t.hash}}</a>
+            </div>
+            <div class="item-date" style="float:right">{{t.timestamp | timeDuration }} ago</div>
+          </div>
+          <div class="todo-tasklist-controls">
+            <span class="todo-tasklist-item-text">From <a href="/addr/{{t.from}}">{{t.from.substr(0,24)}}...</a></span>
+            <span class="todo-tasklist-item-text">To <a href="/addr/{{t.to}}">{{t.to.substr(0,24)}}...</a></span><br>
+            <div class="todo-tasklist-item-text" style="margin-top:4px;">{{t.value}} {{settings.symbol}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END PORTLET-->
+  </div>
+</div>

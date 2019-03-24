@@ -3,21 +3,41 @@
  * Tool for calculating richlist by hackyminer
  */
 
-var _ = require('lodash');
-var Web3 = require('web3');
-var async = require('async');
-var BigNumber = require('bignumber.js');
-var mongoose = require('mongoose');
+const _ = require('lodash');
+const Web3 = require('web3');
+const web3explorer = require('web3-explorer');
+const asyncL = require('async');
+const BigNumber = require('bignumber.js');
+const mongoose = require('mongoose');
 
-var Account = require('../db.js').Account;
-var Transaction = require('../db.js').Transaction;
-var Block = require('../db.js').Block;
+const { Account } = require('../db.js');
+const { Transaction } = require('../db.js');
+const { Block } = require('../db.js');
 
 const ADDRESS_CACHE_MAX = 10000; // address cache threshold
 
+/**
+ * Start config for node connection and sync
+ */
+const config = { nodeAddr: 'localhost', 'wsPort': 8546 };
+// load the config.json file
+try {
+  const loaded = require('../config.json');
+  _.extend(config, loaded);
+  console.log('config.json found.');
+} catch (error) {
+  console.log('No config file found.');
+  throw error;
+  process.exit(1);
+}
+
+console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
+// Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
+const web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort.toString()}`));
+
 // RichList for Geth Classic, Geth
 function makeRichList(toBlock, blocks, updateCallback) {
-  var self = makeRichList;
+  const self = makeRichList;
   if (!self.cached) {
     self.cached = {};
     self.index = 0;
@@ -25,33 +45,35 @@ function makeRichList(toBlock, blocks, updateCallback) {
   if (!self.accounts) {
     self.accounts = {};
   }
-  var fromBlock = toBlock - blocks;
+  let fromBlock = toBlock - blocks;
   if (fromBlock < 0) {
     fromBlock = 0;
   }
 
-  console.log('Scan accounts from ' + fromBlock + ' to ' + toBlock + ' ...');
+  if (!('quiet' in config && config.quiet === true)) {
+    console.log(`Scan accounts from ${fromBlock} to ${toBlock} ...`);
+  }
 
-  var ended = false;
+  let ended = false;
   if (fromBlock == toBlock) {
     ended = true;
   }
 
-  async.waterfall([
-    function(callback) {
+  asyncL.waterfall([
+    function (callback) {
       // Transaction.distinct("from", { blockNumber: { $lte: toBlock, $gt: fromBlock } }, function(err, docs) ...
       // faster
       // dictint("from")
       Transaction.aggregate([
         { $match: { blockNumber: { $lte: toBlock, $gt: fromBlock } } },
-        { $group: { _id: '$from' }},
-        { $project: { "_id": 1 }}
-      ]).exec(function(err, docs) {
+        { $group: { _id: '$from' } },
+        { $project: { '_id': 1 } },
+      ]).exec((err, docs) => {
         if (err) {
           console.log(err);
           return;
         }
-        docs.forEach(function(doc) {
+        docs.forEach((doc) => {
           // check address cache
           if (!self.cached[doc._id]) {
             self.accounts[doc._id] = { address: doc._id, type: 0 };
@@ -63,18 +85,18 @@ function makeRichList(toBlock, blocks, updateCallback) {
         });
         callback(null);
       });
-    }, function(callback) {
+    }, function (callback) {
       // dictint("to")
       Transaction.aggregate([
         { $match: { blockNumber: { $lte: toBlock, $gt: fromBlock } } },
-        { $group: { _id: '$to' }},
-        { $project: { "_id": 1 }}
-      ]).exec(function(err, docs) {
+        { $group: { _id: '$to' } },
+        { $project: { '_id': 1 } },
+      ]).exec((err, docs) => {
         if (err) {
-           console.log(err);
-           return;
+          console.log(err);
+          return;
         }
-        docs.forEach(function(doc) {
+        docs.forEach((doc) => {
           // to == null case
           if (!doc._id) {
             return;
@@ -88,18 +110,18 @@ function makeRichList(toBlock, blocks, updateCallback) {
         });
         callback(null);
       });
-    }, function(callback) {
+    }, function (callback) {
       // aggregate miner's addresses
       Block.aggregate([
         { $match: { number: { $lte: toBlock, $gt: fromBlock } } },
-        { $group: { _id: '$miner' }},
-        { $project: { "_id": 1 }}
-      ]).exec(function(err, docs) {
+        { $group: { _id: '$miner' } },
+        { $project: { '_id': 1 } },
+      ]).exec((err, docs) => {
         if (err) {
-           console.log(err);
-           return;
+          console.log(err);
+          return;
         }
-        docs.forEach(function(doc) {
+        docs.forEach((doc) => {
           if (!self.cached[doc._id]) {
             self.accounts[doc._id] = { address: doc._id, type: 0 };
             self.cached[doc._id] = 1;
@@ -109,92 +131,52 @@ function makeRichList(toBlock, blocks, updateCallback) {
         });
         callback(null);
       });
-    }, function(callback) {
-      let len = Object.keys(self.accounts).length;
-      console.info('* ' + len + ' / ' + (self.index + len) + ' total accounts.');
-      if (updateCallback && (len >= 200 || ended)) {
+    }, function (callback) {
+      const len = Object.keys(self.accounts).length;
+      console.info(`* ${len} / ${self.index + len} total accounts.`);
+      if (updateCallback && (len >= 100 || ended)) {
         self.index += len;
-        console.log("* update " + len + " accounts ...");
+        if (!('quiet' in config && config.quiet === true)) {
+          console.log(`* update ${len} accounts ...`);
+        }
 
         // split accounts into chunks to make proper sized json-rpc batch job.
-        var accounts = Object.keys(self.accounts);
-        var chunks = [];
+        const accounts = Object.keys(self.accounts);
+        const chunks = [];
 
         // about ~1000 `eth_getBalance` json rpc calls are possible in one json-rpc batchjob.
-        while (accounts.length > 800) {
-          var chunk = accounts.splice(0, 500);
+        while (accounts.length > 200) {
+          const chunk = accounts.splice(0, 100);
           chunks.push(chunk);
         }
         if (accounts.length > 0) {
           chunks.push(accounts);
         }
 
-        async.eachSeries(chunks, function(chunk, outerCallback) {
-          var data = {};
-          // get account type + getBalance using json rpc batch job
-          async.waterfall([
-          function(innerCallback) {
-            var batch = web3.createBatch();
-
-            for (var i = 0; i < chunk.length; i++) {
-              var account = chunk[i];
-              batch.add(web3.eth.getCode.request(account));
-            }
-
-            batch.requestManager.sendBatch(batch.requests, function(err, results) {
+        asyncL.eachSeries(chunks, (chunk, outerCallback) => {
+          const data = {};
+          asyncL.eachSeries(chunk, (account, eachCallback) => {
+            web3.eth.getCode(account, (err, code) => {
               if (err) {
-                console.log("ERROR: fail to getCode batch job:", err);
-                innerCallback(err);
-                return;
+                return eachCallback(err);
               }
-              results = results || [];
-              batch.requests.map(function (request, index) {
-                return results[index] || {};
-              }).forEach(function (result, i) {
-                var code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
-                var account = batch.requests[i].params[0];
-                data[account] = { address: account };
-                if (code.length > 2) {
-                  // 0: normal address, 1: contract
-                  data[account].type = 1; // contract case
-                } else if (self.accounts[account]) {
-                  data[account].type = self.accounts[account].type;
+              data[account] = { address: account };
+              if (code.length > 2) {
+                data[account].type = 1; // contract type
+              } else if (self.accounts[account]) {
+                data[account].type = self.accounts[account].type;
+              }
+
+              web3.eth.getBalance(account, (err, balance) => {
+                if (err) {
+                  return eachCallback(err);
                 }
 
+                data[account].balance = parseFloat(web3.utils.fromWei(balance, 'ether'));
+                eachCallback();
               });
-              innerCallback(null, data);
             });
-          }, function(data, innerCallback) {
-            // batch rpc job
-            var batch = web3.createBatch();
-            for (var i = 0; i < chunk.length; i++) {
-              var account = chunk[i];
-              batch.add(web3.eth.getBalance.request(account));
-            }
-
-            batch.requestManager.sendBatch(batch.requests, function(err, results) {
-              if (err) {
-                console.log("ERROR: fail to getBalance batch job:", err);
-                innerCallback(err);
-                return;
-              }
-              results = results || [];
-              batch.requests.map(function (request, index) {
-                return results[index] || {};
-              }).forEach(function (result, i) {
-                var balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
-
-                let ether;
-                if (typeof balance === 'object') {
-                  ether = parseFloat(balance.div(1e18).toString());
-                } else {
-                  ether = balance / 1e18;
-                }
-                data[batch.requests[i].params[0]].balance = ether;
-              });
-              innerCallback(null, data);
-            });
-          }], function(err) {
+          }, (err) => {
             if (err) {
               return outerCallback(err);
             }
@@ -204,22 +186,21 @@ function makeRichList(toBlock, blocks, updateCallback) {
 
             outerCallback();
           });
-        }, function(error) {
+        }, (error) => {
           if (error) {
-            console.log("WARN: fail to call getBalance() " + error);
+            console.log(`WARN: fail to call getBalance() ${error}`);
           }
           // reset accounts
           self.accounts = {};
 
           // check the size of the cached accounts
           if (Object.keys(self.cached).length > ADDRESS_CACHE_MAX) {
-            console.info("** reduce cached accounts ...");
-            var sorted = Object.keys(self.cached).sort(function(a, b) {
-              return self.cached[b] - self.cached[a]; // descend order
-            });
-            var newcached = {};
-            var reduce = parseInt(ADDRESS_CACHE_MAX * 0.6);
-            for (var j = 0; j < reduce; j++) {
+            console.info('** reduce cached accounts ...');
+            const sorted = Object.keys(self.cached).sort((a, b) => self.cached[b] - self.cached[a], // descend order
+            );
+            const newcached = {};
+            const reduce = parseInt(ADDRESS_CACHE_MAX * 0.6);
+            for (let j = 0; j < reduce; j++) {
               newcached[sorted[j]] = self.cached[sorted[j]];
             }
             self.cached = newcached;
@@ -230,17 +211,17 @@ function makeRichList(toBlock, blocks, updateCallback) {
       } else {
         callback(null);
       }
-    }
-  ], function(error) {
+    },
+  ], (error) => {
     if (error) {
       console.log(error);
       return;
     }
 
     if (ended) {
-      console.log("**DONE**");
+      console.log('**DONE**');
     } else {
-      setTimeout(function() {
+      setTimeout(() => {
         makeRichList(fromBlock, blocks, updateCallback);
       }, 300);
     }
@@ -248,102 +229,65 @@ function makeRichList(toBlock, blocks, updateCallback) {
 }
 
 function makeParityRichList(number, offset, blockNumber, updateCallback) {
-  var self = makeParityRichList;
+  const self = makeParityRichList;
   if (!self.index) {
     self.index = 0;
   }
   number = number || 100;
   offset = offset || null;
 
-  async.waterfall([
-    function(callback) {
-      web3.parity.listAccounts(number, offset, blockNumber, function(err, result) {
+  asyncL.waterfall([
+    function (callback) {
+      web3.parity.listAccounts(number, offset, blockNumber, (err, result) => {
         callback(err, result);
       });
-    }, function(accounts, callback) {
+    }, function (accounts, callback) {
       if (!accounts) {
         return callback({
           error: true,
-          message: "No accounts found. Please restart Parity with --fat-db=on option to enable FatDB."
+          message: 'No accounts found. Please restart Parity with --fat-db=on option to enable FatDB.',
         });
       }
 
       if (accounts.length === 0) {
         return callback({
           error: true,
-          message: "No more accounts found."
+          message: 'No more accounts found.',
         });
       }
 
-      var lastAccount = accounts[accounts.length - 1];
-      var data = {};
+      const lastAccount = accounts[accounts.length - 1];
+      const data = {};
 
-      // get account type + getBalance using json rpc batch job
-      async.waterfall([
-      function(innerCallback) {
-        var batch = web3.createBatch();
-
-        for (var i = 0; i < accounts.length; i++) {
-          var account = accounts[i];
-          batch.add(web3.eth.getCode.request(account));
-        }
-
-        batch.requestManager.sendBatch(batch.requests, function(err, results) {
+      // Please see https://github.com/gobitfly/etherchain-light by gobitfly
+      asyncL.eachSeries(accounts, (account, eachCallback) => {
+        web3.eth.getCode(account, (err, code) => {
           if (err) {
-            console.log("ERROR: fail to getCode batch job:", err);
-            innerCallback(err);
-            return;
+            console.log(`ERROR: fail to getCode(${account})`);
+            return eachCallback(err);
           }
-          results = results || [];
-          batch.requests.map(function (request, index) {
-            return results[index] || {};
-          }).forEach(function (result, i) {
-            var code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
-            var account = batch.requests[i].params[0];
-            data[account] = { address: account };
-            if (code.length > 2) {
-              // 0: normal address, 1: contract
-              data[account].type = 1; // contract case
+          data[account] = {};
+          data[account].address = account;
+          if (code.length > 2) {
+            // 0: normal address, 1: contract
+            data[account].type = 1; //contract case
+          }
+
+          web3.eth.getBalance(account, (err, balance) => {
+            if (err) {
+              console.log(`ERROR: fail to getBalance(${account})`);
+              return eachCallback(err);
             }
 
+            data[account].balance = parseFloat(web3.utils.fromWei(balance, 'ether'));
+            eachCallback();
           });
-          innerCallback(null, data);
         });
-      }, function(data, innerCallback) {
-        // batch rpc job
-        var batch = web3.createBatch();
-        for (var i = 0; i < accounts.length; i++) {
-          var account = accounts[i];
-          batch.add(web3.eth.getBalance.request(account));
-        }
-
-        batch.requestManager.sendBatch(batch.requests, function(err, results) {
-          if (err) {
-            console.log("ERROR: fail to getBalance batch job:", err);
-            innerCallback(err);
-            return;
-          }
-          results = results || [];
-          batch.requests.map(function (request, index) {
-            return results[index] || {};
-          }).forEach(function (result, i) {
-            var balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
-
-            let ether;
-            if (typeof balance === 'object') {
-              ether = parseFloat(balance.div(1e18).toString());
-            } else {
-              ether = balance / 1e18;
-            }
-            data[batch.requests[i].params[0]].balance = ether;
-          });
-          innerCallback(null, data);
-        });
-      }], function(err) {
+      }, (err) => {
         callback(err, data, lastAccount);
       });
-    }
-  ], function(error, accounts, lastAccount) {
+    },
+  ], (error, accounts, lastAccount) => {
     if (error) {
       console.log(error);
       process.exit(9);
@@ -352,13 +296,15 @@ function makeParityRichList(number, offset, blockNumber, updateCallback) {
 
     //console.log(JSON.stringify(accounts, null, 2));
     offset = lastAccount;
-    let j = Object.keys(accounts).length;
+    const j = Object.keys(accounts).length;
     self.index += j;
-    console.log(' * ' + j + ' / ' + self.index + ' accounts, offset = ' + offset);
+    if (!('quiet' in config && config.quiet === true)) {
+      console.log(` * ${j} / ${self.index} accounts, offset = ${offset}`);
+    }
     if (updateCallback) {
       updateCallback(accounts, blockNumber);
     }
-    setTimeout(function() {
+    setTimeout(() => {
       makeParityRichList(number, lastAccount, blockNumber, updateCallback);
     }, 300);
   });
@@ -367,33 +313,33 @@ function makeParityRichList(number, offset, blockNumber, updateCallback) {
 /**
  * Write accounts to DB
  */
-var updateAccounts = function(accounts, blockNumber) {
+const updateAccounts = function (accounts, blockNumber) {
   // prepare
-  var bulk = Object.keys(accounts).map(function(j) {
-    let account = accounts[j];
+  const bulk = Object.keys(accounts).map((j) => {
+    const account = accounts[j];
     account.blockNumber = blockNumber;
     return account;
   });
 
   bulkInsert(bulk);
-}
+};
 
-var bulkInsert = function(bulk) {
+var bulkInsert = function (bulk) {
   if (!bulk.length) {
     return;
   }
 
-  var localbulk;
+  let localbulk;
   if (bulk.length > 300) {
     localbulk = bulk.splice(0, 200);
   } else {
     localbulk = bulk.splice(0, 300);
   }
-  Account.collection.insert(localbulk, function(error, data) {
+  Account.collection.insert(localbulk, (error, data) => {
     if (error) {
       if (error.code == 11000) {
         // For already exists case, try upsert method.
-        async.eachSeries(localbulk, function(item, eachCallback) {
+        asyncL.eachSeries(localbulk, (item, eachCallback) => {
           // upsert accounts
           item._id = undefined;
           delete item._id; // remove _id field
@@ -402,161 +348,133 @@ var bulkInsert = function(bulk) {
             item.type = undefined;
             delete item.type;
           }
-          Account.collection.update({ "address": item.address }, { $set: item }, { upsert: true }, function(err, updated) {
+          Account.collection.update({ 'address': item.address }, { $set: item }, { upsert: true }, (err, updated) => {
             if (err) {
               if (!config.quiet) {
-                console.log('WARN: Duplicate DB key : ' + error);
-                console.log('ERROR: Fail to update account: ' + err);
+                console.log(`WARN: Duplicate DB key : ${error}`);
+                console.log(`ERROR: Fail to update account: ${err}`);
               }
               return eachCallback(err);
             }
             eachCallback();
           });
-        }, function(err) {
+        }, (err) => {
           if (err) {
             if (err.code != 11000) {
-              console.log('ERROR: Aborted due to error: ' + JSON.stringify(err, null, 2));
+              console.log(`ERROR: Aborted due to error: ${JSON.stringify(err, null, 2)}`);
               process.exit(9);
               return;
-            } else {
-              console.log('WARN: Fail to upsert (ignore) ' + err);
             }
+            console.log(`WARN: Fail to upsert (ignore) ${err}`);
+
           }
-          console.log('* ' + localbulk.length + ' accounts successfully updated.');
+          if (!('quiet' in config && config.quiet === true)) {
+            console.log(`* ${localbulk.length} accounts successfully updated.`);
+          }
           if (bulk.length > 0) {
-            setTimeout(function() {
+            setTimeout(() => {
               bulkInsert(bulk);
             }, 200);
           }
         });
       } else {
-        console.log('Error: Aborted due to error on DB: ' + error);
+        console.log(`Error: Aborted due to error on DB: ${error}`);
         process.exit(9);
       }
     } else {
-      console.log('* ' + data.insertedCount + ' accounts successfully inserted.');
+      if (!('quiet' in config && config.quiet === true)) {
+        console.log(`* ${data.insertedCount} accounts successfully inserted.`);
+      }
       if (bulk.length > 0) {
-        setTimeout(function() {
+        setTimeout(() => {
           bulkInsert(bulk);
         }, 200);
       }
     }
   });
-}
+};
 
 function prepareJsonAddress(json, defaultType = 0) {
-  var accounts = {};
+  const accounts = {};
   if (json.accounts) {
     // genesis.json style
-    Object.keys(json.accounts).forEach(function(account) {
-      var key = account.toLowerCase();
-      key = '0x' + key.replace(/^0x/, '');
-      accounts[key] = { address: key, type: type };
+    Object.keys(json.accounts).forEach((account) => {
+      let key = account.toLowerCase();
+      key = `0x${key.replace(/^0x/, '')}`;
+      accounts[key] = { address: key, type };
     });
   } else if (typeof json === 'object') {
-    Object.keys(json).forEach(function(account) {
-      var key = account.toLowerCase();
-      key = '0x' + key.replace(/^0x/, '');
-      var type = defaultType;
+    Object.keys(json).forEach((account) => {
+      let key = account.toLowerCase();
+      key = `0x${key.replace(/^0x/, '')}`;
+      let type = defaultType;
       if (json[account].type) {
         type = json[account].type;
       }
-      accounts[key] = { address: key, type: type };
+      accounts[key] = { address: key, type };
     });
   } else { // normal array
-    json.forEach(function(account) {
-      var key = account.toLowerCase();
-      key = '0x' + key.replace(/^0x/, '');
-      accounts[key] = { address: key, type: type };
+    json.forEach((account) => {
+      let key = account.toLowerCase();
+      key = `0x${key.replace(/^0x/, '')}`;
+      accounts[key] = { address: key, type };
     });
   }
   return accounts;
 }
 
 function readJsonAccounts(json, blockNumber, callback, defaultType = 0) {
-  var data = prepareJsonAddress(json, defaultType);
-  var accounts = Object.keys(data);
-  console.log("* update " + accounts.length + " genesis accounts...");
+  const data = prepareJsonAddress(json, defaultType);
+  const accounts = Object.keys(data);
+  console.log(`* update ${accounts.length} genesis accounts...`);
+  async.eachSeries(accounts, (account, eachCallback) => {
+    web3.eth.getBalance(account, (err, balance) => {
+      if (err) {
+        console.log(`ERROR: fail to getBalance(${account})`);
+        return eachCallback(err);
+      }
 
-  // batch rpc job
-  var batch = web3.createBatch();
-  // normally, the request size of batch getBalance() of all accounts is not bigger than 128kB.
-  // simply getBalance at once using rpc batch job.
-  for (var i = 0; i < accounts.length; i++) {
-    var account = accounts[i];
-    batch.add(web3.eth.getBalance.request(account));
-  }
-
-  batch.requestManager.sendBatch(batch.requests, function(err, results) {
+      data[account].balance = parseFloat(web3.utils.fromWei(balance, 'ether'));
+      eachCallback();
+    });
+  }, (err) => {
     if (err) {
-      console.log("ERROR: fail to getBalance batch job:", err);
+      console.log(`ERROR: fail to getBalance()${err}`);
       return;
     }
-    results = results || [];
-    batch.requests.map(function (request, index) {
-      return results[index] || {};
-    }).forEach(function (result, i) {
-      var balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
-
-      let ether;
-      if (typeof balance === 'object') {
-        ether = parseFloat(balance.div(1e18).toString());
-      } else {
-        ether = balance / 1e18;
-      }
-      data[batch.requests[i].params[0]].balance = ether;
-    });
     callback(data, blockNumber);
   });
-}
-
-/**
- * Start config for node connection and sync
- */
-var config = { nodeAddr: 'localhost', 'gethPort': 8545 };
-// load the config.json file
-try {
-  var loaded = require('../config.json');
-  _.extend(config, loaded);
-  console.log('config.json found.');
-} catch (error) {
-  console.log('No config file found.');
-  throw error;
-  process.exit(1);
 }
 
 // temporary turn on some debug
 //config.quiet = false;
 //mongoose.set('debug', true);
 
-console.log('Connecting ' + config.nodeAddr + ':' + config.gethPort + '...');
+async function startSync() {
+  const latestBlock = await web3.eth.getBlockNumber();
+  const nodeInfo = await web3.eth.getNodeInfo();
 
-var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+  console.log(`Node version = ${nodeInfo}`);
 
-var useParity = false;
-if (!process.env.NOPARITY
-    && web3.version.node.split('/')[0].toLowerCase().includes('parity')) {
-  // load parity extension
-  web3 = require("../lib/trace.js")(web3);
-  useParity = true;
-}
-
-var latestBlock = web3.eth.blockNumber;
-
-// run
-console.log("* latestBlock = " + latestBlock);
-
-if (useParity) {
-  makeParityRichList(500, null, latestBlock, updateAccounts);
-} else {
-  // load genesis account
-  if (config.settings && config.settings.genesisAddress) {
-    try {
-      var genesis = require('../' + config.settings.genesisAddress);
-      readJsonAccounts(genesis, latestBlock, updateAccounts);
-    } catch (e) {
-      console.log("Error: Fail to load genesis address (ignore)");
+  if (nodeInfo.split('/')[0].toLowerCase().includes('parity')) {
+    console.log('Web3 has detected parity node configuration');
+    web3explorer(web3);
+    console.log(`* latestBlock = ${latestBlock}`);
+    makeParityRichList(500, null, latestBlock, updateAccounts);
+  } else {
+    // load genesis account
+    if (config.settings && config.settings.genesisAddress) {
+      try {
+        const genesis = require(`../${config.settings.genesisAddress}`);
+        readJsonAccounts(genesis, latestBlock, updateAccounts);
+      } catch (e) {
+        console.log('Error: Fail to load genesis address (ignore)');
+      }
     }
+    if ('quiet' in config && config.quiet === true) {
+      console.log('Quiet mode enabled');
+    }
+    makeRichList(latestBlock, 500, updateAccounts);
   }
-  makeRichList(latestBlock, 500, updateAccounts);
 }
+startSync();

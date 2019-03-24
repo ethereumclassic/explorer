@@ -1,52 +1,64 @@
 <!-- BEGIN PAGE CONTENT-->
 <div class="row">
   <div class="col-md-12 portlet light">
-      <div class="portlet-body">
-
-        <table class="col-md-6 table table-hover">
-          <tr ><td width="25%">height</td><td><a class="btn btn-info" ng-show="block.number > 0 && blockNum == block.number" href="/block/{{block.number - 1}}">&lt;Prev</a> {{block.number | number}} <a class="btn btn-info" ng-show="blockNum == block.number" href="/block/{{block.number + 1}}">Next&gt;</a></td></tr>
-          <tr ><td width="25%">Time</td>
-                <td>{{block.datetime | date:'yyyy-MM-dd HH:mm:ss Z' }} ({{block.timestamp | timeDuration}} ago)</td>
-          </tr>
-          <tr ><td width="25%">Hash</td><td>{{block.hash}}</td></tr>
-          <tr ><td width="25%">parentHash</td><td><a href="/block/{{block.number - 1}}">{{block.parentHash}}</td></tr>
-          <tr ><td width="25%">sha3 Uncles</td><td>{{block.sha3Uncles}}</td></tr>
-          <tr ><td width="25%">Mined By</td><td><a href="/addr/{{block.miner}}">{{block.miner}}</td></tr>
-          <tr ><td width="25%">Difficulty</td><td>{{block.difficulty | totalDifficulty}}</td></tr>
-          <tr ><td width="25%">Total Difficulty</td><td>{{block.totalDifficulty | totalDifficulty}}</td></tr>
-          <tr ><td width="25%">Gas Limit</td><td>{{block.gasLimit | number}}</td></tr>
-          <tr ><td width="25%">Gas Used</td><td>{{block.gasUsed | number}}</td></tr>
-          <tr ><td width="25%">nonce</td><td>{{block.nonce}}</td></tr>
-          <tr ><td width="25%">Extra Data</td><td>{{block.extraData}}</td></tr>
-          <tr ng-show="block.uncles.length > 0"><td width="25%">Uncles</td><td>{{block.uncles.length}} uncles
-            <table class="table table-condensed" ng-show="block.uncles.length > 0">
-              <tbody>
-                <tr ng-repeat="u in block.uncles">
-                  <td> <a href="/uncle/{{block.number}}/{{$index}}">{{u}}</a> </td>
-                </tr>
-              </tbody>
-            </table>
-          </td></tr>
+    <div class="portlet-body">
+      <table class="col-md-6 table table-hover">
+        <tr >
+          <td width="25%">Block Height</td>
+          <td><a class="btn btn-info" ng-show="block.number > 0 && blockNum == block.number" href="/block/{{block.number - 1}}">&lt;Prev</a> {{block.number | number}} <a class="btn btn-info" ng-show="blockNum == block.number" href="/block/{{block.number + 1}}">Next&gt;</a></td>
+        </tr>
+        <tr >
+          <td width="25%">TimeStamp</td>
+          <td>{{block.timestamp | timeDuration}} ago ({{block.datetime | date:'yyyy-MM-dd HH:mm:ss Z' }})</td>
+        </tr>
+        <tr >
+          <td width="25%">Hash</td>
+          <td>{{block.hash}}</td>
+        </tr>
+        <tr >
+          <td width="25%">Parent Hash</td>
+          <td>
+            <a href="/block/{{block.number - 1}}">
+              {{block.parentHash}}
+          </td>
+        </tr>
+        <tr ><td width="25%">Sha3Uncles</td><td>{{block.sha3Uncles}}</td></tr>
+        <tr ><td width="25%">Mined by</td><td><a href="/addr/{{block.miner}}">{{block.miner}}</td></tr>
+        <tr ><td width="25%">Difficulty</td><td>{{block.difficulty | totalDifficulty}}</td></tr>
+        <tr ><td width="25%">Total Difficulty</td><td>{{block.totalDifficulty | totalDifficulty}}</td></tr>
+        <tr ><td width="25%">Gas Limit</td><td>{{block.gasLimit | number}}</td></tr>
+        <tr ><td width="25%">Gas Used</td><td>{{block.gasUsed | number}}</td></tr>
+        <tr ><td width="25%">Nonce</td><td>{{block.nonce}}</td></tr>
+        <tr ><td width="25%">Extra Data</td><td>{{block.extraData}} (Hex: {{block.extraDataHex}})</td></tr>
+        <tr ng-show="block.uncles.length > 0"><td width="25%">Uncles</td><td>{{block.uncles.length}} uncles
+        <table class="table table-condensed" ng-show="block.uncles.length > 0">
+        <tbody>
+        <tr ng-repeat="u in block.uncles">
+        <td> <a href="/uncle/{{block.number}}/{{$index}}">{{u}}</a> </td>
+        </tr>
+        </tbody>
         </table>
+        </td></tr>
+      </table>
     </div>
     <!--TODO: calculate block reward -->
-
   </div>
-    <!-- Begin: Transaction Datatable -->
+  <!-- Begin: Transaction Datatable -->
   <div class="portlet light portlet-datatable col-md-12">
-     <div class="portlet-body">
-    <table class="table table-condensed">
+    <div class="portlet-body">
+      <table class="table table-condensed">
         <thead ng-show="block.transactions.length > 0">
-            <tr>
-                <th> Transactions </th>
-            </tr>
+          <tr>
+            <th> Transactions </th>
+          </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="t in block.transactions">
-                <td> <a href="/tx/{{t}}">{{t}}</a> </td>
-            </tr>
+          <tr ng-repeat="t in block.transactions">
+            <td> <a href="/tx/{{t}}">{{t}}</a> </td>
+          </tr>
         </tbody>
-    </table>
-      </div>
-    </div><!-- End: portlet -->
+      </table>
+    </div>
+  </div>
+  <!-- End: portlet -->
 </div>
