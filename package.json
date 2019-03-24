@@ -20,6 +20,7 @@
     "concurrently": "4.1.0",
     "ejs": "2.6.1",
     "express": "^4.16.4",
+    "human-standard-token-abi": "^2.0.0",
     "mongoose": "^4.13.18",
     "morgan": "^1.9.1",
     "node-fetch": "^2.3.0",
