@@ -75,21 +75,20 @@ const normalizeTX = async (txData, receipt, blockData) => {
     timestamp: blockData.timestamp,
   };
 
-  if (receipt.status) tx.status = receipt.status;
+  if (receipt.status) {
+    tx.status = receipt.status;
+  }
 
   if (txData.to) {
     tx.to = txData.to.toLowerCase();
     return tx;
-  }
-  if (tx.creates) {
+  } else if (txData.creates) {
     tx.creates = txData.creates.toLowerCase();
     return tx;
-  }
-  if (receipt && receipt.contractAddress) {
+  } else {
     tx.creates = receipt.contractAddress.toLowerCase();
+    return tx;
   }
-  return tx;
-
 };
 
 /**
@@ -155,7 +154,12 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
       if (txData.input && txData.input.length > 2) {
         // Contact creation tx
         if (txData.to === null) {
-          contractAddress = txData.creates.toLowerCase();
+          // Support Parity & Geth case
+          if (txData.creates) {
+            contractAddress = txData.creates.toLowerCase();
+          } else {
+            contractAddress = receipt.contractAddress.toLowerCase();
+          }
           const contractdb = {};
           let isTokenContract = true;
           const Token = new web3.eth.Contract(ERC20ABI, contractAddress);
@@ -168,6 +172,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
               isTokenContract = false;
             } else {
               try {
+                // ERC20 & ERC223 Token Standard compatible format
                 contractdb.tokenName = await Token.methods.name().call();
                 contractdb.decimals = await Token.methods.decimals().call();
                 contractdb.symbol = await Token.methods.symbol().call();
