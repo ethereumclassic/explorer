@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="96.717491mm"
+   height="156.63306mm"
+   viewBox="0 0 96.717491 156.63306"
+   version="1.1"
+   id="svg908"
+   inkscape:version="0.92.2 2405546, 2018-03-11"
+   sodipodi:docname="Ethereum_Classic_Logo.svg"
+   inkscape:export-filename="/home/linux/Desktop/ethereum-classic-logo.png"
+   inkscape:export-xdpi="120"
+   inkscape:export-ydpi="120">
+  <title
+     id="title825">Ethereum Classic Logo</title>
+  <defs
+     id="defs902" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.2385474"
+     inkscape:cx="260.56734"
+     inkscape:cy="325.2205"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer6"
+     showgrid="false"
+     inkscape:window-width="1918"
+     inkscape:window-height="996"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata905">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Ethereum Classic Logo</dc:title>
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Ethereum Classic</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>Ethereum Classic</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Ethereum Classic</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+        <dc:description>Ethereum Classic Logo</dc:description>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Original"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-56.641256,-70.183469)"
+     style="display:none"
+     sodipodi:insensitive="true">
+    <g
+       transform="translate(56.415936,69.875162)"
+       style="display:inline"
+       id="g1627"
+       inkscape:export-xdpi="664.21741"
+       inkscape:export-ydpi="664.21741"
+       inkscape:export-filename="/home/linux/Desktop/ethereum-classic-logo.png">
+      <g
+         id="g896">
+        <path
+           inkscape:export-ydpi="120"
+           inkscape:export-xdpi="120"
+           inkscape:connector-curvature="0"
+           id="path838"
+           d="m 0.22532,85.613348 c 17.045069,9.04101 34.806023,18.517432 48.557268,25.844422 L 96.942808,85.620618 C 79.505468,111.53208 64.980668,133.08532 48.782368,156.94137 32.564033,133.13531 14.643092,106.85834 0.22532,85.613348 Z m 1.863679,-7.13823 46.748789,-24.94739 46.14603,24.76633 -46.10598,24.968892 z"
+           style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+           sodipodi:nodetypes="cccccccccc" />
+        <g
+           inkscape:export-ydpi="120"
+           inkscape:export-xdpi="120"
+           id="g842">
+          <path
+             inkscape:connector-curvature="0"
+             id="path1599"
+             d="m 0.22532,85.613348 c 17.045069,9.04101 34.806023,18.517432 48.557268,25.844422 L 96.942808,85.620618 C 79.505468,111.53208 64.980668,133.08532 48.782368,156.94137 32.564033,133.13531 14.643092,106.85834 0.22532,85.613348 Z m 1.863679,-7.13823 46.748789,-24.94739 46.14603,24.76633 -46.10598,24.968892 z M 48.773048,45.518618 0.23098,71.079908 48.562288,0.308307 96.924578,71.234528 Z"
+             style="display:inline;fill:#01c853;fill-opacity:1;stroke-width:0.35277781"
+             sodipodi:nodetypes="ccccccccccccccc" />
+        </g>
+        <path
+           inkscape:export-ydpi="120"
+           inkscape:export-xdpi="120"
+           sodipodi:nodetypes="cccccccccccc"
+           style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+           d="m 48.782588,111.45777 48.16022,-25.837152 c -17.43734,25.911462 -48.16044,71.320752 -48.16044,71.320752 z m 0.0552,-57.930042 46.14603,24.76633 -46.10598,24.968892 z m -0.0647,-8.009112 -0.21076,-45.2103108 48.36229,70.9262228 z"
+           id="path1593"
+           inkscape:connector-curvature="0" />
+        <path
+           inkscape:export-ydpi="120"
+           inkscape:export-xdpi="120"
+           sodipodi:nodetypes="ccccc"
+           style="display:inline;fill:#007831;fill-opacity:1;stroke-width:0.35277781"
+           d="m 48.837788,82.301168 46.14603,-4.00711 -46.10598,24.968892 -0.0401,-20.961782 z"
+           id="path1606"
+           inkscape:connector-curvature="0" />
+        <path
+           inkscape:export-ydpi="120"
+           inkscape:export-xdpi="120"
+           inkscape:connector-curvature="0"
+           id="path850"
+           d="m 48.837688,82.301168 -46.748689,-3.82605 46.708639,24.787832 0.0401,-20.961782 z"
+           style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+           sodipodi:nodetypes="ccccc" />
+        <path
+           inkscape:export-ydpi="120"
+           inkscape:export-xdpi="120"
+           inkscape:connector-curvature="0"
+           id="path852"
+           d="m 48.782588,111.45777 48.16022,-25.83715 c -17.43734,25.91146 -31.96214,47.4647 -48.16044,71.32075 z"
+           style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+           sodipodi:nodetypes="cccc" />
+      </g>
+    </g>
+  </g>
+  <g
+     style="display:inline"
+     transform="translate(-56.641256,-70.183469)"
+     id="g1008"
+     inkscape:groupmode="layer"
+     inkscape:label="Middle" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Bottom"
+     style="display:inline" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Top"
+     style="display:inline">
+    <g
+       id="g873">
+      <g
+         transform="matrix(1.0408977,0,0,1.0408977,-2.168957,-3.2849971)"
+         style="display:inline"
+         id="g1006"
+         inkscape:export-xdpi="664.21741"
+         inkscape:export-ydpi="664.21741"
+         inkscape:export-filename="/home/linux/Desktop/ethereum-classic-logo.png">
+        <g
+           id="g1004">
+          <path
+             inkscape:export-ydpi="120"
+             inkscape:export-xdpi="120"
+             inkscape:connector-curvature="0"
+             id="path990"
+             d="m 2.088999,78.475118 46.748789,-24.94739 46.14603,24.76633 -46.10598,24.968892 z"
+             style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+             sodipodi:nodetypes="ccccc" />
+          <g
+             inkscape:export-ydpi="120"
+             inkscape:export-xdpi="120"
+             id="g994">
+            <path
+               inkscape:connector-curvature="0"
+               id="path992"
+               d="m 2.088999,78.475118 46.748789,-24.94739 46.14603,24.76633 -46.10598,24.968892 z"
+               style="display:inline;fill:#01c853;fill-opacity:1;stroke-width:0.35277781"
+               sodipodi:nodetypes="ccccc" />
+          </g>
+          <path
+             inkscape:export-ydpi="120"
+             inkscape:export-xdpi="120"
+             sodipodi:nodetypes="cccc"
+             style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+             d="m 48.837788,53.527728 46.14603,24.76633 -46.10598,24.968892 z"
+             id="path996"
+             inkscape:connector-curvature="0" />
+          <path
+             inkscape:export-ydpi="120"
+             inkscape:export-xdpi="120"
+             sodipodi:nodetypes="ccccc"
+             style="display:inline;fill:#007831;fill-opacity:1;stroke-width:0.35277781"
+             d="m 48.837788,82.301168 46.14603,-4.00711 -46.10598,24.968892 -0.0401,-20.961782 z"
+             id="path998"
+             inkscape:connector-curvature="0" />
+          <path
+             inkscape:export-ydpi="120"
+             inkscape:export-xdpi="120"
+             inkscape:connector-curvature="0"
+             id="path1000"
+             d="m 48.837688,82.301168 -46.748689,-3.82605 46.708639,24.787832 0.0401,-20.961782 z"
+             style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+             sodipodi:nodetypes="ccccc" />
+        </g>
+      </g>
+      <g
+         transform="translate(-0.22532,-0.308307)"
+         id="g923"
+         style="display:inline">
+        <path
+           sodipodi:nodetypes="ccccc"
+           style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+           d="m 0.22532,85.613348 c 17.045069,9.04101 34.806023,18.517432 48.557268,25.844422 L 96.942808,85.620618 C 79.505468,111.53208 64.980668,133.08532 48.782368,156.94137 32.564033,133.13531 14.643092,106.85834 0.22532,85.613348 Z"
+           id="path909"
+           inkscape:connector-curvature="0"
+           inkscape:export-xdpi="120"
+           inkscape:export-ydpi="120" />
+        <g
+           id="g913"
+           inkscape:export-xdpi="120"
+           inkscape:export-ydpi="120">
+          <path
+             sodipodi:nodetypes="ccccc"
+             style="display:inline;fill:#01c853;fill-opacity:1;stroke-width:0.35277781"
+             d="m 0.22532,85.613348 c 17.045069,9.04101 34.806023,18.517432 48.557268,25.844422 L 96.942808,85.620618 C 79.505468,111.53208 64.980668,133.08532 48.782368,156.94137 32.564033,133.13531 14.643092,106.85834 0.22532,85.613348 Z"
+             id="path911"
+             inkscape:connector-curvature="0" />
+        </g>
+        <path
+           inkscape:connector-curvature="0"
+           id="path915"
+           d="M 48.782588,111.45777 96.942808,85.620618 C 79.505468,111.53208 48.782368,156.94137 48.782368,156.94137 Z"
+           style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+           sodipodi:nodetypes="cccc"
+           inkscape:export-xdpi="120"
+           inkscape:export-ydpi="120" />
+        <path
+           sodipodi:nodetypes="cccc"
+           style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+           d="m 48.782588,111.45777 48.16022,-25.83715 c -17.43734,25.91146 -31.96214,47.4647 -48.16044,71.32075 z"
+           id="path921"
+           inkscape:connector-curvature="0"
+           inkscape:export-xdpi="120"
+           inkscape:export-ydpi="120" />
+      </g>
+      <g
+         id="g1033">
+        <path
+           inkscape:connector-curvature="0"
+           id="path974"
+           d="M 48.547728,45.210311 0.00566,70.771601 48.336968,0 96.699258,70.926221 Z"
+           style="display:inline;fill:#01c853;fill-opacity:1;stroke-width:0.35277781"
+           sodipodi:nodetypes="ccccc" />
+        <path
+           transform="translate(-0.22532,-0.308307)"
+           inkscape:export-ydpi="120"
+           inkscape:export-xdpi="120"
+           sodipodi:nodetypes="cccc"
+           style="display:inline;fill:#009f42;fill-opacity:1;stroke-width:0.35277781"
+           d="M 48.773088,45.518616 48.562328,0.3083052 96.924618,71.234528 Z"
+           id="path978"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+  </g>
+</svg>

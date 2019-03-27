@@ -5,7 +5,7 @@ services:
     command: ./app.js
     restart: always
     environment:
-      MONGO_URI: 'mongodb://db/blockDB'
+      MONGO_URI: 'mongodb://db/explorerDB'
     ports:
       - '3000:3000'
     depends_on:
@@ -15,7 +15,7 @@ services:
     command: ./tools/sync.js
     restart: always
     environment:
-      MONGO_URI: 'mongodb://db/blockDB'
+      MONGO_URI: 'mongodb://db/explorerDB'
     depends_on:
       - db
   stats:
@@ -23,7 +23,23 @@ services:
     command: ./tools/stats.js
     restart: always
     environment:
-      MONGO_URI: 'mongodb://db/blockDB'
+      MONGO_URI: 'mongodb://db/explorerDB'
+    depends_on:
+      - db
+  price:
+    build: .
+    command: ./tools/price.js
+    restart: always
+    environment:
+      MONGO_URI: 'mongodb://db/explorerDB'
+    depends_on:
+      - db
+  richlist:
+    build: .
+    command: ./tools/richlist.js
+    restart: "no"
+    environment:
+      MONGO_URI: 'mongodb://db/explorerDB'
     depends_on:
       - db
   db:

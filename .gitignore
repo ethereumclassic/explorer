@@ -38,8 +38,6 @@ jspm_packages
 
 # local data
 data/
-package-lock.json
-public/js/stats/The_bomb_chart.js
 config.json
 .node-xmlhttprequest-*
 /nbproject/private/

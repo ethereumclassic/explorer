@@ -60,43 +60,4 @@ angular.module('BlocksApp').controller('HomeController', function($rootScope, $s
     restrict: 'E',
     templateUrl: '/views/site-notes.html'
   }
-})
-//OLD CODE DONT USE
-.directive('summaryStats', function($http) {
-  return {
-    restrict: 'E',
-    templateUrl: '/views/summary-stats.html',
-    scope: true,
-    link: function(scope, elem, attrs){
-      scope.stats = {};
-
-      var etcEthURL = "/stats";
-      var etcPriceURL = "https://api.coinmarketcap.com/v1/ticker/ethereum-classic/";
-      var ethPriceURL = "https://api.coinmarketcap.com/v1/ticker/ethereum/"
-      scope.stats.ethDiff = 1;
-      scope.stats.ethHashrate = 1;
-      scope.stats.usdEth = 1;
-      $http.post(etcEthURL, {"action": "etceth"})
-       .then(function(res){
-          scope.stats.etcHashrate = res.data.etcHashrate;
-          scope.stats.ethHashrate = res.data.ethHashrate;
-          scope.stats.etcEthHash = res.data.etcEthHash;
-          scope.stats.ethDiff = res.data.ethDiff;
-          scope.stats.etcDiff = res.data.etcDiff;
-          scope.stats.etcEthDiff = res.data.etcEthDiff;
-        });
-      $http.get(etcPriceURL)
-       .then(function(res){
-          scope.stats.usdEtc = parseFloat(res.data[0]["price_usd"]);
-          scope.stats.usdEtcEth = parseInt(100*scope.stats.usdEtc/scope.stats.usdEth);
-        });
-      $http.get(ethPriceURL)
-       .then(function(res){
-          scope.stats.usdEth = parseFloat(res.data[0]["price_usd"]);
-          scope.stats.usdEtcEth = parseInt(100*scope.stats.usdEtc/scope.stats.usdEth);
-          scope.stats.ethChange = parseFloat(res.data.change);
-        });
-
-      }
-  }
 });
