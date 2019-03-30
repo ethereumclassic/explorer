@@ -7,11 +7,16 @@
     <!-- BEGIN HEAD -->
     <head>
         <title data-ng-bind="'<%= settings.name %> | ' + $state.current.data.pageTitle"></title>
+        <meta property="og:title" content="<%= settings.name %>">
+        <meta property="og:site_name" content="<%= settings.name %>">
+        <meta name="twitter:title" content="<%= settings.name %>">
+        <meta name="apple-mobile-web-app-title" content="<%= settings.name %>">
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta content="width=device-width, initial-scale=1" name="viewport" />
-        <meta content="<%= settings.title %>" name="description"/>
-        <meta content="<%= settings.author %>" name="author" />
+        <meta name="description" content="<%= settings.title %>">
+        <meta property="og:description" content="<%= settings.title %>">
+        <meta name="twitter:description" content="<%= settings.title %>">
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 
         <base href="/">
@@ -29,8 +34,8 @@
         <!-- BEGIN THEME STYLES -->
         <link href="/css/components.min.css" id="style_components" rel="stylesheet" type="text/css" />
         <link href="/css/plugins.min.css" rel="stylesheet" type="text/css" />
-        <link href="/css/layout.css" rel="stylesheet" type="text/css" />
-        <link href="/css/custom.css" rel="stylesheet" type="text/css" />
+        <link href="/css/layout.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/etc-explorer.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/green-haze.min.css" rel="stylesheet" type="text/css" />
         <!-- END THEME STYLES -->
     <!-- END HEAD -->
