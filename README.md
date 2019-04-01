@@ -27,7 +27,10 @@ Follow the project progress at: [ETC Block Explorer Development](https://github.
   4. Install Node.js dependencies.
   `npm install`
 
-  5. Start Express Server.
+  5. Build frontend.
+  `npm run dist`
+
+  6. Start Express Server.
   `npm start`
 
 ## Basic settings

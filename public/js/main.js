@@ -130,10 +130,8 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                         insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
                         files: [
                              '/js/controllers/AddressController.js',
-                            '/plugins/datatables/datatables.min.css',
-                            '/plugins/datatables/datatables.bootstrap.css',
-                            '/plugins/datatables/datatables.all.min.js',
-                            '/plugins/datatables/datatable.min.js'
+                             '/plugins/datatables/datatables.bootstrap.min.css',
+                             '/plugins/datatables/datatables.all.min.js'
                         ]
                     });
                 }]
@@ -262,7 +260,7 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                              '/js/controllers/StatsController.js',
                              '/css/stats.css',
                              "/plugins/async.min.js",
-                             "/plugins/moment/moment.min.js"
+                             "/plugins/moment.min.js"
                         ]
                     });
                 }]
