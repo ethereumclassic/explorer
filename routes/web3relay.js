@@ -5,7 +5,6 @@
 */
 
 const Web3 = require('web3');
-const web3explorer = require('web3-explorer');
 
 let web3;
 
@@ -49,17 +48,6 @@ web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${
 
 if (web3.eth.net.isListening()) console.log('Web3 connection established');
 else throw 'No connection, please specify web3host in conf.json';
-
-async function detectNode() {
-  const nodeInfo = await web3.eth.getNodeInfo();
-
-  if (nodeInfo.split('/')[0].toLowerCase().includes('parity')) {
-    console.log('Web3 has detected parity node configuration');
-    web3explorer(web3);
-  }
-  console.log(`Node version = ${nodeInfo}`);
-}
-detectNode();
 
 exports.data = async (req, res) => {
   console.log(req.body);
