@@ -145,12 +145,7 @@ module.exports.Market = mongoose.model('Market');
 module.exports.TokenTransfer = mongoose.model('TokenTransfer');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
-  useMongoClient: true
-  // poolSize: 5,
-  // rs_name: 'myReplicaSetName',
-  // user: 'explorer',
-  // pass: 'yourdbpasscode'
-});
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/explorerDB', {useNewUrlParser: true});
 
+mongoose.set('useCreateIndex', true);
 // mongoose.set('debug', true);

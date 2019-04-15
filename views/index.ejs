@@ -7,20 +7,25 @@
     <!-- BEGIN HEAD -->
     <head>
         <title data-ng-bind="'<%= settings.name %> | ' + $state.current.data.pageTitle"></title>
+        <meta property="og:title" content="<%= settings.name %>">
+        <meta property="og:site_name" content="<%= settings.name %>">
+        <meta name="twitter:title" content="<%= settings.name %>">
+        <meta name="apple-mobile-web-app-title" content="<%= settings.name %>">
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta content="width=device-width, initial-scale=1" name="viewport" />
-        <meta content="<%= settings.title %>" name="description"/>
-        <meta content="<%= settings.author %>" name="author" />
+        <meta name="description" content="<%= settings.title %>">
+        <meta property="og:description" content="<%= settings.title %>">
+        <meta name="twitter:description" content="<%= settings.title %>">
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 
         <base href="/">
         <!-- BEGIN GLOBAL MANDATORY STYLES -->
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
         <link href="/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-        <link href="/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
+        <link href="/plugins/simple-line-icons/css/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
         <link href="/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link href="/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css" />
+        <link href="/plugins/uniform/css/uniform.default.min.css" rel="stylesheet" type="text/css" />
         <link href="/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
         <!-- END GLOBAL MANDATORY STYLES -->
         <!-- BEGIN DYNAMICALLY LOADED CSS FILES(all plugin and page related styles must be loaded between GLOBAL and THEME css files ) -->
@@ -29,8 +34,8 @@
         <!-- BEGIN THEME STYLES -->
         <link href="/css/components.min.css" id="style_components" rel="stylesheet" type="text/css" />
         <link href="/css/plugins.min.css" rel="stylesheet" type="text/css" />
-        <link href="/css/layout.css" rel="stylesheet" type="text/css" />
-        <link href="/css/custom.css" rel="stylesheet" type="text/css" />
+        <link href="/css/layout.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/etc-explorer.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/green-haze.min.css" rel="stylesheet" type="text/css" />
         <!-- END THEME STYLES -->
     <!-- END HEAD -->
@@ -85,7 +90,7 @@
         <script src="/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
         <script src="/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
         <script src="/plugins/jquery.blockui.min.js" type="text/javascript"></script>
-        <script src="/plugins/jquery.cokie.min.js" type="text/javascript"></script>
+        <script src="/plugins/jquery.cookie.min.js" type="text/javascript"></script>
         <script src="/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
         <script src="/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
         <!-- END CORE JQUERY PLUGINS -->
@@ -107,7 +112,7 @@
         <!-- END APP LEVEL ANGULARJS SCRIPTS -->
         <!-- BEGIN APP LEVEL JQUERY SCRIPTS -->
         <script src="/js/layout.min.js" type="text/javascript"></script>
-        <script src="/plugins/d3.v3.min.js" type="text/javascript"></script>
+        <script src="/plugins/d3.min.js" type="text/javascript"></script>
         <script src="/plugins/d3.tip.min.js" type="text/javascript"></script>
         <script src="/plugins/lodash.min.js" type="text/javascript"></script>
         <!-- END APP LEVEL JQUERY SCRIPTS -->

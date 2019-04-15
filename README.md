@@ -6,33 +6,34 @@
 
 Follow the project progress at: [ETC Block Explorer Development](https://github.com/ethereumclassic/explorer)
 
-## Local installation
+## Requirements
 
-Clone the repo
+| Dependency  | Mac | Linux |
+|-------------|-----|-------|
+| [Node.js 8.x](https://nodejs.org/en/) | `brew install node` | [Node.js Install Example](https://nodejs.org/en/download/package-manager/) |
+| [MongoDB 4.x](https://www.mongodb.com) | `brew install mongodb` | [MongoDB Install Example](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/) |
 
-`git clone https://github.com/ethereumclassic/explorer`
+## Build and Run
 
-Download [Nodejs and npm](https://docs.npmjs.com/getting-started/installing-node "Nodejs install") if you don't have them
+  1. Clone the repository.
+  `git clone https://github.com/ethereumclassic/explorer`
 
-Install dependencies:
+  2. Go to the explorer subdirectory.
+  `cd explorer`
 
-`npm install`
+  3. Set up default configurations.
+  `cp config.example.json config.json`
 
-Install mongodb:
+  4. Install Node.js dependencies.
+  `npm install`
 
-MacOS: `brew install mongodb`
+  5. Build frontend.
+  `npm run dist`
 
-Ubuntu: `sudo apt-get install -y mongodb-org`
+  6. Start Express Server.
+  `npm start`
 
-## Populate the DB
-
-This will fetch and parse the entire blockchain.
-
-Setup your configuration file: `cp config.example.json config.json`
-
-Edit `config.json` as you wish
-
-Basic settings:
+## Basic settings
 ```json
 {
     "nodeAddr":     "localhost",
@@ -48,12 +49,12 @@ Basic settings:
         "symbol": "ETC",
         "name": "Ethereum Classic",
         "title": "Ethereum Classic Block Explorer",
-        "author": "Elaine",
         "rss": "https://ethereumclassic.org",
         "reddit": "https://www.reddit.com/r/EthereumClassic",
         "twitter": "https://twitter.com/eth_classic",
         "linkedin": "https://www.linkedin.com/company/ethereum-classic",
         "github": "https://github.com/ethereumclassic",
+        "github-repo": "https://github.com/ethereumclassic/explorer",
         "logo": "/img/explorer-logo.png",
         "copyright": "2019 &copy; Ethereum Classic.",
         "poweredbyCustom": false,
@@ -107,75 +108,13 @@ Basic settings:
 | `useRichList` | If `useRichList` is set to true, explorer will update account balance for richlist page. |
 | `useFiat` | If `useFiat` is set to true, explorer will show price for account & tx page. ( Disable for testnets )|
 
-### Mongodb Auth setting.
-
-#### Configure MongoDB
-
-In view of system security, most of mongoDB Admin has setup security options, So, You need to setup mongodb auth informations.
-Switch to the built-in admin database:
-
-```
-$ mongo
-$ > use admin
-```
-
-1. Create an administrative user  (if you have already admin or root of mongodb account, then skip it)
-
-```
-# make admin auth and role setup
-$ > db.createUser( { user: "admin", pwd: "<Enter a secure password>", roles: ["root"] } )
-```
-
-And, You can make Explorer's "explorerDB" database with db user accounts "explorer" and password "some_pass_code".
-
-```
-$ > use explorerDB
-$ > db.createUser( { user: "explorer", pwd: "<Enter a secure password>", roles: ["dbOwner"] } )
-$ > quit()
-```
-
-Above dbuser explorer will full access explorerDB and clustor setting will be well used on monitoring the multiple sharding and replication of multiple mongodb instances.
-Enable database authorization in the MongoDB configuration file /etc/mongodb.conf by appending the following lines:
-
-```
-auth=true
-```
-
-Restart MongoDB and verify the administrative user created earlier can connect:
-
-```
-$ sudo service mongodb restart
-$ mongo -u admin -p your_password --authenticationDatabase=admin
-```
-
-If everything is configured correctly the Mongo Shell will connect and
-
-```
-$ > show dbs
-```
-
-will show db informations.
-and You can add modified from  ./db.js:103 lines,  add auth information and mongodb connect options.
-
-```
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
-  useMongoClient: true
-  // poolSize: 5,
-  // rs_name: 'myReplicaSetName',
-  // user: 'explorer',
-  // pass: 'yourdbpasscode'
-});
-```
-
-And explore it.
-
-### Run
+## Run
 
 The below will start both the web-gui and sync.js (which populates MongoDB with blocks/transactions).
 
 `npm start`
 
-You can leave sync.js running without app.js and it will sync and grab blocks based on config.json parameters
+You can leave sync.js running without app.js and it will sync and grab blocks based on config.json parameters.
 
 `npm run sync`
 

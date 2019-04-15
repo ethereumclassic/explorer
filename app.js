@@ -28,11 +28,21 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(favicon(`${__dirname}/public/favicon.ico`));
+const distdir = 'dist';
+
+if (process.env.DIST && ['dist', 'public'].indexOf(process.env.DIST) > 0) {
+  distdir = process.env.DIST;
+  console.log('distdir = ' + distdir);
+}
+
+// setup settings.development = process.env.NODE_ENV
+config.settings["development"] = app.get('env');
+
+app.use(favicon(`${__dirname}/${distdir}/favicon.ico`));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, distdir)));
 
 // app libraries
 global.__lib = `${__dirname}/lib/`;
