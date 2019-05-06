@@ -169,6 +169,67 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
 
 And explore it.
 
+
+#### Configure MongoDB
+
+In view of system security, most of mongoDB Admin has setup security options, So, You need to setup mongodb auth informations.
+Switch to the built-in admin database:
+
+```
+$ mongo
+$ > use admin
+```
+
+1. Create an administrative user  (if you have already admin or root of mongodb account, then skip it)
+
+```
+# make admin auth and role setup
+$ > db.createUser( { user: "admin", pwd: "<Enter a secure password>", roles: ["root"] } )
+```
+
+And, You can make Explorer's "explorerDB" database with db user accounts "explorer" and password "some_pass_code".
+
+```
+$ > use explorerDB
+$ > db.createUser( { user: "explorer", pwd: "<Enter a secure password>", roles: ["dbOwner"] } )
+$ > quit()
+```
+
+Above dbuser explorer will full access explorerDB and clustor setting will be well used on monitoring the multiple sharding and replication of multiple mongodb instances.
+Enable database authorization in the MongoDB configuration file /etc/mongodb.conf by appending the following lines:
+
+```
+auth=true
+```
+
+Restart MongoDB and verify the administrative user created earlier can connect:
+
+```
+$ sudo service mongodb restart
+$ mongo -u admin -p your_password --authenticationDatabase=admin
+```
+
+If everything is configured correctly the Mongo Shell will connect and
+
+```
+$ > show dbs
+```
+
+will show db informations.
+and You can add modified from  ./db.js:103 lines,  add auth information and mongodb connect options.
+
+```
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
+  useMongoClient: true
+  // poolSize: 5,
+  // rs_name: 'myReplicaSetName',
+  // user: 'explorer',
+  // pass: 'yourdbpasscode'
+});
+```
+
+And explore it.
+
 ### Run
 
 The below will start both the web-gui and sync.js (which populates MongoDB with blocks/transactions).
