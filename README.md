@@ -44,6 +44,8 @@ Basic settings:
     "patch":        true,
     "patchBlocks":  100,
     "bulkSize":     100,
+    "mongoUser":    "explorer",
+    "mongoPassword": "password",
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",
@@ -134,6 +136,15 @@ $ > db.createUser( { user: "explorer", pwd: "<Enter a secure password>", roles: 
 $ > quit()
 ```
 
+Modify the `config.json` to contain the username and password of your new Mongo user:
+
+```
+...
+"mongoUser":    "explorer",
+"mongoPassword": "<Enter a secure password>",
+...
+```
+
 Above dbuser explorer will full access explorerDB and clustor setting will be well used on monitoring the multiple sharding and replication of multiple mongodb instances.
 Enable database authorization in the MongoDB configuration file /etc/mongodb.conf by appending the following lines:
 
@@ -155,25 +166,25 @@ $ > show dbs
 ```
 
 will show db informations.
-and You can add modified from  ./db.js:103 lines,  add auth information and mongodb connect options.
+and You can add modify `db.js` to add further MongoDB connect options.
 
 ```
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
-  useMongoClient: true
+  useMongoClient: true,
   // poolSize: 5,
   // rs_name: 'myReplicaSetName',
-  // user: 'explorer',
-  // pass: 'yourdbpasscode'
+  user: config.mongoUser,
+  pass: config.mongoPassword
 });
 ```
 
-And explore it.
+And start exploring!
 
 ### Run
 
-The below will start both the web-gui and sync.js (which populates MongoDB with blocks/transactions).
+The below will start both the web-gui and sync.js (which populates MongoDB with blocks/transactions) on the port specified (3000 by default)
 
-`npm start`
+`export PORT=3000 && npm start`
 
 You can leave sync.js running without app.js and it will sync and grab blocks based on config.json parameters
 
