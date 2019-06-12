@@ -101,7 +101,7 @@ div.dataTables_wrapper div.dataTables_length select:focus {
   word-break: break-word;
 }
 
-.page-header .page-header-menu .container {
+.page-header .page-header-menu {
   border-bottom: 1px solid rgba(51, 51, 51, .1);
 }
 
@@ -298,9 +298,6 @@ div .todo-tasklist-item:hover {
   .page-header .page-header-menu {
     background-color: transparent;
     margin-top: 0 !important;
-  }
-
-  .page-header .page-header-menu .container {
     border: 1px solid rgba(51, 51, 51, .1);
   }
 
@@ -326,15 +323,12 @@ div .todo-tasklist-item:hover {
   }
 
   .page-header .page-header-menu {
+    border: 1px solid rgba(51, 51, 51, .1);
     margin: 15px 15px;
     padding: 0;
   }
 
   .page-header .page-header-menu {
     background-color: transparent;
-  }
-
-  .page-header .page-header-menu .container {
-    border: 1px solid rgba(51, 51, 51, .1);
   }
 }
