@@ -10,15 +10,15 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
     */
 
     const CHART_TYPES = {
-        "hashrate": {
-            "title": "Hashrate chart"
-        },
+        // "hashrate": {
+        //     "title": "Hashrate chart"
+        // },
         "blocktime": {
             "title": "Blocktime chart"
         },
-        "difficulty": {
-            "title": "Difficulty chart"
-        },
+        // "difficulty": {
+        //     "title": "Difficulty chart"
+        // },
         "miner_hashrate": {
             "title": "Miner distribution"
         }
