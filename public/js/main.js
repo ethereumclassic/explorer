@@ -43,6 +43,7 @@ BlocksApp.factory('setupObj', ['$rootScope', '$http', function($rootScope, $http
 /* Setup App Main Controller */
 BlocksApp.controller('MainController', ['$scope', '$rootScope', function($scope, $rootScope) {
     $scope.$on('$viewContentLoaded', function() {
+      $rootScope.isHome = $rootScope.$state.current.name === ('home' || '')
         //App.initComponents(); // init core components
         //Layout.init(); //  Init entire layout(header, footer, sidebar, etc) on page load if the partials included in server side instead of loading with ng-include directive
     });
@@ -344,3 +345,7 @@ BlocksApp.run(["$rootScope", "settings", "$state", "setupObj", function($rootSco
         $rootScope.setup = res;
     });
 }]);
+//   .factory('router', ['$rootScope', '$state' function($rootScope, $state) {
+//
+// }]);
+
