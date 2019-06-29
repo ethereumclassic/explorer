@@ -294,6 +294,10 @@ div .todo-tasklist-item:hover {
   color: var(--grey)
 }
 
+.scroll-to-top {
+  color: var(--blue);
+}
+
 @media (max-width: 487px) {
   .page-header .page-header-menu {
     background-color: transparent;
