@@ -313,4 +313,5 @@ exports.data = async (req, res) => {
 
 };
 
+exports.web3 = web3;
 exports.eth = web3.eth;

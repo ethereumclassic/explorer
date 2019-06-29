@@ -12,5 +12,23 @@ function getSigner(block) {
   const pubkey = ethUtils.ecrecover(sigHash, sig.v, sig.r, sig.s);
   return ethUtils.pubToAddress(pubkey).toString('hex')
 }
-
 module.exports.getSigner = getSigner;
+
+let config;
+function getConfig() {
+  if (config) return config;
+  try {
+    config = require('../config.json');
+  } catch (e) {
+    if (e.code == 'MODULE_NOT_FOUND') {
+      console.log('No config file found. Using default configuration... (config.example.json)');
+      config = require('../config.example.json');
+    } else {
+      throw e;
+      process.exit(1);
+    }
+  }
+  return config;
+}
+module.exports.getConfig = getConfig;
+

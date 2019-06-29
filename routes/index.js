@@ -34,6 +34,9 @@ module.exports = function (app) {
   app.post('/compile', compile);
 
   app.post('/stats', stats);
+  
+  const authoritiesRoute = require('./authorities');
+  app.post('/authorities', authoritiesRoute);
 };
 
 const getAddr = async (req, res) => {

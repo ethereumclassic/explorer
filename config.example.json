@@ -8,6 +8,7 @@
     "patch":        true,
     "patchBlocks":  100,
     "bulkSize":     100,
+    "biosAddress":  "0x8F98D0AA9B01e7D15a7950Db68b26b89D6F1be14",
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",
