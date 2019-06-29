@@ -98,8 +98,13 @@ const normalizeTX = async (txData, receipt, blockData) => {
 **/
 var writeBlockToDB = function (config, blockData, flush) {
   
-  if (blockData) {
-    blockData.miner = getSigner(blockData);
+  try {
+    if (blockData) {
+      blockData.miner = '0x' + getSigner(blockData);
+    }
+  } catch (err) {
+    // do nothing
+    console.log(err);
   }
   
   const self = writeBlockToDB;
