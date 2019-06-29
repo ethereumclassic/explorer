@@ -85,7 +85,6 @@ angular.module('BlocksApp')
         
         startTimeout();
         scope.$on('$destroy', function() {
-          console.log('destroy');
           $timeout.cancel(timeout);
           timeout = undefined;
         })
