@@ -214,42 +214,42 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                 }]
             }
         })
-        .state('viewcontract', {
-            url: "/contract",
-            templateUrl: "views/contract.html",
-            data: {pageTitle: 'Verify Contract'},
-            controller: "ContractController",
-            resolve: {
-                deps: ['$ocLazyLoad', function($ocLazyLoad) {
-                    return $ocLazyLoad.load({
-                        name: 'BlocksApp',
-                        insertBefore: '#ng_load_plugins_before',
-                        files: [
-                             '/js/controllers/ContractController.js',
-                             '/js/custom.js'
-                         ]
-                     });
-                }]
-            }
-        })
-        .state('contract', {
-            url: "/contract/{addr}",
-            templateUrl: "views/contract.html",
-            data: {pageTitle: 'Verify Contract'},
-            controller: "ContractController",
-            resolve: {
-                deps: ['$ocLazyLoad', function($ocLazyLoad) {
-                    return $ocLazyLoad.load({
-                        name: 'BlocksApp',
-                        insertBefore: '#ng_load_plugins_before',
-                        files: [
-                             '/js/controllers/ContractController.js',
-                             '/js/custom.js'
-                         ]
-                     });
-                }]
-            }
-        })
+        // .state('viewcontract', {
+        //     url: "/contract",
+        //     templateUrl: "views/contract.html",
+        //     data: {pageTitle: 'Verify Contract'},
+        //     controller: "ContractController",
+        //     resolve: {
+        //         deps: ['$ocLazyLoad', function($ocLazyLoad) {
+        //             return $ocLazyLoad.load({
+        //                 name: 'BlocksApp',
+        //                 insertBefore: '#ng_load_plugins_before',
+        //                 files: [
+        //                      '/js/controllers/ContractController.js',
+        //                      '/js/custom.js'
+        //                  ]
+        //              });
+        //         }]
+        //     }
+        // })
+        // .state('contract', {
+        //     url: "/contract/{addr}",
+        //     templateUrl: "views/contract.html",
+        //     data: {pageTitle: 'Verify Contract'},
+        //     controller: "ContractController",
+        //     resolve: {
+        //         deps: ['$ocLazyLoad', function($ocLazyLoad) {
+        //             return $ocLazyLoad.load({
+        //                 name: 'BlocksApp',
+        //                 insertBefore: '#ng_load_plugins_before',
+        //                 files: [
+        //                      '/js/controllers/ContractController.js',
+        //                      '/js/custom.js'
+        //                  ]
+        //              });
+        //         }]
+        //     }
+        // })
         .state('stats', {
             url: "/stats/{chart}",
             templateUrl: "views/stats/index.html",
