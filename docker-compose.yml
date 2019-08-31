@@ -18,6 +18,14 @@ services:
       MONGO_URI: 'mongodb://db/explorerDB'
     depends_on:
       - db
+  sync-votes:
+    build: .
+    command: ./tools/sync-votes.js
+    restart: always
+    environment:
+      MONGO_URI: 'mongodb://db/explorerDB'
+    depends_on:
+      - db
   stats:
     build: .
     command: ./tools/stats.js

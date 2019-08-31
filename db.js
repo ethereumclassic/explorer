@@ -112,6 +112,35 @@ const Market = new Schema(
   }, { collection: 'Market' },
 );
 
+const Poll = new Schema(
+  {
+    address: { type: String, },
+    type: { type: Number, default: 0 }, // 0 — authority, 1 - blacklist
+    closeTime: { type: Number },
+    votes: { type: Number, default: 0 },
+    isVoted: { type: Boolean, default: false },
+    isDisabled: { type: Boolean, default: false }
+  },
+  { collection: 'Poll' }
+);
+
+const AuthoritySlot = new Schema(
+  {
+    address: { type: String, default: '0x0000000000000000000000000000000000000000' },
+    timestamp: { type: Number, default: 0 }
+  },
+  { _id : false }
+);
+
+const Authority = new Schema(
+  {
+    address: { type: String, index: { unique: true } },
+    votes: { type: Number, default: 0 },
+    slots: [AuthoritySlot]
+  },
+  { collection: 'Authority' }
+);
+
 // create indices
 Transaction.index({ blockNumber: -1 });
 Transaction.index({ from: 1, blockNumber: -1 });
@@ -128,6 +157,9 @@ TokenTransfer.index({ blockNumber: -1 });
 TokenTransfer.index({ from: 1, blockNumber: -1 });
 TokenTransfer.index({ to: 1, blockNumber: -1 });
 TokenTransfer.index({ contract: 1, blockNumber: -1 });
+Poll.index({ address: 1, isDisabled: 1, type: 1 });
+Poll.index({ address: 1, isDisabled: 1, isVoted: 1 });
+Poll.index({ address: 1, isDisabled: 1, isVoted: 1, type: 1, });
 
 mongoose.model('BlockStat', BlockStat);
 mongoose.model('Block', Block);
@@ -136,6 +168,9 @@ mongoose.model('Contract', Contract);
 mongoose.model('Transaction', Transaction);
 mongoose.model('Market', Market);
 mongoose.model('TokenTransfer', TokenTransfer);
+mongoose.model('Poll', Poll);
+mongoose.model('Authority', Authority);
+mongoose.model('AuthoritySlot', AuthoritySlot);
 module.exports.BlockStat = mongoose.model('BlockStat');
 module.exports.Block = mongoose.model('Block');
 module.exports.Contract = mongoose.model('Contract');
@@ -143,6 +178,9 @@ module.exports.Transaction = mongoose.model('Transaction');
 module.exports.Account = mongoose.model('Account');
 module.exports.Market = mongoose.model('Market');
 module.exports.TokenTransfer = mongoose.model('TokenTransfer');
+module.exports.Poll = mongoose.model('Poll');
+module.exports.Authority = mongoose.model('Authority');
+module.exports.AuthoritySlot = mongoose.model('AuthoritySlot');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
@@ -152,5 +190,6 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
   // user: 'explorer',
   // pass: 'yourdbpasscode'
 });
+
 
 // mongoose.set('debug', true);

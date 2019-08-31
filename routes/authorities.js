@@ -11,9 +11,9 @@ module.exports = function (req, res) {
     console.error('Contract method \'getAuthorities\' not found', err);
     res.send([]);
     res.end();
-  }
+  }    
   contract.methods.getAuthorities().call()
-    .then(authorities => {
+    .then(authorities => {      
       res.send(authorities);
       res.end();
     })

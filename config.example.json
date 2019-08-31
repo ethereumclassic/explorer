@@ -8,7 +8,7 @@
     "patch":        true,
     "patchBlocks":  100,
     "bulkSize":     100,
-    "biosAddress":  "0x8F98D0AA9B01e7D15a7950Db68b26b89D6F1be14",
+    "biosAddress":  "0x82e3FB6449b7cb18bD9095B963e3E5863d21F8B4",
     "settings": {
         "symbol": "PPR",
         "name": "Papyrus",

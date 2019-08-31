@@ -5,9 +5,10 @@
   "repository": "https://github.com/ethereumclassic/explorer",
   "license": "MIT",
   "scripts": {
-    "start": "concurrently \"nodemon tools/sync.js \" \"nodemon app.js\" ",
+    "start": "concurrently \"nodemon tools/sync.js \" \"nodemon tools/sync-votes.js\" \"nodemon app.js\"",
     "app": "node app.js",
     "sync": "node tools/sync.js",
+    "sync-votes": "node tools/sync/votes.js",
     "stats": "node tools/stats.js",
     "rich": "node tools/richlist.js",
     "test": "mocha --exit",

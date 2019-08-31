@@ -161,6 +161,47 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                 }]
             }
         })
+
+        .state('authorities', {
+            url: '/authorities',
+            templateUrl: 'views/authorities.html',
+            data: { pageTitle: 'Authority Nodes' },
+            controller: 'PollController',
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                            '/js/controllers/PollController.js',
+                            '/plugins/identicon/pnglib.js',
+                            '/plugins/identicon/identicon.js',
+                        ]
+                    });
+                }]
+            }
+        })
+
+        .state('blacklists', {
+            url: '/blacklists',
+            templateUrl: 'views/blacklists.html',
+            data: { pageTitle: 'Blacklist Nodes' },
+            controller: 'PollController',
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                            '/js/controllers/PollController.js',
+                            '/plugins/identicon/pnglib.js',
+                            '/plugins/identicon/identicon.js',
+                        ]
+                    });
+                }]
+            }
+        })
+
         .state('block', {
             url: "/block/{number}",
             templateUrl: "views/block.html",
