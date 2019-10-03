@@ -56,6 +56,7 @@ Follow the project progress at: [ETC Block Explorer Development](https://github.
         "github": "https://github.com/ethereumclassic",
         "github-repo": "https://github.com/ethereumclassic/explorer",
         "logo": "/img/explorer-logo.png",
+        "customCss": "green-haze.min.css",
         "copyright": "2019 &copy; Ethereum Classic.",
         "poweredbyCustom": false,
         "poweredbyEtcImage": "/img/powered-by-etcexplorer-w.png",
