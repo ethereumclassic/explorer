@@ -274,43 +274,89 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
 
     // update balances
     if (config.settings.useRichList && accounts.length > 0) {
-      asyncL.eachSeries(accounts, (account, eachCallback) => {
-        const { blockNumber } = data[account];
-        // get contract account type
-        web3.eth.getCode(account, (err, code) => {
-          if (err) {
-            console.log(`ERROR: fail to getCode(${account})`);
-            return eachCallback(err);
-          }
-          if (code.length > 2) {
-            data[account].type = 1; // contract type
-          }
+      let n = 0;
+      let chunks = [];
+      while (accounts.length > 800) {
+        let chunk = accounts.splice(0, 500);
+        chunks.push(chunk);
+      }
+      if (accounts.length > 0) {
+        chunks.push(accounts);
+      }
+      asyncL.eachSeries(chunks, function(chunk, outerCallback) {
+        asyncL.waterfall([
+          // get contract account type
+          function(callback) {
+            let batch = new web3.BatchRequest();
 
-          web3.eth.getBalance(account, blockNumber, (err, balance) => {
-            if (err) {
-              console.log(err);
-              console.log(`ERROR: fail to getBalance(${account})`);
-              return eachCallback(err);
+            for (let i = 0; i < chunk.length; i++) {
+              let account = chunk[i];
+              batch.add(web3.eth.getCode.request(account));
             }
 
-            data[account].balance = parseFloat(web3.utils.fromWei(balance, 'ether'));
-            eachCallback();
-          });
-        });
-      }, (err) => {
-        let n = 0;
-        accounts.forEach((account) => {
-          n++;
-          if (!('quiet' in config && config.quiet === true)) {
-            if (n <= 5) {
-              console.log(` - upsert ${account} / balance = ${data[account].balance}`);
-            } else if (n === 6) {
-              console.log(`   (...) total ${accounts.length} accounts updated.`);
+            batch.requestManager.sendBatch(batch.requests, (err, results) => {
+              if (err) {
+                console.log("ERROR: fail to getCode batch job:", err);
+                callback(err);
+                return;
+              }
+              results = results || [];
+              batch.requests.map(function (request, index) {
+                return results[index] || {};
+              }).forEach((result, i) => {
+                let code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+                if (code.length > 2) {
+                  data[batch.requests[i].params[0]].type = 1; // contract type
+                }
+
+              });
+              callback(null);
+            });
+          }, function(callback) {
+            // batch rpc job
+            let batch = new web3.BatchRequest();
+            for (let i = 0; i < chunk.length; i++) {
+              let account = chunk[i];
+              if (account) {
+                batch.add(web3.eth.getBalance.request(account));
+              }
             }
-          }
-          // upsert account
-          Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
+
+            batch.requestManager.sendBatch(batch.requests, (err, results) => {
+              if (err) {
+                console.log("ERROR: fail to getBalance batch job:", err);
+                callback(err);
+                return;
+              }
+              results = results || [];
+              batch.requests.map((request, index) => {
+                return results[index] || {};
+              }).forEach((result, i) => {
+                let balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+
+                let ether;
+                if (typeof balance === 'object') {
+                  ether = parseFloat(balance.div(1e18).toString());
+                } else {
+                  ether = balance / 1e18;
+                }
+                let account = batch.requests[i].params[0].toLowerCase();
+                data[account].balance = ether;
+
+                if (n <= 5) {
+                  console.log(' - upsert ' + account + ' / balance = ' + data[account].balance);
+                } else if (n == 6) {
+                  console.log('   (...) total ' + accounts.length + ' accounts updated.');
+                }
+                n++;
+                // upsert account
+                Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
+              });
+            });
+            callback(null);
+          }], function(error) {
         });
+      }, function(error) {
       });
     }
 
