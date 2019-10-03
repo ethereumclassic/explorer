@@ -143,7 +143,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
     self.miners = [];
   }
   if (blockData) {
-    self.miners.push({ address: blockData.miner, blockNumber: blockData.number, type: 0 });
+    self.miners.push({ address: blockData.miner.toLowerCase(), blockNumber: blockData.number, type: 0 });
   }
   if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
@@ -255,17 +255,17 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
     self.miners = [];
 
     // setup accounts
-    const data = {};
+    var data = {};
     bulk.forEach((tx) => {
-      data[tx.from] = { address: tx.from, blockNumber: tx.blockNumber, type: 0 };
+      data[tx.from] = { address: tx.from.toLowerCase(), blockNumber: tx.blockNumber, type: 0 };
       if (tx.to) {
-        data[tx.to] = { address: tx.to, blockNumber: tx.blockNumber, type: 0 };
+        data[tx.to] = { address: tx.to.toLowerCase(), blockNumber: tx.blockNumber, type: 0 };
       }
     });
 
     // setup miners
     miners.forEach((miner) => {
-      data[miner.address] = miner;
+      data[miner.address.toLowerCase()] = miner;
     });
 
     const accounts = Object.keys(data);
