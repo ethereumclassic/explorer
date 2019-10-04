@@ -8,6 +8,7 @@
     "patch":        true,
     "patchBlocks":  100,
     "bulkSize":     100,
+    "useRichList": true,
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",
@@ -27,7 +28,7 @@
         "poweredbyEtcImage": "/img/powered-by-etcexplorer-w.png",
         "poweredbyEtc": true,
         "tokenList": "tokens.json",
-        "useRichList": true,
+        "showRichList": true,
         "useFiat": true,
         "miners": {
             "0xdf7d7e053933b5cc24372f878c90e62dadad5d42": "EtherMine",

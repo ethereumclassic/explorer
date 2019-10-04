@@ -273,7 +273,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
     if (bulk.length === 0 && accounts.length === 0) return;
 
     // update balances
-    if (config.settings.useRichList && accounts.length > 0) {
+    if (config.useRichList && accounts.length > 0) {
       let n = 0;
       let chunks = [];
       while (accounts.length > 800) {
@@ -623,7 +623,7 @@ if (config.patch === true) {
 // check NORICHLIST env
 // you can use it like as 'NORICHLIST=1 node tools/sync.js' to disable balance updater temporary.
 if (process.env.NORICHLIST) {
-  config.settings.useRichList = false;
+  config.useRichList = false;
 }
 
 // Start listening for latest blocks
