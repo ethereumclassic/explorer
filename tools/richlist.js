@@ -142,11 +142,11 @@ function makeRichList(toBlock, blocks, updateCallback) {
 
         // split accounts into chunks to make proper sized json-rpc batch job.
         const accounts = Object.keys(self.accounts);
-        const chunks = [];
+        let chunks = [];
 
         // about ~1000 `eth_getBalance` json rpc calls are possible in one json-rpc batchjob.
-        while (accounts.length > 200) {
-          const chunk = accounts.splice(0, 100);
+        while (accounts.length > 800) {
+          let chunk = accounts.splice(0, 500);
           chunks.push(chunk);
         }
         if (accounts.length > 0) {
@@ -154,29 +154,71 @@ function makeRichList(toBlock, blocks, updateCallback) {
         }
 
         asyncL.eachSeries(chunks, (chunk, outerCallback) => {
-          const data = {};
-          asyncL.eachSeries(chunk, (account, eachCallback) => {
-            web3.eth.getCode(account, (err, code) => {
-              if (err) {
-                return eachCallback(err);
-              }
-              data[account] = { address: account };
-              if (code.length > 2) {
-                data[account].type = 1; // contract type
-              } else if (self.accounts[account]) {
-                data[account].type = self.accounts[account].type;
-              }
+          let data = {};
+          // get account type + getBalance using json rpc batch job
+          asyncL.waterfall([
+          (innerCallback) => {
+            let batch = new web3.BatchRequest();
 
-              web3.eth.getBalance(account, (err, balance) => {
-                if (err) {
-                  return eachCallback(err);
+            for (let i = 0; i < chunk.length; i++) {
+              let account = chunk[i];
+              batch.add(web3.eth.getCode.request(account));
+            }
+
+            batch.requestManager.sendBatch(batch.requests, (err, results) => {
+              if (err) {
+                console.log("ERROR: fail to getCode batch job:", err);
+                innerCallback(err);
+                return;
+              }
+              results = results || [];
+              batch.requests.map((request, index) => {
+                return results[index] || {};
+              }).forEach((result, i) => {
+                let code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+                let account = batch.requests[i].params[0];
+                data[account] = { address: account };
+                if (code.length > 2) {
+                  // 0: normal address, 1: contract
+                  data[account].type = 1; // contract case
+                } else if (self.accounts[account]) {
+                  data[account].type = self.accounts[account].type;
                 }
 
-                data[account].balance = parseFloat(web3.utils.fromWei(balance, 'ether'));
-                eachCallback();
               });
+              innerCallback(null, data);
             });
-          }, (err) => {
+          }, function(data, innerCallback) {
+            // batch rpc job
+            let batch = new web3.BatchRequest();
+            for (let i = 0; i < chunk.length; i++) {
+              let account = chunk[i];
+              batch.add(web3.eth.getBalance.request(account));
+            }
+
+            batch.requestManager.sendBatch(batch.requests, (err, results) => {
+              if (err) {
+                console.log("ERROR: fail to getBalance batch job:", err);
+                innerCallback(err);
+                return;
+              }
+              results = results || [];
+              batch.requests.map((request, index) => {
+                return results[index] || {};
+              }).forEach((result, i) =>{
+                let balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+
+                let ether;
+                if (typeof balance === 'object') {
+                  ether = parseFloat(balance.div(1e18).toString());
+                } else {
+                  ether = balance / 1e18;
+                }
+                data[batch.requests[i].params[0]].balance = ether;
+              });
+              innerCallback(null, data);
+            });
+          }], (err) => {
             if (err) {
               return outerCallback(err);
             }
@@ -257,33 +299,70 @@ function makeParityRichList(number, offset, blockNumber, updateCallback) {
       }
 
       const lastAccount = accounts[accounts.length - 1];
-      const data = {};
+      let data = {};
 
-      // Please see https://github.com/gobitfly/etherchain-light by gobitfly
-      asyncL.eachSeries(accounts, (account, eachCallback) => {
-        web3.eth.getCode(account, (err, code) => {
+      // get account type + getBalance using json rpc batch job
+      asyncL.waterfall([
+      function(innerCallback) {
+        let batch = new web3.BatchRequest();
+
+        for (let i = 0; i < accounts.length; i++) {
+          let account = accounts[i];
+          batch.add(web3.eth.getCode.request(account));
+        }
+
+        batch.requestManager.sendBatch(batch.requests, (err, results) => {
           if (err) {
-            console.log(`ERROR: fail to getCode(${account})`);
-            return eachCallback(err);
+            console.log("ERROR: fail to getCode batch job:", err);
+            innerCallback(err);
+            return;
           }
-          data[account] = {};
-          data[account].address = account;
-          if (code.length > 2) {
-            // 0: normal address, 1: contract
-            data[account].type = 1; //contract case
-          }
-
-          web3.eth.getBalance(account, (err, balance) => {
-            if (err) {
-              console.log(`ERROR: fail to getBalance(${account})`);
-              return eachCallback(err);
+          results = results || [];
+          batch.requests.map((request, index) => {
+            return results[index] || {};
+          }).forEach((result, i) => {
+            let code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+            let account = batch.requests[i].params[0];
+            data[account] = { address: account };
+            if (code.length > 2) {
+              // 0: normal address, 1: contract
+              data[account].type = 1; // contract case
             }
 
-            data[account].balance = parseFloat(web3.utils.fromWei(balance, 'ether'));
-            eachCallback();
           });
+          innerCallback(null, data);
         });
-      }, (err) => {
+      }, function(data, innerCallback) {
+        // batch rpc job
+        let batch = new web3.BatchRequest();
+        for (let i = 0; i < accounts.length; i++) {
+          let account = accounts[i];
+          batch.add(web3.eth.getBalance.request(account));
+        }
+
+        batch.requestManager.sendBatch(batch.requests, (err, results) => {
+          if (err) {
+            console.log("ERROR: fail to getBalance batch job:", err);
+            innerCallback(err);
+            return;
+          }
+          results = results || [];
+          batch.requests.map((request, index) => {
+            return results[index] || {};
+          }).forEach((result, i) => {
+            let balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+
+            let ether;
+            if (typeof balance === 'object') {
+              ether = parseFloat(balance.div(1e18).toString());
+            } else {
+              ether = balance / 1e18;
+            }
+            data[batch.requests[i].params[0]].balance = ether;
+          });
+          innerCallback(null, data);
+        });
+      }], (err) => {
         callback(err, data, lastAccount);
       });
     },
@@ -427,21 +506,35 @@ function readJsonAccounts(json, blockNumber, callback, defaultType = 0) {
   const data = prepareJsonAddress(json, defaultType);
   const accounts = Object.keys(data);
   console.log(`* update ${accounts.length} genesis accounts...`);
-  async.eachSeries(accounts, (account, eachCallback) => {
-    web3.eth.getBalance(account, (err, balance) => {
-      if (err) {
-        console.log(`ERROR: fail to getBalance(${account})`);
-        return eachCallback(err);
-      }
 
-      data[account].balance = parseFloat(web3.utils.fromWei(balance, 'ether'));
-      eachCallback();
-    });
-  }, (err) => {
+  // batch rpc job
+  let batch = new web3.BatchRequest();
+  // normally, the request size of batch getBalance() of all accounts is not bigger than 128kB.
+  // simply getBalance at once using rpc batch job.
+  for (let i = 0; i < accounts.length; i++) {
+    let account = accounts[i];
+    batch.add(web3.eth.getBalance.request(account));
+  }
+
+  batch.requestManager.sendBatch(batch.requests, (err, results) => {
     if (err) {
-      console.log(`ERROR: fail to getBalance()${err}`);
+      console.log("ERROR: fail to getBalance batch job:", err);
       return;
     }
+    results = results || [];
+    batch.requests.map((request, index) => {
+      return results[index] || {};
+    }).forEach((result, i) => {
+      let balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+
+      let ether;
+      if (typeof balance === 'object') {
+        ether = parseFloat(balance.div(1e18).toString());
+      } else {
+        ether = balance / 1e18;
+      }
+      data[batch.requests[i].params[0]].balance = ether;
+    });
     callback(data, blockNumber);
   });
 }
