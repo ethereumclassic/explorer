@@ -56,7 +56,7 @@
     "simple-line-icons": "^2.4.1",
     "solc": "^0.5.7",
     "ui-select": "^0.19.8",
-    "web3": "1.0.0-beta.37",
+    "web3": "^1.2.1",
     "web3-explorer": "1.0.4"
   },
   "devDependencies": {
