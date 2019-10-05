@@ -286,7 +286,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
       asyncL.eachSeries(chunks, function(chunk, outerCallback) {
         asyncL.waterfall([
           // get contract account type
-          function(callback) {
+          async () => {
             let batch = new web3.BatchRequest();
 
             for (let i = 0; i < chunk.length; i++) {
@@ -294,25 +294,21 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
               batch.add(web3.eth.getCode.request(account));
             }
 
-            batch.requestManager.sendBatch(batch.requests, (err, results) => {
-              if (err) {
-                console.log("ERROR: fail to getCode batch job:", err);
-                callback(err);
-                return;
-              }
-              results = results || [];
-              batch.requests.map(function (request, index) {
-                return results[index] || {};
-              }).forEach((result, i) => {
-                let code = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
+            try {
+              let results = await batch.execute();
+
+              results.response.forEach((code, i) => {
                 if (code.length > 2) {
-                  data[batch.requests[i].params[0]].type = 1; // contract type
+                  data[chunk[i]].type = 1; // contract type
                 }
 
               });
-              callback(null);
-            });
-          }, function(callback) {
+              return null;
+            } catch (err) {
+              console.log("ERROR: fail to getCode batch job:", err);
+              return err;
+            }
+          }, async () => {
             // batch rpc job
             let batch = new web3.BatchRequest();
             for (let i = 0; i < chunk.length; i++) {
@@ -322,25 +318,16 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
               }
             }
 
-            batch.requestManager.sendBatch(batch.requests, (err, results) => {
-              if (err) {
-                console.log("ERROR: fail to getBalance batch job:", err);
-                callback(err);
-                return;
-              }
-              results = results || [];
-              batch.requests.map((request, index) => {
-                return results[index] || {};
-              }).forEach((result, i) => {
-                let balance = batch.requests[i].format ? batch.requests[i].format(result.result) : result.result;
-
+            try {
+              let results = await batch.execute();
+              results.response.forEach((balance, i) => {
                 let ether;
                 if (typeof balance === 'object') {
                   ether = parseFloat(balance.div(1e18).toString());
                 } else {
                   ether = balance / 1e18;
                 }
-                let account = batch.requests[i].params[0].toLowerCase();
+                let account = chunk[i].toLowerCase();
                 data[account].balance = ether;
 
                 if (n <= 5) {
@@ -352,8 +339,10 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
                 // upsert account
                 Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
               });
-            });
-            callback(null);
+            } catch (err) {
+              console.log("ERROR: fail to getBalance batch job:", err);
+            };
+            return null;
           }], function(error) {
         });
       }, function(error) {
