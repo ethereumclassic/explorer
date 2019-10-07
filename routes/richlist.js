@@ -103,7 +103,9 @@ var getAccounts = function (req, res) {
       data.totalSupply = totalSupply;
     }
 
-    Account.find({}).lean(true).sort(sortOrder).skip(start)
+    Account
+      .find({ address: { '$ne': '0x0000000000000000000000000000000000000000' }})
+      .lean(true).sort(sortOrder).skip(start)
       .limit(limit)
       .exec((err, accounts) => {
         if (err) {

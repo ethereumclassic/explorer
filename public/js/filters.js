@@ -2,7 +2,6 @@ var getDifficulty = function(hashes) {
   /*
     borrowed from https://github.com/cubedro/eth-netstats :D
   */
-
   var result = 0;
   var unit = '';
 
@@ -46,7 +45,7 @@ var getDifficulty = function(hashes) {
     unit = 'Z';
   }
   
-  return result.toFixed(2) + ' ' + unit + 'H';
+  return (+result).toFixed(2) + ' ' + unit + 'H';
 }
 
 /*

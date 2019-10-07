@@ -1,3 +1,7 @@
+# Common
+.DS_Store
+.idea
+
 # Logs
 logs
 *.log
@@ -35,6 +39,7 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
 
 # local data
 data/

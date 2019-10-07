@@ -5,9 +5,10 @@
   "repository": "https://github.com/ethereumclassic/explorer",
   "license": "MIT",
   "scripts": {
-    "start": "concurrently \"node tools/sync.js \" \"node app.js\" ",
+    "start": "concurrently \"nodemon tools/sync.js \" \"nodemon tools/sync-votes.js\" \"nodemon app.js\"",
     "app": "node app.js",
     "sync": "node tools/sync.js",
+    "sync-votes": "node tools/sync/votes.js",
     "stats": "node tools/stats.js",
     "rich": "node tools/richlist.js",
     "test": "mocha --exit",
@@ -19,6 +20,8 @@
     "body-parser": "^1.18.3",
     "concurrently": "4.1.0",
     "ejs": "2.6.1",
+    "ethereumjs-block": "1.7.1",
+    "ethereumjs-util": "5.2.0",
     "express": "^4.16.4",
     "human-standard-token-abi": "^2.0.0",
     "mongoose": "^4.13.18",
@@ -37,6 +40,7 @@
     "eslint-plugin-import": "^2.16.0",
     "html-linter": "^1.1.1",
     "mocha": "^6.0.2",
+    "nodemon": "^1.19.1",
     "request": "^2.88.0"
   }
 }

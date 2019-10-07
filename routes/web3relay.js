@@ -53,10 +53,11 @@ else throw 'No connection, please specify web3host in conf.json';
 async function detectNode() {
   const nodeInfo = await web3.eth.getNodeInfo();
 
-  if (nodeInfo.split('/')[0].toLowerCase().includes('parity')) {
-    console.log('Web3 has detected parity node configuration');
-    web3explorer(web3);
-  }
+  // if (nodeInfo.split('/')[0].toLowerCase().includes('parity')) {
+  //   console.log('Web3 has detected parity node configuration');
+  // TODO: investigate
+  web3explorer(web3);
+  // }
   console.log(`Node version = ${nodeInfo}`);
 }
 detectNode();
@@ -312,4 +313,5 @@ exports.data = async (req, res) => {
 
 };
 
+exports.web3 = web3;
 exports.eth = web3.eth;

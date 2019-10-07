@@ -9,18 +9,18 @@ const filters = require('./filters');
 
 const etherUnits = require(`${__lib}etherUnits.js`);
 
-let config = {};
-try {
-  config = require('../config.json');
-} catch (e) {
-  if (e.code == 'MODULE_NOT_FOUND') {
-    console.log('No config file found. Using default configuration... (config.example.json)');
-    config = require('../config.example.json');
-  } else {
-    throw e;
-    process.exit(1);
-  }
-}
+const config = require('../utils').getConfig();
+// try {
+//   config = require('../config.json');
+// } catch (e) {
+//   if (e.code == 'MODULE_NOT_FOUND') {
+//     console.log('No config file found. Using default configuration... (config.example.json)');
+//     config = require('../config.example.json');
+//   } else {
+//     throw e;
+//     process.exit(1);
+//   }
+// }
 
 module.exports = function (req, res) {
 

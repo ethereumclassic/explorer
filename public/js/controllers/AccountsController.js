@@ -1,6 +1,14 @@
 angular.module('BlocksApp').controller('AccountsController', function($stateParams, $rootScope, $scope, $http, $filter) {
   $scope.settings = $rootScope.setup;
-
+  $scope.authorities = [];
+  
+  var getAuthorities = function() {
+    $http.post('/authorities').then(function(response) {
+      $scope.authorities = response.data;
+    })
+  };
+  getAuthorities();
+  
   // fetch accounts
   var getAccounts = function() {
     $("#table_accounts").DataTable({

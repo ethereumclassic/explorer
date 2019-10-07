@@ -6,8 +6,8 @@
   <div class="portlet light">
     <div class="portlet-title">
       <div class="caption caption-md">
-        <i class="fa fa-cubes font-red"></i>
-        <span class="caption-subject font-red bold uppercase">Blocks</span>
+        <i class="fa fa-cubes"></i>
+        <span class="caption-subject bold uppercase">Blocks</span>
       </div>
       <div class="actions">
         <div class="btn-group">
@@ -18,7 +18,7 @@
     </div>
     <div class="portlet-body">
       <div class="todo-tasklist scrollable">
-        <div ng-repeat="t in latest_blocks track by $index" class="todo-tasklist-item item-border-green row" ng-class="(t.extraData.indexOf('Parity') > -1) ? 'item-border-red': '';(t.extraData.indexOf('Pool') > -1) ? 'item-border-blue': ''">
+        <div ng-repeat="t in latest_blocks track by $index" class="todo-tasklist-item item-border-blue row" ng-class="(t.extraData.indexOf('Parity') > -1) ? 'item-border-red': '';(t.extraData.indexOf('Pool') > -1) ? 'item-border-green': ''">
           <!--TODO: color by known miners -->
           <div class="col-sm-5">
             <span class="todo-tasklist-item-title"><i class="fa fa-cube"></i> <a href="/block/{{t.number}}">{{t.number}}</a></span><br>
@@ -42,8 +42,8 @@
   <div class="portlet light">
     <div class="portlet-title">
       <div class="caption caption-md">
-        <i class="icon-bar-chart font-red"></i>
-        <span class="caption-subject font-red bold uppercase">Transactions</span>
+        <i class="icon-bar-chart"></i>
+        <span class="caption-subject bold uppercase">Transactions</span>
       </div>
       <div class="actions">
         <div class="btn-group">

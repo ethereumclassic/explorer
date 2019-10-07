@@ -43,6 +43,7 @@ BlocksApp.factory('setupObj', ['$rootScope', '$http', function($rootScope, $http
 /* Setup App Main Controller */
 BlocksApp.controller('MainController', ['$scope', '$rootScope', function($scope, $rootScope) {
     $scope.$on('$viewContentLoaded', function() {
+      $rootScope.isHome = $rootScope.$state.current.name === ('home' || '')
         //App.initComponents(); // init core components
         //Layout.init(); //  Init entire layout(header, footer, sidebar, etc) on page load if the partials included in server side instead of loading with ng-include directive
     });
@@ -160,6 +161,47 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                 }]
             }
         })
+
+        .state('authorities', {
+            url: '/authorities',
+            templateUrl: 'views/authorities.html',
+            data: { pageTitle: 'Authority Nodes' },
+            controller: 'PollController',
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                            '/js/controllers/PollController.js',
+                            '/plugins/identicon/pnglib.js',
+                            '/plugins/identicon/identicon.js',
+                        ]
+                    });
+                }]
+            }
+        })
+
+        .state('blacklists', {
+            url: '/blacklists',
+            templateUrl: 'views/blacklists.html',
+            data: { pageTitle: 'Blacklist Nodes' },
+            controller: 'PollController',
+            resolve: {
+                deps: ['$ocLazyLoad', function($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'BlocksApp',
+                        insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
+                        files: [
+                            '/js/controllers/PollController.js',
+                            '/plugins/identicon/pnglib.js',
+                            '/plugins/identicon/identicon.js',
+                        ]
+                    });
+                }]
+            }
+        })
+
         .state('block', {
             url: "/block/{number}",
             templateUrl: "views/block.html",
@@ -213,42 +255,42 @@ BlocksApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvide
                 }]
             }
         })
-        .state('viewcontract', {
-            url: "/contract",
-            templateUrl: "views/contract.html",
-            data: {pageTitle: 'Verify Contract'},
-            controller: "ContractController",
-            resolve: {
-                deps: ['$ocLazyLoad', function($ocLazyLoad) {
-                    return $ocLazyLoad.load({
-                        name: 'BlocksApp',
-                        insertBefore: '#ng_load_plugins_before',
-                        files: [
-                             '/js/controllers/ContractController.js',
-                             '/js/custom.js'
-                         ]
-                     });
-                }]
-            }
-        })
-        .state('contract', {
-            url: "/contract/{addr}",
-            templateUrl: "views/contract.html",
-            data: {pageTitle: 'Verify Contract'},
-            controller: "ContractController",
-            resolve: {
-                deps: ['$ocLazyLoad', function($ocLazyLoad) {
-                    return $ocLazyLoad.load({
-                        name: 'BlocksApp',
-                        insertBefore: '#ng_load_plugins_before',
-                        files: [
-                             '/js/controllers/ContractController.js',
-                             '/js/custom.js'
-                         ]
-                     });
-                }]
-            }
-        })
+        // .state('viewcontract', {
+        //     url: "/contract",
+        //     templateUrl: "views/contract.html",
+        //     data: {pageTitle: 'Verify Contract'},
+        //     controller: "ContractController",
+        //     resolve: {
+        //         deps: ['$ocLazyLoad', function($ocLazyLoad) {
+        //             return $ocLazyLoad.load({
+        //                 name: 'BlocksApp',
+        //                 insertBefore: '#ng_load_plugins_before',
+        //                 files: [
+        //                      '/js/controllers/ContractController.js',
+        //                      '/js/custom.js'
+        //                  ]
+        //              });
+        //         }]
+        //     }
+        // })
+        // .state('contract', {
+        //     url: "/contract/{addr}",
+        //     templateUrl: "views/contract.html",
+        //     data: {pageTitle: 'Verify Contract'},
+        //     controller: "ContractController",
+        //     resolve: {
+        //         deps: ['$ocLazyLoad', function($ocLazyLoad) {
+        //             return $ocLazyLoad.load({
+        //                 name: 'BlocksApp',
+        //                 insertBefore: '#ng_load_plugins_before',
+        //                 files: [
+        //                      '/js/controllers/ContractController.js',
+        //                      '/js/custom.js'
+        //                  ]
+        //              });
+        //         }]
+        //     }
+        // })
         .state('stats', {
             url: "/stats/{chart}",
             templateUrl: "views/stats/index.html",
@@ -344,3 +386,7 @@ BlocksApp.run(["$rootScope", "settings", "$state", "setupObj", function($rootSco
         $rootScope.setup = res;
     });
 }]);
+//   .factory('router', ['$rootScope', '$state' function($rootScope, $state) {
+//
+// }]);
+

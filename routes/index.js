@@ -3,10 +3,13 @@ const mongoose = require('mongoose');
 const Block = mongoose.model('Block');
 const Transaction = mongoose.model('Transaction');
 const Account = mongoose.model('Account');
+const Authority = mongoose.model('Authority');
+const Blacklist = mongoose.model('Blacklist');
+const Poll = mongoose.model('Poll');
 const async = require('async');
 const filters = require('./filters');
 
-module.exports = function (app) {
+module.exports = function(app) {
   const web3relay = require('./web3relay');
 
   const Token = require('./token');
@@ -33,8 +36,66 @@ module.exports = function (app) {
   app.post('/web3relay', web3relay.data);
   app.post('/compile', compile);
 
+  app.get('/polls', getPolls);
+  app.get('/votes-list', getVotesList);
+
   app.post('/stats', stats);
+
+  const authoritiesRoute = require('./authorities');
+  app.post('/authorities', authoritiesRoute);
 };
+
+const getPolls = async (req, res) => {
+  const type = req.query.type || 0;
+  async.parallel(
+    {
+      nodes: cb => {
+        (type == 0 ? Authority : Blacklist).find({})
+          .lean(true)
+          .exec('find', (err, docs) => cb(null, docs));
+      },
+      polls: cb => {
+        Poll.find({ type, isDisabled: false })
+          .lean(true)
+          .exec('find', (err, docs) => cb(null, docs));
+      }
+    },
+    (err, result) => {
+      if (err) console.log(err);
+      res.write(JSON.stringify(result));
+      res.end();
+    }
+  );
+};
+
+const SIGNATURES = {
+  voteForNewAuthority: '0xfc3c9afd',
+  voteForBlackListAuthority: '0x332327a2'
+}
+
+const getVotesList = async (req, res) => {
+  const type = req.query.type || 0;
+  const isPoll = req.query.poll || 0;
+  const address = req.query.address.substr(2).toLowerCase();
+
+  if (!address) {
+    res.write(JSON.stringify([]));
+    res.end();
+    return;
+  }
+
+  const signatute = SIGNATURES[type == 0 ? 'voteForNewAuthority' : 'voteForBlackListAuthority'];  
+  const $and = [
+    { input: new RegExp('^' + signatute, 'gi') },          
+    { input: new RegExp(address + '$', 'gi') },    
+  ];
+  // if (type == 1) {
+  //   $and.push({ status: isPoll ? null : { $ne: null } });
+  // }
+  const results = await Transaction.find({$and}).lean(true);  
+  res.write(JSON.stringify(results));
+  res.end();
+}
 
 const getAddr = async (req, res) => {
   // TODO: validate addr and tx
@@ -45,10 +106,13 @@ const getAddr = async (req, res) => {
   const start = parseInt(req.body.start);
 
   const data = {
-    draw: parseInt(req.body.draw), recordsFiltered: count, recordsTotal: count, mined: 0,
+    draw: parseInt(req.body.draw),
+    recordsFiltered: count,
+    recordsTotal: count,
+    mined: 0
   };
 
-  const addrFind = Transaction.find({ $or: [{ 'to': addr }, { 'from': addr }] });
+  const addrFind = Transaction.find({ $or: [{ to: addr }, { from: addr }] });
 
   let sortOrder = '-blockNumber';
   if (req.body.order && req.body.order[0] && req.body.order[0].column) {
@@ -60,48 +124,54 @@ const getAddr = async (req, res) => {
     }
   }
 
-  addrFind.lean(true).sort(sortOrder).skip(start).limit(limit)
+  addrFind
+    .lean(true)
+    .sort(sortOrder)
+    .skip(start)
+    .limit(limit)
     .exec('find', (err, docs) => {
       if (docs) data.data = filters.filterTX(docs, addr);
       else data.data = [];
       res.write(JSON.stringify(data));
       res.end();
     });
-
 };
-var getAddrCounter = function (req, res) {
+var getAddrCounter = function(req, res) {
   const addr = req.body.addr.toLowerCase();
   const count = parseInt(req.body.count);
   const data = { recordsFiltered: count, recordsTotal: count, mined: 0 };
 
-  async.waterfall([
-    function (callback) {
-
-      Transaction.count({ $or: [{ 'to': addr }, { 'from': addr }] }, (err, count) => {
-        if (!err && count) {
-          // fix recordsTotal
-          data.recordsTotal = count;
-          data.recordsFiltered = count;
-        }
-        callback(null);
-      });
-
-    }, function (callback) {
-
-      Block.count({ 'miner': addr }, (err, count) => {
-        if (!err && count) {
-          data.mined = count;
-        }
-        callback(null);
-      });
-
-    }], (err) => {
-    res.write(JSON.stringify(data));
-    res.end();
-  });
-
+  async.waterfall(
+    [
+      function(callback) {
+        Transaction.count(
+          { $or: [{ to: addr }, { from: addr }] },
+          (err, count) => {
+            if (!err && count) {
+              // fix recordsTotal
+              data.recordsTotal = count;
+              data.recordsFiltered = count;
+            }
+            callback(null);
+          }
+        );
+      },
+      function(callback) {
+        Block.count({ miner: addr }, (err, count) => {
+          if (!err && count) {
+            data.mined = count;
+          }
+          callback(null);
+        });
+      }
+    ],
+    err => {
+      res.write(JSON.stringify(data));
+      res.end();
+    }
+  );
 };
-var getBlock = function (req, res) {
+var getBlock = function(req, res) {
   // TODO: support queries for block hash
   const txQuery = 'number';
   const number = parseInt(req.body.block);
@@ -111,7 +181,7 @@ var getBlock = function (req, res) {
     if (err || !doc) {
       console.error(`BlockFind error: ${err}`);
       console.error(req.body);
-      res.write(JSON.stringify({ 'error': true }));
+      res.write(JSON.stringify({ error: true }));
     } else {
       const block = filters.filterBlocks([doc]);
       res.write(JSON.stringify(block[0]));
@@ -119,10 +189,12 @@ var getBlock = function (req, res) {
     res.end();
   });
 };
-var getTx = function (req, res) {
+var getTx = function(req, res) {
   const tx = req.body.tx.toLowerCase();
-  const txFind = Block.findOne({ 'transactions.hash': tx }, 'transactions timestamp')
-    .lean(true);
+  const txFind = Block.findOne(
+    { 'transactions.hash': tx },
+    'transactions timestamp'
+  ).lean(true);
   txFind.exec((err, doc) => {
     if (!doc) {
       console.log(`missing: ${tx}`);
@@ -139,7 +211,7 @@ var getTx = function (req, res) {
 /*
   Fetch data from DB
 */
-var getData = function (req, res) {
+var getData = function(req, res) {
   // TODO: error handling for invalid calls
   const action = req.body.action.toLowerCase();
   const { limit } = req.body;
@@ -157,9 +229,9 @@ var getData = function (req, res) {
 /*
   Total supply API code
 */
-var getTotal = function (req, res) {
+var getTotal = function(req, res) {
   Account.aggregate([
-    { $group: { _id: null, totalSupply: { $sum: '$balance' } } },
+    { $group: { _id: null, totalSupply: { $sum: '$balance' } } }
   ]).exec((err, docs) => {
     if (err) {
       res.write('Error getting total supply');
@@ -173,60 +245,71 @@ var getTotal = function (req, res) {
 /*
   temporary blockstats here
 */
-const latestBlock = function (req, res) {
+const latestBlock = function(req, res) {
   const block = Block.findOne({}, 'totalDifficulty')
-    .lean(true).sort('-number');
+    .lean(true)
+    .sort('-number');
   block.exec((err, doc) => {
     res.write(JSON.stringify(doc));
     res.end();
   });
 };
 
-const getLatest = function (lim, res, callback) {
-  const blockFind = Block.find({}, 'number transactions timestamp miner extraData')
-    .lean(true).sort('-number').limit(lim);
+const getLatest = function(lim, res, callback) {
+  const blockFind = Block.find(
+    {},
+    'number transactions timestamp miner extraData'
+  )
+    .lean(true)
+    .sort('-number')
+    .limit(lim);
   blockFind.exec((err, docs) => {
     callback(docs, res);
   });
 };
 
 /* get blocks from db */
-const sendBlocks = function (lim, res) {
+const sendBlocks = function(lim, res) {
   const blockFind = Block.find({}, 'number timestamp miner extraData')
-    .lean(true).sort('-number').limit(lim);
+    .lean(true)
+    .sort('-number')
+    .limit(lim);
   blockFind.exec((err, docs) => {
     if (!err && docs) {
       const blockNumber = docs[docs.length - 1].number;
       // aggregate transaction counters
       Transaction.aggregate([
         { $match: { blockNumber: { $gte: blockNumber } } },
-        { $group: { _id: '$blockNumber', count: { $sum: 1 } } },
+        { $group: { _id: '$blockNumber', count: { $sum: 1 } } }
       ]).exec((err, results) => {
         const txns = {};
         if (!err && results) {
           // set transaction counters
-          results.forEach((txn) => {
+          results.forEach(txn => {
             txns[txn._id] = txn.count;
           });
-          docs.forEach((doc) => {
+          docs.forEach(doc => {
             doc.txn = txns[doc.number] || 0;
           });
         }
-        res.write(JSON.stringify({ 'blocks': filters.filterBlocks(docs) }));
+        res.write(JSON.stringify({ blocks: filters.filterBlocks(docs) }));
         res.end();
       });
     } else {
       console.log(`blockFind error:${err}`);
-      res.write(JSON.stringify({ 'error': true }));
+      res.write(JSON.stringify({ error: true }));
       res.end();
     }
   });
 };
 
-const sendTxs = function (lim, res) {
-  Transaction.find({}).lean(true).sort('-blockNumber').limit(lim)
+const sendTxs = function(lim, res) {
+  Transaction.find({})
+    .lean(true)
+    .sort('-blockNumber')
+    .limit(lim)
     .exec((err, txs) => {
-      res.write(JSON.stringify({ 'txs': txs }));
+      res.write(JSON.stringify({ txs: txs }));
       res.end();
     });
 };
@@ -234,6 +317,6 @@ const sendTxs = function (lim, res) {
 const MAX_ENTRIES = 10;
 
 const DATA_ACTIONS = {
-  'latest_blocks': sendBlocks,
-  'latest_txs': sendTxs,
+  latest_blocks: sendBlocks,
+  latest_txs: sendTxs
 };

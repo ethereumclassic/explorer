@@ -25,6 +25,8 @@ const Account = mongoose.model('Account');
 const Contract = mongoose.model('Contract');
 const TokenTransfer = mongoose.model('TokenTransfer');
 
+const { getSigner } = require('../utils');
+
 const ERC20_METHOD_DIC = { '0xa9059cbb': 'transfer', '0xa978501e': 'transferFrom' };
 
 /**
@@ -95,6 +97,16 @@ const normalizeTX = async (txData, receipt, blockData) => {
   Write the whole block object to DB
 **/
 var writeBlockToDB = function (config, blockData, flush) {
+  
+  try {
+    if (blockData) {
+      blockData.miner = '0x' + getSigner(blockData);
+    }
+  } catch (err) {
+    // do nothing
+    console.log(err);
+  }
+  
   const self = writeBlockToDB;
   if (!self.bulkOps) {
     self.bulkOps = [];

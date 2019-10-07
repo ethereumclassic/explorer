@@ -2,11 +2,9 @@
 <div class="page-header-top">
   <div class="container">
     <!-- BEGIN LOGO -->
-    <div class="page-logo">
-      <a href="/">
-      <img ng-show="settings.logo" src="{{settings.logo}}" alt="logo" class="logo-default" />
-      </a>
-    </div>
+    <a href="/">
+      <img ng-show="settings.logo" src="/img/logo.svg" alt="logo" class="papyrus-logo" />
+    </a>
     <!-- END LOGO -->
     <!-- BEGIN RESPONSIVE MENU TOGGLER -->
     <a href="#" class="menu-toggler btn btn-sm green-haze btn-outline">MENU</a>
@@ -36,98 +34,107 @@
 <div class="page-header-menu">
   <div class="container">
     <!-- BEGIN MEGA MENU -->
-    <div class="hor-menu hor-menu-light">
+    <div class="hor-menu ">
       <ul class="nav navbar-nav">
-        <li class="active">
-          <a href="/">Home</a>
+        <li ui-sref-active="active">
+          <a ui-sref="home">Home</a>
         </li>
-        <li ng-show="settings.useRichList">
-          <a href="/accounts">Accounts</a>
+        <li ng-show="settings.useRichList" ui-sref-active="active">
+          <a ui-sref="accounts">Accounts</a>
         </li>
-        <li>
-          <a href="/token">Tokens</a>
+        <li ng-show="settings.useRichList" ui-sref-active="active">
+          <a ui-sref="authorities">Authorities</a>
         </li>
-        <li class="menu-dropdown mega-menu-dropdown ">
-          <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle"> Stats
-          <i class="fa fa-angle-down"></i>
-          </a>
-          <ul class="dropdown-menu">
-            <li>
-              <div class="mega-menu-content">
-                <div class="row">
-                  <div class="col-md-12">
-                    <ul class="mega-menu-submenu">
-                      <li>
-                        <a href="/stats/hashrate">
-                        <i class="fa fa-line-chart"></i> Hashrate Chart </a>
-                      </li>
-                      <li>
-                        <a href="/stats/miner_hashrate">
-                        <i class="fa fa-line-chart"></i> Miner Distribution Chart</a>
-                      </li>
-                      <li>
-                        <a href="/stats/difficulty">
-                        <i class="fa fa-line-chart"></i> Difficulty Chart</a>
-                      </li>
-                      <li>
-                        <a href="/stats/blocktime">
-                        <i class="fa fa-line-chart"></i> Blocktime Chart</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
+        <li ng-show="settings.useRichList" ui-sref-active="active">
+          <a ui-sref="blacklists">Blacklist</a>
         </li>
-        <li class="menu-dropdown classic-menu-dropdown ">
-          <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#"> Misc
-          <i class="fa fa-angle-down"></i>
-          </a>
-          <ul class="dropdown-menu pull-left">
-            <li>
-              <a href="/contract">
-              <i class="icon-check"></i> Verify Contract </a>
-            </li>
-          </ul>
-        </li>
-        <li class="menu-dropdown classic-menu-dropdown ">
-          <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#"> Community
-          <i class="fa fa-angle-down"></i>
-          </a>
-          <ul class="dropdown-menu pull-left">
-            <li>
-              <a href="https://forum.ethereumclassic.org" target="_blank">
-              <i class="fa fa-group"></i>
-              <span class="title" data-toggle="tooltip" title="Community Chat"> The Forum</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://tokenmint.io" target="_blank">
-              <i class="fa fa-leaf"></i>
-              <span class="title" data-toggle="tooltip" title="ERC223 Token Factory" > TokenMint.io</span>
-              </a>
-            </li>
-            <li>
-              <a href=" https://ethereumclassic.github.io/etherwallet/ " target="_blank">
-              <i class="fa fa-folder-open"></i>
-              <span class="title" data-toggle="tooltip" title="Client Side JS ETC Wallet"> ClassicEtherWallet.com</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://2miners.com/etc-stats" target="_blank">
-              <i class="fa fa-bar-chart"></i>
-              <span class="title" data-toggle="tooltip" title="Mainnet Stats"> Live Network Stats </span>
-              </a>
-            </li>
-            <li>
-              <a href="http://statebot.info" target="_blank">
-              <i class="fa fa-android"></i>
-              <span class="title" data-toggle="tooltip" title="JSON state dumps for analysis"> Statebot.io </span>
-              </a>
-            </li>
-          </ul>
-        </li>
+        <!-- <li ui-sref-active="active">
+          <a ui-sref="viewcontract">Verify Contract</a>
+        </li> -->
+        <!--<li ui-sref-active="active">-->
+          <!--<a ui-sref="tokenlist">Tokens</a>-->
+        <!--</li>-->
+        <!--<li class="menu-dropdown mega-menu-dropdown">-->
+          <!--<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle"> Stats-->
+          <!--<i class="fa fa-angle-down"></i>-->
+          <!--</a>-->
+          <!--<ul class="dropdown-menu">-->
+            <!--<li>-->
+              <!--<div class="mega-menu-content">-->
+                <!--<div class="row">-->
+                  <!--<div class="col-md-12">-->
+                    <!--<ul class="mega-menu-submenu">-->
+                      <!--&lt;!&ndash;<li ui-sref-active="active">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<a ui-sref="stats({chart: 'hashrate'})">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<i class="fa fa-line-chart"></i> Hashrate Chart </a>&ndash;&gt;-->
+                      <!--&lt;!&ndash;</li>&ndash;&gt;-->
+                      <!--<li>-->
+                        <!--<a ui-sref="stats({chart: 'miner_hashrate'})">-->
+                        <!--<i class="fa fa-line-chart"></i> Miner Distribution Chart</a>-->
+                      <!--</li>-->
+                      <!--&lt;!&ndash;<li>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<a ui-sref="stats({chart: 'difficulty'})">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<i class="fa fa-line-chart"></i> Difficulty Chart</a>&ndash;&gt;-->
+                      <!--&lt;!&ndash;</li>&ndash;&gt;-->
+                      <!--<li>-->
+                        <!--<a ui-sref="stats({chart: 'blocktime'})">-->
+                        <!--<i class="fa fa-line-chart"></i> Blocktime Chart</a>-->
+                      <!--</li>-->
+                    <!--</ul>-->
+                  <!--</div>-->
+                <!--</div>-->
+              <!--</div>-->
+            <!--</li>-->
+          <!--</ul>-->
+        <!--</li>-->
+        <!--<li class="menu-dropdown classic-menu-dropdown ">-->
+          <!--<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#"> Misc-->
+          <!--<i class="fa fa-angle-down"></i>-->
+          <!--</a>-->
+          <!--<ul class="dropdown-menu pull-left">-->
+            <!--<li>-->
+              <!--<a href="/contract">-->
+              <!--<i class="icon-check"></i> Verify Contract </a>-->
+            <!--</li>-->
+          <!--</ul>-->
+        <!--</li>-->
+        <!--<li class="menu-dropdown classic-menu-dropdown ">-->
+          <!--<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#"> Community-->
+          <!--<i class="fa fa-angle-down"></i>-->
+          <!--</a>-->
+          <!--<ul class="dropdown-menu pull-left">-->
+            <!--<li>-->
+              <!--<a href="https://forum.ethereumclassic.org" target="_blank">-->
+              <!--<i class="fa fa-group"></i>-->
+              <!--<span class="title" data-toggle="tooltip" title="Community Chat"> The Forum</span>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href="https://tokenmint.io" target="_blank">-->
+              <!--<i class="fa fa-leaf"></i>-->
+              <!--<span class="title" data-toggle="tooltip" title="ERC223 Token Factory" > TokenMint.io</span>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href=" https://ethereumclassic.github.io/etherwallet/ " target="_blank">-->
+              <!--<i class="fa fa-folder-open"></i>-->
+              <!--<span class="title" data-toggle="tooltip" title="Client Side JS ETC Wallet"> ClassicEtherWallet.com</span>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href="https://2miners.com/etc-stats" target="_blank">-->
+              <!--<i class="fa fa-bar-chart"></i>-->
+              <!--<span class="title" data-toggle="tooltip" title="Mainnet Stats"> Live Network Stats </span>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href="http://statebot.info" target="_blank">-->
+              <!--<i class="fa fa-android"></i>-->
+              <!--<span class="title" data-toggle="tooltip" title="JSON state dumps for analysis"> Statebot.io </span>-->
+              <!--</a>-->
+            <!--</li>-->
+          <!--</ul>-->
+        <!--</li>-->
       </ul>
     </div>
     <!-- END MEGA MENU -->

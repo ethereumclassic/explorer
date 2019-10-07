@@ -121,7 +121,7 @@ angular.module('BlocksApp').controller('AddressController', function($stateParam
           url: '/compile',
           data: {"addr": scope.addrHash, "action": "find"}
         }).then(function(resp) {
-          console.log(resp.data);
+          // console.log(resp.data);
           scope.contract = resp.data;
         });
       }
