@@ -1,0 +1,43 @@
+<div class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" style="text-indent: 0; font-size: 32px; margin-right: 6px;" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" ng-if="modalDataLoading">Votes</h4>
+        <h4 class="modal-title" ng-if="!modalDataLoading">{{ modalData.length }} vote{{ modalData.length === 1 ? '' : 's' }}</h4>
+      </div>
+      <div class="modal-body" ng-transclude>
+        <span ng-show="modalDataLoading">Loading...</span>        
+        <span ng-show="!modalDataLoading && modalData.length ==- 0">
+          No votes recieved
+        </span>
+        <ul class="node-items" ng-show="!modalDataLoading && modalData.length > 0">    
+          <li ng-repeat="node in modalData track by $index" class="node-item">
+            <div class="node-item__left">
+              <div class="node-info">
+                <div class="node-info__avatar">
+                  <div class="node-info__avatar-wrapper">
+                    <img ng-src="{{ addressToSrcIcon(node.from) }}" />
+                  </div>
+                </div>
+                <div class="node-info__about">          
+                  <strong>{{ node.from }}</strong>
+                  <div class="node-info__about-company">
+                    <div>
+                      <h5>Company</h5>
+                      Papyrus
+                    </div>
+                    <div>
+                      <h5>Home page</h5>
+                      <a href="https://papyrus.network" target="_blank">papyrus.network</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>            
+          </li>  
+        </ul>        
+      </div>      
+    </div>
+  </div>
+</div>

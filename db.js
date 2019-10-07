@@ -141,6 +141,14 @@ const Authority = new Schema(
   { collection: 'Authority' }
 );
 
+const Blacklist = new Schema(
+  {
+    address: { type: String, index: { unique: true } },
+    votes: { type: Number, default: 0 },
+  },
+  { collection: 'Blacklist' }
+)
+
 // create indices
 Transaction.index({ blockNumber: -1 });
 Transaction.index({ from: 1, blockNumber: -1 });
@@ -160,6 +168,7 @@ TokenTransfer.index({ contract: 1, blockNumber: -1 });
 Poll.index({ address: 1, isDisabled: 1, type: 1 });
 Poll.index({ address: 1, isDisabled: 1, isVoted: 1 });
 Poll.index({ address: 1, isDisabled: 1, isVoted: 1, type: 1, });
+Blacklist.index({ address: 1 });
 
 mongoose.model('BlockStat', BlockStat);
 mongoose.model('Block', Block);
@@ -171,6 +180,7 @@ mongoose.model('TokenTransfer', TokenTransfer);
 mongoose.model('Poll', Poll);
 mongoose.model('Authority', Authority);
 mongoose.model('AuthoritySlot', AuthoritySlot);
+mongoose.model('Blacklist', Blacklist);
 module.exports.BlockStat = mongoose.model('BlockStat');
 module.exports.Block = mongoose.model('Block');
 module.exports.Contract = mongoose.model('Contract');
@@ -181,6 +191,7 @@ module.exports.TokenTransfer = mongoose.model('TokenTransfer');
 module.exports.Poll = mongoose.model('Poll');
 module.exports.Authority = mongoose.model('Authority');
 module.exports.AuthoritySlot = mongoose.model('AuthoritySlot');
+module.exports.Blacklist = mongoose.model('Blacklist');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {

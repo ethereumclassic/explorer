@@ -7,11 +7,17 @@ const config = getConfig();
 require('../db.js');
 const mongoose = require('mongoose');
 
+const Transaction = mongoose.model('Transaction');
 const Authority = mongoose.model('Authority');
 const AuthoritySlot = mongoose.model('AuthoritySlot');
+const Blacklist = mongoose.model('Blacklist');
 const Poll = mongoose.model('Poll');
 
 const SYNC_TIMEOUT = 3000;
+const SIGNATURES = {
+  voteForNewAuthority: '0xfc3c9afd',
+  voteForBlackListAuthority: '0x332327a2'
+}
 
 console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
 const web3 = new Web3(
@@ -39,6 +45,33 @@ const getAuthorities = async () => {
     }))
   }));
 };
+
+const getBlacklisted = async () => {
+  const blacklisted = await callMethod('getAuthorityBlacklistPollAddresses');    
+  const results = await Transaction.aggregate([
+    {
+      $match: { 
+        $and: [
+          { input: new RegExp('^' + SIGNATURES.voteForBlackListAuthority, 'gi') },  
+          { status: { $ne: null }}
+        ]
+      }
+    },
+    {
+      $group: {
+        _id: "$input",        
+        count: {$sum: 1}
+      }
+    }
+  ]);  
+  return blacklisted.map(address => {
+    const match = results.find(res => (new RegExp(address.substr(2).toLowerCase(), 'gi').test(res._id)));
+    return {
+      address,
+      votes: match && match.count || 0
+    };
+  });  
+}
 
 const getNewAuthorityPolls = async () => {
   const addresses = await callMethod('getAddNewPollAddresses');
@@ -82,6 +115,20 @@ const saveOrUpdateAuthorities = authorities => {
   });
 };
 
+const saveOrUpdateBlacklist = blacklist => {
+  blacklist.forEach(bl => {
+    const { address, votes } = bl;
+    Blacklist.update(
+      { address: address },
+      { address, votes },
+      { upsert: true, setDefaultsOnInsert: true },
+      (err, data) => {
+        if (err) console.log(err);
+      }
+    )
+  })
+}
+
 const saveOrUpdatePolls = (polls, type = 0) => {
   if (![0, 1].includes(type)) return;
 
@@ -111,9 +158,11 @@ const disableFinalisedPolls = addressesToDelete => {
 const saveOrUpdateData = async (
   authorities,
   authorityPolls,
+  blacklist,
   blacklistPolls
 ) => {
   saveOrUpdateAuthorities(authorities);
+  saveOrUpdateBlacklist(blacklist);
   disableFinalisedPolls(
     [...authorityPolls, ...blacklistPolls].map(p => p.address)
   );
@@ -125,22 +174,16 @@ let timeout;
 const syncronize = async () => {
   clearTimeout(timeout);
   try {
-    const [authorities, authorityPolls, blacklistPolls] = await Promise.all([
+    const [authorities, authorityPolls, blacklist, blacklistPolls] = await Promise.all([
       getAuthorities(),
       getNewAuthorityPolls(),
+      getBlacklisted(),
       getBlacklistPolls()
-    ]);
-    saveOrUpdateData(authorities, authorityPolls, blacklistPolls);
+    ]);      
+    saveOrUpdateData(authorities, authorityPolls, blacklist, blacklistPolls);
   } finally {
     setTimeout(syncronize, SYNC_TIMEOUT);
   }
 };
 
 syncronize();
-// Инициализирвоать web3 и контракт
-// Получить авторити ноды, активные голосования и блэклисты
-// Сохранить в монгу
-// Синхронизировать каждые 3 секунды, проверяя
-// изменения в базе и сохраняя при изменении
-
-// Сделать роут для получения данных из монги

@@ -4,6 +4,7 @@ const Block = mongoose.model('Block');
 const Transaction = mongoose.model('Transaction');
 const Account = mongoose.model('Account');
 const Authority = mongoose.model('Authority');
+const Blacklist = mongoose.model('Blacklist');
 const Poll = mongoose.model('Poll');
 const async = require('async');
 const filters = require('./filters');
@@ -36,6 +37,7 @@ module.exports = function(app) {
   app.post('/compile', compile);
 
   app.get('/polls', getPolls);
+  app.get('/votes-list', getVotesList);
 
   app.post('/stats', stats);
 
@@ -48,7 +50,7 @@ const getPolls = async (req, res) => {
   async.parallel(
     {
       nodes: cb => {
-        Authority.find({})
+        (type == 0 ? Authority : Blacklist).find({})
           .lean(true)
           .exec('find', (err, docs) => cb(null, docs));
       },
@@ -65,6 +67,35 @@ const getPolls = async (req, res) => {
     }
   );
 };
+
+const SIGNATURES = {
+  voteForNewAuthority: '0xfc3c9afd',
+  voteForBlackListAuthority: '0x332327a2'
+}
+
+const getVotesList = async (req, res) => {
+  const type = req.query.type || 0;
+  const isPoll = req.query.poll || 0;
+  const address = req.query.address.substr(2).toLowerCase();
+
+  if (!address) {
+    res.write(JSON.stringify([]));
+    res.end();
+    return;
+  }
+
+  const signatute = SIGNATURES[type == 0 ? 'voteForNewAuthority' : 'voteForBlackListAuthority'];  
+  const $and = [
+    { input: new RegExp('^' + signatute, 'gi') },          
+    { input: new RegExp(address + '$', 'gi') },    
+  ];
+  // if (type == 1) {
+  //   $and.push({ status: isPoll ? null : { $ne: null } });
+  // }
+  const results = await Transaction.find({$and}).lean(true);  
+  res.write(JSON.stringify(results));
+  res.end();
+}
 
 const getAddr = async (req, res) => {
   // TODO: validate addr and tx

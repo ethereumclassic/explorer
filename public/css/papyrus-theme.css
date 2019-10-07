@@ -351,13 +351,13 @@ div .todo-tasklist-item:hover {
   width: 50%;
 }
 
-.node-item__left {
-  border-right: 1px solid #eee;
+.node-item__left {  
   padding-right: 15px;
 }
 
 .node-item__right {
   padding-left: 15px;
+  border-left: 1px solid #eee;
 }
 
 .node-info {

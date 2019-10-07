@@ -1,5 +1,5 @@
 <ul class="node-items">    
-  <li ng-repeat="node in nodes track by $index" class="node-item">
+  <li ng-repeat="node in nodes track by $index" ng-click="toggleModal(node.address)" class="node-item">
     <div class="node-item__left">
       <div class="node-info">
         <div class="node-info__avatar">
@@ -12,11 +12,11 @@
           <div class="node-info__about-company">
             <div>
               <h5>Company</h5>
-              Unknown
+              Papyrus
             </div>
             <div>
               <h5>Home page</h5>
-              <a href="#" target="_blank">Unknown</a>
+              <a href="https://papyrus.network" target="_blank">papyrus.network</a>
             </div>
           </div>
         </div>
@@ -53,7 +53,7 @@
     <div class="portlet-body">
       <span ng-show="polls.length == 0">No active polls yet</span>
       <ul class="node-items" ng-show="polls.length > 0">
-        <li class="node-item" ng-repeat="poll in polls">
+        <li class="node-item" ng-repeat="poll in polls" ng-click="toggleModal(poll.address, true)">
           <div class="node-item__left">
             <div class="node-info">
               <div class="node-info__avatar">
@@ -66,11 +66,11 @@
                 <div class="node-info__about-company">
                   <div>
                     <h5>Company</h5>
-                    Unknown
+                    Papyrus
                   </div>
                   <div>
                     <h5>Home page</h5>
-                    <a href="#" target="_blank">Unknown</a>
+                    <a href="https://papyrus.network" target="_blank">papyrus.network</a>
                   </div>
                 </div>
               </div>
@@ -104,3 +104,18 @@
     </div>
   </div>
 </div>
+
+<voters-list visible="showModal"></voters-list>
+
+<!-- <div class="modal-wrapper" style="position: relative; z-index: 1000;">
+  <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); padding: 3% 0; overflow: auto;">
+    <div class="modal-container" style="width: 100%; max-width: 600px; min-height: 200px; background: #fff; margin: 0 auto;">
+      <div class="modal-title">
+        <h3>32 votes</h3>
+      </div>
+      <div class="modal-content">
+        address
+      </div>
+    </div>
+  </div>  
+</div> -->

@@ -3,11 +3,12 @@ var FETCH_DELAY = 3000;
 angular
   .module('BlocksApp')
   .controller('PollController', function($rootScope, $scope, $http, $timeout) {
-    var type = Number($scope.$state.current.name === 'blacklists');
+    var isBlacklists = $scope.$state.current.name === 'blacklists'; 
+    var type = Number(isBlacklists);
     var timeout;    
     var setNowTimeout;
 
-    $scope.votesRequired = 24;
+    $scope.votesRequired = isBlacklists ? 3 : 24;
     $scope.millisecondsToWords = function(milliseconds, zero = '0s') {
       if (milliseconds <= 0) {
         return zero;
@@ -23,6 +24,26 @@ angular
       }
       return seconds + 's';
     };
+
+    $scope.showModal = false;
+    $scope.modalDataLoading = true;
+    $scope.modalAddress = null;
+    $scope.toggleModal = function(address, isPoll) {      
+      isPoll = isPoll !== undefined ? isPoll : false; 
+      $scope.showModal = !$scope.showModal;
+      if ($scope.showModal) {
+        $scope.modalDataLoading = true;
+        $http({
+          method: 'GET',
+          url: '/votes-list?type='+ type + '&address=' + address + '&poll=' + (isPoll ? 1 : 0),
+        }).then(function (resp) {
+          $scope.modalDataLoading = false;
+          $scope.modalData = resp.data;
+        })
+      } else {
+        $scope.modalData = null;
+      }      
+    }
 
     $scope.addressToSrcIcon = function(address) {
       try {
@@ -71,4 +92,33 @@ angular
       $timeout.cancel(setNowTimeout);
       setNowTimeout = undefined;
     });
+  })
+  .directive('votersList', function($http) {
+    return {
+      restrict: 'E',
+      templateUrl: '/views/votersList.html',
+      transclude: true,
+      replace:true,
+      scope:true,
+      link: function(scope, element, attrs){
+        console.log(attrs, element);
+        scope.$watch(attrs.visible, function(value){
+          if(value == true) {
+            $(element).modal('show');
+          } else {
+            $(element).modal('hide');
+          }
+        });
+        $(element).on('shown.bs.modal', function(){
+          scope.$apply(function(){
+            scope.$parent[attrs.visible] = true;
+          });
+        });
+        $(element).on('hidden.bs.modal', function(){
+          scope.$apply(function(){
+            scope.$parent[attrs.visible] = false;
+          });
+        });
+      }
+    }
   });
