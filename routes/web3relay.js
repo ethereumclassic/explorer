@@ -8,6 +8,7 @@ const Web3 = require('web3');
 
 let web3;
 
+const async = require('async');
 const _ = require('lodash');
 const BigNumber = require('bignumber.js');
 
@@ -54,35 +55,41 @@ exports.data = async (req, res) => {
 
   if ('tx' in req.body) {
     var txHash = req.body.tx.toLowerCase();
+    var txResponse = null;
 
     Transaction.findOne({ hash: txHash }).lean(true).exec(async (err, doc) => {
       if (err || !doc) {
-        web3.eth.getTransaction(txHash, (err, tx) => {
-          if (err || !tx) {
-            console.error(`TxWeb3 error :${err}`);
-            if (!tx) {
-              web3.eth.getBlock(txHash, (err, block) => {
-                if (err || !block) {
-                  console.error(`BlockWeb3 error :${err}`);
-                  res.write(JSON.stringify({ 'error': true }));
+        async.waterfall([
+          (callback) => {
+            web3.eth.getTransaction(txHash, (err, tx) => {
+              if (err || !tx) {
+                let ret = { error: true };
+                console.error(`TxWeb3 error :${err}`);
+                if (!tx) {
+                  web3.eth.getBlock(txHash, (err, block) => {
+                    if (err || !block) {
+                      console.error(`BlockWeb3 error :${err}`);
+                    } else {
+                      console.error(`BlockWeb3 found: ${txHash}`);
+                      ret.isBlock = true;
+                    }
+                    return callback(true, ret);
+                  });
                 } else {
-                  console.log(`BlockWeb3 found: ${txHash}`);
-                  res.write(JSON.stringify({ 'error': true, 'isBlock': true }));
+                  return callback(true, ret);
                 }
-                res.end();
-              });
-            } else {
-              res.write(JSON.stringify({ 'error': true }));
-              res.end();
-            }
-          } else {
+              } else {
+                callback(null, tx);
+              }
+            });
+          }, (tx, callback) => {
             const ttx = tx;
             ttx.value = etherUnits.toEther(new BigNumber(tx.value), 'wei');
             //get TxReceipt status & gasUsed
             web3.eth.getTransactionReceipt(txHash, (err, receipt) => {
               if (err) {
                 console.error(err);
-                return;
+                return callback(err);
               }
               ttx.gasUsed = receipt.gasUsed;
               if (receipt.status) {
@@ -93,18 +100,40 @@ exports.data = async (req, res) => {
                   ttx.creates = receipt.contractAddress;
                 }
               }
+              callback(null, ttx);
             });
+          }, (tx, callback) => {
             //get timestamp from block
-            const block = web3.eth.getBlock(tx.blockNumber, (err, block) => {
-              if (!err && block) ttx.timestamp = block.timestamp;
-              ttx.isTrace = (ttx.input != '0x');
-              txResponse = ttx;
+            web3.eth.getBlock(tx.blockNumber, (err, block) => {
+              if (err || !block) {
+                console.error(err);
+                return callback(err);
+              }
+              tx.timestamp = block.timestamp;
+              tx.isTrace = (tx.input != '0x');
+              callback(null, tx);
             });
           }
+        ], (error, tx) => {
+          if (error) {
+            let ret = tx || { error: true };
+            console.log(`Web3 TX not found: ${txHash}`);
+            res.write(JSON.stringify(ret));
+            res.end();
+            return;
+          }
+          txResponse = tx;
+          txResponse.gasPriceGwei = etherUnits.toGwei(new BigNumber(txResponse.gasPrice), 'wei');
+          txResponse.gasPriceEther = etherUnits.toEther(new BigNumber(txResponse.gasPrice), 'wei');
+          txResponse.txFee = txResponse.gasPriceEther * txResponse.gasUsed;
+
+          res.write(JSON.stringify(txResponse));
+          res.end();
         });
-      } else {
-        txResponse = doc;
+        return;
       }
+
+      txResponse = doc;
 
       const latestBlock = await web3.eth.getBlockNumber() + 1;
 
