@@ -56,10 +56,13 @@
     "simple-line-icons": "^2.4.1",
     "solc": "^0.5.7",
     "ui-select": "^0.19.8",
-    "web3": "^2.0.0-alpha.1",
-    "web3-explorer": "1.0.4"
+    "web3": "^2.0.0-alpha.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
+    "@babel/preset-env": "^7.6.3",
     "chai": "^4.2.0",
     "del": "^4.1.0",
     "eslint": "^5.16.0",

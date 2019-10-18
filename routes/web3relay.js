@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+require("@babel/register")({
+  presets: ["@babel/preset-env"]
+});
 
 /*
     Endpoint for client to talk to etc node
@@ -46,6 +49,16 @@ try {
 //Create Web3 connection
 console.log(`Connecting ${config.nodeAddr}:${config.wsPort}...`);
 web3 = new Web3(new Web3.providers.WebsocketProvider(`ws://${config.nodeAddr}:${config.wsPort}`));
+
+web3.eth.getNodeInfo((err, nodeInfo)=>{
+  if (nodeInfo.split('/')[0].toLowerCase().includes('parity')) {
+    console.log('Web3 has detected parity node configuration');
+    // Parity
+    const Trace = require("../lib/trace").Trace;
+    web3.trace = new Trace(web3.currentProvider);
+  }
+  console.log(`Node version = ${nodeInfo}`);
+});
 
 if (web3.eth.net.isListening()) console.log('Web3 connection established');
 else throw 'No connection, please specify web3host in conf.json';

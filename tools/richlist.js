@@ -2,10 +2,12 @@
 /**
  * Tool for calculating richlist by hackyminer
  */
+require("@babel/register")({
+  presets: ["@babel/preset-env"]
+});
 
 const _ = require('lodash');
 const Web3 = require('web3');
-const web3explorer = require('web3-explorer');
 const asyncL = require('async');
 const BigNumber = require('bignumber.js');
 const mongoose = require('mongoose');
@@ -516,16 +518,14 @@ async function readJsonAccounts(json, blockNumber, callback, defaultType = 0) {
 //config.quiet = false;
 //mongoose.set('debug', true);
 
-async function startSync() {
+async function startSync(isParity) {
   const latestBlock = await web3.eth.getBlockNumber();
-  const nodeInfo = await web3.eth.getNodeInfo();
+  console.log(`* latestBlock = ${latestBlock}`);
 
-  console.log(`Node version = ${nodeInfo}`);
+  if (isParity) {
+    const Parity = require("../lib/parity").Parity;
+    web3.parity = new Parity(web3.currentProvider);
 
-  if (nodeInfo.split('/')[0].toLowerCase().includes('parity')) {
-    console.log('Web3 has detected parity node configuration');
-    web3explorer(web3);
-    console.log(`* latestBlock = ${latestBlock}`);
     makeParityRichList(500, null, latestBlock, updateAccounts);
   } else {
     // load genesis account
@@ -543,4 +543,17 @@ async function startSync() {
     makeRichList(latestBlock, 500, updateAccounts);
   }
 }
-startSync();
+
+web3.eth.getNodeInfo((err, nodeInfo) => {
+  let isParity = false;
+
+  console.log(`Node version = ${nodeInfo}`);
+  if (nodeInfo.split('/')[0].toLowerCase().includes('parity')) {
+    console.log('Web3 has detected parity node configuration');
+    const Parity = require("../lib/parity").Parity;
+    web3.parity = new Parity(web3.currentProvider);
+    isParity = true;
+  }
+
+  startSync(isParity);
+});
