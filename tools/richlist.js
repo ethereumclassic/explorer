@@ -305,7 +305,7 @@ function makeParityRichList(number, offset, blockNumber, updateCallback) {
         try {
           let results = await batch.execute();
           results.response.forEach((code, i) => {
-            let account = accounts[i];
+            let account = accounts[i].toLowerCase();
             data[account] = { address: account };
             if (code.length > 2) {
               // 0: normal address, 1: contract
