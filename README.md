@@ -45,6 +45,7 @@ Follow the project progress at: [ETC Block Explorer Development](https://github.
     "patch":        true,
     "patchBlocks":  100,
     "bulkSize":     100,
+    "useRichList": true,
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",
@@ -56,11 +57,12 @@ Follow the project progress at: [ETC Block Explorer Development](https://github.
         "github": "https://github.com/ethereumclassic",
         "github-repo": "https://github.com/ethereumclassic/explorer",
         "logo": "/img/explorer-logo.png",
+        "customCss": "green-haze.min.css",
         "copyright": "2019 &copy; Ethereum Classic.",
         "poweredbyCustom": false,
         "poweredbyEtcImage": "/img/powered-by-etcexplorer-w.png",
         "poweredbyEtc": true,
-        "useRichList": true,
+        "showRichList": true,
         "useFiat": true,
         "miners": {
             "0xdf7d7e053933b5cc24372f878c90e62dadad5d42": "EtherMine",
@@ -106,6 +108,7 @@ Follow the project progress at: [ETC Block Explorer Development](https://github.
 | `patch` | If set to true and below value is set, sync will iterated through the # of blocks specified. |
 | `patchBlocks` | If `patch` is set to true, the amount of block specified will be check from the latest one. |
 | `useRichList` | If `useRichList` is set to true, explorer will update account balance for richlist page. |
+| `showRichList` | If `showRichList` is set to false, explorer will not show richlist link. It is useful while update or maintain richlist db. |
 | `useFiat` | If `useFiat` is set to true, explorer will show price for account & tx page. ( Disable for testnets )|
 
 ## Run

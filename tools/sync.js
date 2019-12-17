@@ -143,7 +143,7 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
     self.miners = [];
   }
   if (blockData) {
-    self.miners.push({ address: blockData.miner, blockNumber: blockData.number, type: 0 });
+    self.miners.push({ address: blockData.miner.toLowerCase(), blockNumber: blockData.number, type: 0 });
   }
   if (blockData && blockData.transactions.length > 0) {
     for (d in blockData.transactions) {
@@ -255,17 +255,17 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
     self.miners = [];
 
     // setup accounts
-    const data = {};
+    var data = {};
     bulk.forEach((tx) => {
-      data[tx.from] = { address: tx.from, blockNumber: tx.blockNumber, type: 0 };
+      data[tx.from] = { address: tx.from.toLowerCase(), blockNumber: tx.blockNumber, type: 0 };
       if (tx.to) {
-        data[tx.to] = { address: tx.to, blockNumber: tx.blockNumber, type: 0 };
+        data[tx.to] = { address: tx.to.toLowerCase(), blockNumber: tx.blockNumber, type: 0 };
       }
     });
 
     // setup miners
     miners.forEach((miner) => {
-      data[miner.address] = miner;
+      data[miner.address.toLowerCase()] = miner;
     });
 
     const accounts = Object.keys(data);
@@ -273,44 +273,79 @@ const writeTransactionsToDB = async (config, blockData, flush) => {
     if (bulk.length === 0 && accounts.length === 0) return;
 
     // update balances
-    if (config.settings.useRichList && accounts.length > 0) {
-      asyncL.eachSeries(accounts, (account, eachCallback) => {
-        const { blockNumber } = data[account];
-        // get contract account type
-        web3.eth.getCode(account, (err, code) => {
-          if (err) {
-            console.log(`ERROR: fail to getCode(${account})`);
-            return eachCallback(err);
-          }
-          if (code.length > 2) {
-            data[account].type = 1; // contract type
-          }
+    if (config.useRichList && accounts.length > 0) {
+      let n = 0;
+      let chunks = [];
+      while (accounts.length > 800) {
+        let chunk = accounts.splice(0, 500);
+        chunks.push(chunk);
+      }
+      if (accounts.length > 0) {
+        chunks.push(accounts);
+      }
+      asyncL.eachSeries(chunks, function(chunk, outerCallback) {
+        asyncL.waterfall([
+          // get contract account type
+          async () => {
+            let batch = new web3.BatchRequest();
 
-          web3.eth.getBalance(account, blockNumber, (err, balance) => {
-            if (err) {
-              console.log(err);
-              console.log(`ERROR: fail to getBalance(${account})`);
-              return eachCallback(err);
+            for (let i = 0; i < chunk.length; i++) {
+              let account = chunk[i];
+              batch.add(web3.eth.getCode.request(account));
             }
 
-            data[account].balance = parseFloat(web3.utils.fromWei(balance, 'ether'));
-            eachCallback();
-          });
-        });
-      }, (err) => {
-        let n = 0;
-        accounts.forEach((account) => {
-          n++;
-          if (!('quiet' in config && config.quiet === true)) {
-            if (n <= 5) {
-              console.log(` - upsert ${account} / balance = ${data[account].balance}`);
-            } else if (n === 6) {
-              console.log(`   (...) total ${accounts.length} accounts updated.`);
+            try {
+              let results = await batch.execute();
+
+              results.response.forEach((code, i) => {
+                if (code.length > 2) {
+                  data[chunk[i]].type = 1; // contract type
+                }
+
+              });
+              return null;
+            } catch (err) {
+              console.log("ERROR: fail to getCode batch job:", err);
+              return err;
             }
-          }
-          // upsert account
-          Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
+          }, async () => {
+            // batch rpc job
+            let batch = new web3.BatchRequest();
+            for (let i = 0; i < chunk.length; i++) {
+              let account = chunk[i];
+              if (account) {
+                batch.add(web3.eth.getBalance.request(account));
+              }
+            }
+
+            try {
+              let results = await batch.execute();
+              results.response.forEach((balance, i) => {
+                let ether;
+                if (typeof balance === 'object') {
+                  ether = parseFloat(balance.div(1e18).toString());
+                } else {
+                  ether = balance / 1e18;
+                }
+                let account = chunk[i].toLowerCase();
+                data[account].balance = ether;
+
+                if (n <= 5) {
+                  console.log(' - upsert ' + account + ' / balance = ' + data[account].balance);
+                } else if (n == 6) {
+                  console.log('   (...) total ' + accounts.length + ' accounts updated.');
+                }
+                n++;
+                // upsert account
+                Account.collection.update({ address: account }, { $set: data[account] }, { upsert: true });
+              });
+            } catch (err) {
+              console.log("ERROR: fail to getBalance batch job:", err);
+            };
+            return null;
+          }], function(error) {
         });
+      }, function(error) {
       });
     }
 
@@ -577,7 +612,7 @@ if (config.patch === true) {
 // check NORICHLIST env
 // you can use it like as 'NORICHLIST=1 node tools/sync.js' to disable balance updater temporary.
 if (process.env.NORICHLIST) {
-  config.settings.useRichList = false;
+  config.useRichList = false;
 }
 
 // Start listening for latest blocks
