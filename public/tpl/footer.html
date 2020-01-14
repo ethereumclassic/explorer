@@ -7,10 +7,10 @@
         <p> {{settings.about}} </p><br>
         <span ng-bind-html="settings.poweredbyCustom" ng-if="settings.poweredbyCustom">{{settings.poweredbyCustom}}</span>
         <span ng-if="!settings.poweredbyCustom && settings.poweredbyEtcImage">
-          <a href="{{settings.github-repo}}" target="_blank"><img height="51px" src="{{settings.poweredbyEtcImage}}"></a>
+          <a href="{{settings.githubRepo}}" target="_blank"><img height="51px" src="{{settings.poweredbyEtcImage}}"></a>
         </span>
         <p ng-if="!settings.poweredbyCustom && !settings.poweredbyEtcImage && settings.poweredbyEtc">
-          Powered by <a href="{{settings.github-repo}}" target="_blank">ETC Explorer</a>
+          Powered by <a href="{{settings.githubRepo}}" target="_blank">ETC Explorer</a>
         </p>
       </div>
       <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
@@ -36,7 +36,7 @@
       <div class="col-md-6 col-sm-12 col-xs-12 footer-block">
         <h2>Help, it's Broken!</h2>
         <address class="margin-bottom-40">
-          <br>Open an Issue: <a href="{{settings.github-repo}}/issues" target="_blank">github</a>
+          <br>Open an Issue: <a href="{{settings.githubRepo}}/issues" target="_blank">github</a>
           <br> <a href="{{settings.contact}}" target="_blank">Email bug reports</a>
           <br> <a href="{{settings.twitter}}" target="_blank">Twit</a>
         </address>
