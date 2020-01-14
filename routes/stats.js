@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const Block = mongoose.model('Block');
 const BlockStat = mongoose.model('BlockStat');
+const TxStat = mongoose.model('TxStat');
+const Transaction = mongoose.model( 'Transaction' );
 
 const https = require('https');
 const async = require('async');
@@ -28,7 +30,11 @@ module.exports = function (req, res) {
 
   else if (req.body.action == 'miners') { getMinerStats(req, res); } else if (req.body.action == 'hashrate') { getHashrate(res); } else if (req.body.action == 'hashrates') getHashrates(req, res);
 
+  else if (req.body.action=="txns") {
+    getTxStats(req, res);
+  }
 };
+  
 /**
   Aggregate miner stats
 **/
@@ -81,6 +87,36 @@ var getMinerStats = function (req, res) {
       });
     });
 };
+
+/**
+  Aggregate transaction stats
+ */
+var getTxStats = function(req, res) {
+  var days = config.settings.stats && config.settings.stats.txnDays || 3;
+  var range =  24*days*60*60;
+  // check validity of range
+  if (req.body.range && req.body.range < 60 * 60 * 24 * 7) {
+    range = parseInt(req.body.range);
+    if (range < 3600) { // minimal 1 hour
+      range = 3600;
+    }
+  }
+
+  var timebefore = parseInt((new Date()).getTime() / 1000) - range;
+
+  TxStat.find({ timestamp: { $gte: timebefore } }, "timestamp txns")
+    .lean(true).sort('-timestamp').limit(100)
+    .exec(function (err, docs) {
+      if (err || !docs) {
+        console.error(err);
+        res.status(500).send();
+        res.end();
+        return;
+      }
+      res.write(JSON.stringify(docs));
+      res.end();
+    });
+}
 
 /**
   Aggregate network hashrates

@@ -112,7 +112,14 @@ const Market = new Schema(
   }, { collection: 'Market' },
 );
 
+const TxStat = new Schema(
+{
+    "timestamp": {type: Number, index: {unique: true}},
+    "txns": Number
+}, {collection: "TxStat"});
+
 // create indices
+Transaction.index({timestamp:-1});
 Transaction.index({ blockNumber: -1 });
 Transaction.index({ from: 1, blockNumber: -1 });
 Transaction.index({ to: 1, blockNumber: -1 });
@@ -130,6 +137,7 @@ TokenTransfer.index({ to: 1, blockNumber: -1 });
 TokenTransfer.index({ contract: 1, blockNumber: -1 });
 
 mongoose.model('BlockStat', BlockStat);
+mongoose.model('TxStat', TxStat);
 mongoose.model('Block', Block);
 mongoose.model('Account', Account);
 mongoose.model('Contract', Contract);
@@ -137,6 +145,7 @@ mongoose.model('Transaction', Transaction);
 mongoose.model('Market', Market);
 mongoose.model('TokenTransfer', TokenTransfer);
 module.exports.BlockStat = mongoose.model('BlockStat');
+module.exports.TxStat = mongoose.model('TxStat');
 module.exports.Block = mongoose.model('Block');
 module.exports.Contract = mongoose.model('Contract');
 module.exports.Transaction = mongoose.model('Transaction');

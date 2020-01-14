@@ -21,6 +21,12 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
         },
         "miner_hashrate": {
             "title": "Miner distribution"
+        },
+        "supply": {
+            "title": "Total Supply"
+        },
+        "tx": {
+            "title": "Transaction chart"
         }
     }
 
@@ -166,6 +172,216 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                     div.style("top", d3.event.pageY - 25 + "px");
                     div.style("display", "inline-block");
                     div.html((d.data._id) + "<br>" + (d.data.count) + "<br>(" + d3.format(".2%")(d.data.count / total) + ")");
+                });
+            slice
+                .on("mouseout", function (d) {
+                    div.style("display", "none");
+                });
+
+            slice.exit()
+                .remove();
+
+                //console.log(data.length);
+
+            var legendHeight = Math.min(maxMiners, color.domain().length);
+            var legend = svg.selectAll('.legend')
+                //.data(color.domain())
+                .data(data)
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
+                .attr('transform', function (d, i) {
+                    if (data.length - i >= maxMiners) {
+                        // show maxMiners, hide remains
+                        return 'translate(2000,0)';
+                    }
+                    var height = legendRectSize + legendSpacing;
+                    var offset = height * legendHeight / 2;
+                    var horz = -3 * legendRectSize;
+                    var vert = (data.length - i) * height;
+                    var tx, ty;
+                    if (window.innerWidth > 800) {
+                       tx = 250;
+                       ty = vert - offset;
+                    } else {
+                       tx = - radius * 0.8;
+                       ty = vert + radius;
+                    }
+                    return 'translate(' + tx + ',' + ty + ')';
+                });
+
+            legend.append('rect')
+                .attr('width', legendRectSize)
+                .attr('height', legendRectSize)
+                .style('fill', function (d,i) {
+                    //console.log(i);
+                    return color(d._id);
+                });
+
+            legend.append('text')
+
+                .attr('x', legendRectSize + legendSpacing)
+                .attr('y', legendRectSize - legendSpacing)
+                .text(function (d) {
+                    //console.log(d);
+                    return d._id;
+                });
+
+
+        }
+      }
+    }
+  };
+})
+.directive('totalSupply', function($http) {
+  return {
+    restrict: 'E',
+    template: '<svg id="totalSupply" width="100%" height="500px"></svg>',
+    scope: true,
+    link: function(scope, elem, attrs) {
+      scope.stats = {};
+      var statsURL = "/supply";
+
+      $http.post(statsURL)
+        .then(function(res) {
+          var dataset = [];
+          var total = 0;
+          Object.keys(res.data).forEach(function(k) {
+            if (k === 'totalSupply') {
+              total = res.data[k];
+            } else if (k === 'genesisAlloc' && typeof res.data[k] === 'object') {
+              Object.keys(res.data[k]).forEach(function(kk) {
+                if (kk !== 'total') {
+                  var d = { _id: kk, amount: res.data[k][kk] };
+                  dataset.push(d);
+                }
+              });
+            } else if (k !== 'height' && k != 'circulatingSupply') {
+              var d = { _id: k, amount: res.data[k] };
+              dataset.push(d);
+            }
+          });
+
+          var data = _.sortBy(dataset, function(d) {
+            return d.amount * 1.0;
+          });
+          scope.init(data, total, "#totalSupply");
+        });
+
+      /**
+       * Created by chenxiangyu on 2016/8/5.
+       * slightly modified to show total supply pie chart.
+       */
+      scope.init = function(dataset, total, chartid) {
+        var svg = d3.select(chartid)
+          .append("g");
+
+
+        svg.append("g")
+            .attr("class", "slices");
+        svg.append("g")
+            .attr("class", "labelName");
+        svg.append("g")
+            .attr("class", "labelValue");
+        svg.append("g")
+            .attr("class", "lines");
+
+        var width = parseInt(d3.select(chartid).style("width"));
+        var height = parseInt(d3.select(chartid).style("height"));
+
+        // fix for mobile layout
+        var radius;
+        if (window.innerWidth < 800) {
+            radius = Math.min(width, 450) * 0.6;
+        } else {
+            radius = 450 * 0.5;
+        }
+
+        var pie = d3.layout.pie()
+            .sort(null)
+            .value(function (d) {
+                //return d.value;
+                //console.log(d);
+                return d.amount;
+            });
+
+        var arc = d3.svg.arc()
+            .outerRadius(radius * 0.8)
+            .innerRadius(radius * 0.4);
+
+        var outerArc = d3.svg.arc()
+            .innerRadius(radius * 0.9)
+            .outerRadius(radius * 0.9);
+
+        var legendRectSize = (radius * 0.05);
+        var legendSpacing = radius * 0.02;
+
+        var maxMiners = 23;
+        if (window.innerWidth < 800) {
+            var legendHeight = legendRectSize + legendSpacing;
+            var fixHeight = Math.min(maxMiners, dataset.length) * legendHeight;
+            fixHeight = height + parseInt(fixHeight) + 50;
+            d3.select(chartid).attr("height", fixHeight + 'px');
+        }
+
+        var div = d3.select("body").append("div").attr("class", "toolTip");
+
+        // fix for mobile layout
+        if (window.innerWidth < 800) {
+            svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        } else {
+            svg.attr("transform", "translate(" + 200 + "," + 200 + ")");
+        }
+
+        var colorRange = d3.scale.category10();
+        var color = d3.scale.ordinal()
+            .range(colorRange.range());
+
+        change(dataset);
+
+
+        d3.selectAll("input")
+            .on("change", selectDataset);
+
+        function selectDataset() {
+            var value = this.value;
+            if (value == "total") {
+                change(datasetTotal);
+            }
+        }
+
+        function change(data) {
+            /* ------- PIE SLICES -------*/
+            var slice = svg.select(".slices").selectAll("path.slice")
+                .data(pie(dataset), function (d) {
+                    //return d.data.label
+                    //console.log(d);
+                    return d.data._id;
+                });
+
+            slice.enter()
+                .insert("path")
+                .style("fill", function (d) {
+                    return color(d.data._id);
+                })
+                .attr("class", "slice");
+
+            slice
+                .transition().duration(1000)
+                .attrTween("d", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        return arc(interpolate(t));
+                    };
+                })
+            slice
+                .on("mousemove", function (d) {
+                    div.style("left", d3.event.pageX + 10 + "px");
+                    div.style("top", d3.event.pageY - 25 + "px");
+                    div.style("display", "inline-block");
+                    div.html((d.data._id) + "<br>" + (d.data.amount) + "<br>(" + d3.format(".2%")(d.data.amount / total) + ")");
                 });
             slice
                 .on("mouseout", function (d) {
@@ -884,6 +1100,217 @@ angular.module('BlocksApp').controller('StatsController', function($stateParams,
                 tip.style("top", d3.event.pageY + 25 + "px");
 
                 focus.attr("transform", "translate(" + x(moment(x0).unix()*1000) + "," + y(s1.blockTime) + ")");
+            }
+
+            callback(null, 'three');
+        }
+        function myLastFunction(arg1, callback) {
+            // arg1 now equals 'three'
+            callback(null, 'done');
+        }
+      }
+    }
+  }
+})
+.directive('transactionChart', function($http) {
+  return {
+    restrict: 'E',
+    template: '<svg id="transaction" width="100%" height="500px"></svg>',
+    scope: true,
+    link: function(scope, elem, attrs) {
+      $http.post("/stats", {"action": "txns"})
+        .then(function(res) {
+
+          scope.init(res.data, "#transaction");
+        });
+
+      /**
+       * Created by chenxiangyu on 2016/8/5
+       * slightly modified for transaction.
+       */
+      scope.init = function(dataset, chartid) {
+        async.waterfall([
+            myFirstFunction,
+            mySecondFunction,
+            myLastFunction
+        ], function (err, result) {
+            // result now equals 'done'
+            return result;
+        });
+
+        function myFirstFunction(callback) {
+            callback(null, dataset, 'two');
+        }
+
+        function mySecondFunction(arg1, arg2, callback) {
+            var width1 = parseInt(d3.select(chartid).style("width"));
+
+            var margin = {top: 0, right: 10, bottom: 50, left: 65},
+                //var margin = {top: 30, right: 0, bottom: 0, left: 0},
+                // For Responsive web design, get window.innerWidth
+                //width = window.innerWidth - margin.left - margin.right,
+                width = width1 - margin.left - margin.right,
+                //width = window.screen.availWidth - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
+
+            // FIXME
+            if (width < 0) {
+                width = 1000;
+            }
+
+            var x = d3.time.scale().range([0, width]);
+            var y = d3.scale.linear().range([height, 0]);
+
+            // For Responsive web design
+            var tick = window.innerWidth < 800 ? 2:5;
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .tickFormat(d3.time.format("%x"))
+                .ticks(tick);
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .tickFormat(d3.format("s"))
+                .tickFormat(function(d){return d3.format("s")(d) + ' txns';})
+                .ticks(5);
+
+            var area = d3.svg.area()
+                .x(function(d) { return x(d.timestamp*1000); })
+                .y0(height)
+                .y1(function(d) { return y(d.txns); });
+
+            var valueline = d3.svg.line()
+                .x(function(d) { return x(d.timestamp*1000); })
+                .y(function(d) { return y(d.txns); });
+
+            var svg = d3.select(chartid)
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            // fix for mobile layout
+            var tick = window.innerWidth < 800 ? 15:30;
+
+            // function for the x grid lines
+            function make_x_axis() {
+                return d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .ticks(tick)
+            }
+
+            // function for the y grid lines
+            function make_y_axis() {
+                return d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+                    .ticks(8)
+            }
+
+            var data = arg1;
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.timestamp*1000; }));
+            y.domain([d3.min(data, function(d) { return d.txns; }), d3.max(data, function(d) { return d.txns; })]);
+
+            // Add the filled area
+            svg.append("path")
+                .datum(data)
+                .attr("class", "area")
+                .attr("d", area);
+
+            // Draw the x Grid lines
+            svg.append("g")
+                .attr("class", "grid")
+                .attr("transform", "translate(0," + height + ")")
+                .call(make_x_axis()
+                    .tickSize(-height, 0, 0)
+                    .tickFormat("")
+                );
+
+            // Draw the y Grid lines
+            svg.append("g")
+                .attr("class", "grid")
+                .call(make_y_axis()
+                    .tickSize(-width, 0, 0)
+                    .tickFormat("")
+                );
+
+            // Add the valueline path.
+            svg.append("path")
+                .attr("d", valueline(data));
+
+            // Add the X Axis
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+            // Add the Y Axis
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .direction('s')
+                .html(function(d) {
+                    return '<div class="tooltip-arrow"></div>' +
+                        '<div class="tooltip-inner"><div class="small"><b>' +
+                        'Transactions: <b>' + d.txns + ' txns </b><br />' +
+                        '<b>' + d3.time.format("%x %H:%M")(new Date(d.timestamp * 1000)) + '</b>' +
+                        '</div></div>';
+                });
+
+            // Add Tooltip
+            var focus = svg.append("g")
+                .attr("class", "focus")
+                .style("display", "none");
+
+            focus.append("circle")
+                .attr("r", 4.5);
+
+            focus.append("text")
+                .attr("x", 9)
+                .attr("dy", ".35em");
+
+            svg.call(tip);
+
+            svg.append("rect")
+                .attr("class", "overlay")
+                .attr("width", width)
+                .attr("height", height)
+                .on("mouseover", function() {
+                    var x0 = x.invert(d3.mouse(this)[0]);
+                    var s1 = _.minBy(data, function(d) {
+                        return Math.abs(moment(x0).unix()-d.timestamp);
+                    });
+                    tip.show(s1, this);
+                    tip.style("left", d3.event.pageX + 10 + "px");
+                    tip.style("top", d3.event.pageY + 25 + "px");
+                    focus.style("display", null);
+                 })
+                .on("mouseout", function() { tip.hide(); focus.style("display", "none"); })
+                .on("mousemove", mousemove);
+
+            function mousemove() {
+                var x0 = x.invert(d3.mouse(this)[0]);
+
+                var s1 = _.minBy(data, function(d) {
+                    return Math.abs(moment(x0).unix()-d.timestamp);
+                });
+
+                tip.show(s1, this);
+                tip.style("left", d3.event.pageX + 10 + "px");
+                tip.style("top", d3.event.pageY + 25 + "px");
+
+                focus.attr("transform", "translate(" + x(moment(x0).unix()*1000) + "," + y(s1.txns) + ")");
             }
 
             callback(null, 'three');
