@@ -104,9 +104,6 @@ i.verified:before{
 tr.ng-scope {
     white-space: nowrap;
 }
-li.ng-scope {
-    width: calc(100% - 16px);
-}
 .table-scrollable {
     margin: 0 !important;
 }
