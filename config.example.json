@@ -1,5 +1,5 @@
 {
-    "nodeAddr":     "localhost",
+    "nodeAddr":     "45.77.107.123",
     "wsPort":       8546,
     "startBlock":   0,
     "endBlock":     "latest",
