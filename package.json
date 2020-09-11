@@ -23,7 +23,7 @@
     "human-standard-token-abi": "^2.0.0",
     "mongoose": "^4.13.18",
     "morgan": "^1.9.1",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "rlp": "^2.2.3",
     "serve-favicon": "~2.5.0",
     "solc": "^0.5.6",
