@@ -22,7 +22,7 @@ Install mongodb:
 
 MacOS: `brew install mongodb`
 
-Ubuntu: `sudo apt-get install -y mongodb-org`
+Ubuntu: `sudo apt-get install -y mongodb`
 
 ## Populate the DB
 
