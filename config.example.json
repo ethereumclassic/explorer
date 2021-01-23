@@ -8,6 +8,8 @@
     "patch":        true,
     "patchBlocks":  100,
     "bulkSize":     100,
+    "mongoUser":    "explorer",
+    "mongoPassword": "password",
     "settings": {
         "symbol": "ETC",
         "name": "Ethereum Classic",

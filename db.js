@@ -1,3 +1,21 @@
+const config = { nodeAddr: 'localhost', wsPort: 8546, bulkSize: 100 };
+const _ = require('lodash');
+
+try {
+  var local = require('./config.json');
+  _.extend(config, local);
+  console.log('config.json found.');
+} catch (error) {
+  if (error.code === 'MODULE_NOT_FOUND') {
+    var local = require('./config.example.json');
+    _.extend(config, local);
+    console.log('No config file found. Using default configuration... (config.example.json)');
+  } else {
+    throw error;
+    process.exit(1);
+  }
+}
+
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
@@ -146,11 +164,11 @@ module.exports.TokenTransfer = mongoose.model('TokenTransfer');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/explorerDB', {
-  useMongoClient: true
+  useMongoClient: true,
   // poolSize: 5,
   // rs_name: 'myReplicaSetName',
-  // user: 'explorer',
-  // pass: 'yourdbpasscode'
+  user: config.mongoUser, 
+  pass: config.mongoPassword
 });
 
 // mongoose.set('debug', true);
